@@ -1,0 +1,143 @@
+/* Custom styles & Premier League Aesthetic for Merdivenim Geldi */
+
+:root {
+  --pl-purple: #38003c;
+  --pl-green: #00ff85;
+  --pl-magenta: #e90052;
+  --pl-cyan: #04f5ff;
+  --pl-dark-card: rgba(19, 13, 37, 0.75);
+  --pl-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background-color: #0d071a;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(56, 0, 60, 0.45) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(233, 0, 82, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 133, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: var(--pl-dark-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--pl-border);
+  border-radius: 1rem;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.glass-card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00ff85, #04f5ff, #e90052);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0a1c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Table Hover & Transitions */
+.table-row-hover {
+  transition: all 0.2s ease;
+}
+
+.table-row-hover:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Ladder rank badges */
+.rank-badge-1 {
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  color: #000;
+  font-weight: 800;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.rank-badge-2 {
+  background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+  color: #0f172a;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(226, 232, 240, 0.3);
+}
+
+.rank-badge-3 {
+  background: linear-gradient(135deg, #f97316, #b45309);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+}
+
+.rank-badge-default {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* Form Pill Sparkline */
+.form-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.375rem;
+  padding: 0 0.25rem;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 255, 133, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 255, 133, 0.45);
+  }
+}
+
+.glow-pulse {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+/* Modal Transitions */
+.modal-backdrop {
+  transition: opacity 0.25s ease-out;
+}
+
+.modal-content {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}

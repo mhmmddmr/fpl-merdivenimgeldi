@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merdivenim Geldi - FPL Özel Lig İstatistik & Analiz</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pl: {
+              purple: '#38003c',
+              green: '#00ff85',
+              magenta: '#e90052',
+              cyan: '#04f5ff',
+              yellow: '#ffe600',
+              dark: '#0d071a',
+              card: '#130d25'
+            }
+          },
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            inter: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js & Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body class="text-slate-100 antialiased selection:bg-pl-green selection:text-slate-900">
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- 1. Header / Navbar -->
+    <header class="glass-card glass-card-glow p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div id="logo-box" class="flex items-center gap-3.5 cursor-pointer group">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-900 via-pink-600 to-pl-green flex items-center justify-center text-white text-2xl shadow-lg shadow-purple-900/50 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-stairs"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-pl-green transition-colors font-outfit uppercase">
+              Merdivenim Geldi
+            </h1>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-pl-green/20 text-pl-green border border-pl-green/30">
+              FPL 9 Takım
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Fantasy Premier League Özel Lig İstatistik & Takip Paneli</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <button id="btn-add-gameweek" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pl-green to-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 transition shadow-lg shadow-pl-green/20">
+          <i class="fa-solid fa-plus-circle"></i> Yeni Hafta / Puan Ekle
+        </button>
+
+        <button id="btn-h2h" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs sm:text-sm border border-white/10 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-people-arrows text-pl-cyan"></i> 1v1 Kapışma
+        </button>
+
+        <button id="btn-records" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs sm:text-sm border border-white/10 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-trophy text-yellow-400"></i> Rekorlar
+        </button>
+
+        <button id="btn-data-management" class="px-2.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition" title="Yedekleme & Ayarlar">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. Hero Highlights (4 Özet Kart) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- 1. Güncel Lider -->
+      <div id="card-leader" class="glass-card p-5 border-l-4 border-l-pl-green glow-pulse">
+        <!-- Dynamic Leader Content -->
+      </div>
+
+      <!-- 2. Haftanın Fatihi -->
+      <div id="card-gw-winner" class="glass-card p-5 border-l-4 border-l-pl-magenta">
+        <!-- Dynamic GW Winner Content -->
+      </div>
+
+      <!-- 3. Merdiveni Tırmanan -->
+      <div id="card-climber" class="glass-card p-5 border-l-4 border-l-pl-cyan">
+        <!-- Dynamic Climber Content -->
+      </div>
+
+      <!-- 4. Lig Ortalaması & Dip -->
+      <div id="card-average" class="glass-card p-5 border-l-4 border-l-amber-400">
+        <!-- Dynamic Average Content -->
+      </div>
+    </section>
+
+    <!-- 3. Standings Table & Charts Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Sol Taraf: Puan Durumu Tablosu (7 cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="glass-card p-5">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
+            <div>
+              <h2 class="text-lg font-black text-white flex items-center gap-2 font-outfit">
+                <i class="fa-solid fa-ranking-star text-pl-green"></i> Lig Puan Tablosu
+              </h2>
+              <span id="current-gw-badge" class="text-xs text-slate-400">Gameweek 1</span>
+            </div>
+
+            <!-- Hafta Filtresi -->
+            <div class="flex items-center gap-2">
+              <label for="gameweek-select" class="text-xs text-slate-400">Görüntülenen:</label>
+              <select id="gameweek-select" class="bg-slate-900 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-1.5 focus:outline-none focus:border-pl-green">
+                <!-- Dynamic Gameweek Options -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto -mx-5 px-5">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-white/5">
+                  <th class="py-3 px-3 sm:px-4 text-center">Sıra</th>
+                  <th class="py-3 px-2 text-center hidden sm:table-cell">Fark</th>
+                  <th class="py-3 px-3 sm:px-4">Takım & Menajer</th>
+                  <th class="py-3 px-3 text-center">GW</th>
+                  <th class="py-3 px-3 text-center">Toplam</th>
+                  <th class="py-3 px-3 text-center hidden md:table-cell">Zirve Farkı</th>
+                  <th class="py-3 px-3 text-center hidden lg:table-cell">Form</th>
+                  <th class="py-3 px-3 text-right"></th>
+                </tr>
+              </thead>
+              <tbody id="standings-tbody" class="divide-y divide-white/5 text-sm">
+                <!-- Dynamic Standings Rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sağ Taraf: İnteraktif Grafikler & Analiz (5 cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="glass-card p-5">
+          <!-- Chart Tabs Switcher -->
+          <div class="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/5">
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-outfit">
+              <i class="fa-solid fa-chart-line text-pl-cyan"></i> Görsel Analiz
+            </h3>
+            <div class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-white/5 text-xs">
+              <button data-tab="rank" class="chart-tab-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-900 font-bold transition">
+                Sıralama (Bump)
+              </button>
+              <button data-tab="points" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
+                Kümülatif
+              </button>
+              <button data-tab="weekly" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
+                Haftalık
+              </button>
+              <button data-tab="dominance" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
+                Zirve
+              </button>
+            </div>
+          </div>
+
+          <!-- Chart Canvas Container -->
+          <div class="relative h-[360px] w-full">
+            <canvas id="chart-canvas"></canvas>
+          </div>
+
+          <div class="mt-3 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-circle-info"></i> Grafik çizgilerinin üzerine gelerek detaylı verileri inceleyebilirsiniz.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. Footer -->
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-white/5 space-y-1">
+      <p>🏆 <b>Merdivenim Geldi</b> • Fantasy Premier League 9 Takımlı Özel Lig Takip Paneli</p>
+      <p>Veriler yerel tarayıcınızda saklanır ve GitHub üzerinden güncellenebilir.</p>
+    </footer>
+
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL 1: Hafta / Puan Ekle & Düzenle -->
+  <div id="modal-add-gw" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-lg w-full max-h-[90vh] flex flex-col p-6 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-pl-green"></i> Haftalık Puan Girişi
+        </h3>
+        <button onclick="closeModal('modal-add-gw')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <form id="form-add-gw" class="flex flex-col flex-1 overflow-hidden mt-4">
+        <!-- Hafta Numarası Seçimi -->
+        <div class="mb-4 flex items-center justify-between bg-slate-900/80 p-3 rounded-xl border border-white/5">
+          <label for="input-gw-number" class="text-xs font-bold text-slate-300">Hafta (Gameweek) No:</label>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500 font-mono">GW</span>
+            <input type="number" id="input-gw-number" min="1" max="38" value="2" class="w-16 px-3 py-1 bg-slate-800 border border-slate-700 text-white font-mono font-bold rounded-lg text-center focus:border-pl-green focus:outline-none" required />
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-400 mb-2">9 Takımın bu haftaki puanlarını girin:</div>
+
+        <!-- 9 Takım Puan Inputları -->
+        <div id="gw-form-inputs" class="space-y-2 overflow-y-auto pr-1 flex-1 max-h-72">
+          <!-- Dynamic Team Score Inputs -->
+        </div>
+
+        <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-add-gw')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold">
+            Vazgeç
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-pl-green text-slate-950 text-xs font-bold hover:opacity-90 flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i> Kaydet ve Güncelle
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: 1v1 Head to Head -->
+  <div id="modal-h2h" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-xl w-full p-6 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-people-arrows text-pl-cyan"></i> 1v1 Menajer Kapışması
+        </h3>
+        <button onclick="closeModal('modal-h2h')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <!-- Menajer Seçiciler -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="text-[11px] text-slate-400 font-bold block mb-1">1. Menajer:</label>
+          <select id="h2h-select-team1" class="w-full bg-slate-900 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-pl-cyan focus:outline-none">
+            <!-- Dynamic Options -->
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] text-slate-400 font-bold block mb-1">2. Menajer:</label>
+          <select id="h2h-select-team2" class="w-full bg-slate-900 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-pl-cyan focus:outline-none">
+            <!-- Dynamic Options -->
+          </select>
+        </div>
+      </div>
+
+      <div id="h2h-results-container">
+        <!-- Dynamic H2H Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Menajer Karnesi / Detay Kartı -->
+  <div id="modal-manager" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-lg w-full p-6 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-pl-green"></i> Menajer Karnesi
+        </h3>
+        <button onclick="closeModal('modal-manager')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div id="manager-modal-content">
+        <!-- Dynamic Manager Details -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Lig Rekorları & Hall of Fame -->
+  <div id="modal-records" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full p-6 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-trophy text-yellow-400"></i> Lig Rekorları & Şeref Kürsüsü
+        </h3>
+        <button onclick="closeModal('modal-records')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div id="records-content">
+        <!-- Dynamic Records Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Veri Yönetimi & FPL API & Yedekleme -->
+  <div id="modal-data" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-lg w-full p-6 border border-white/10 shadow-2xl space-y-6">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-database text-purple-400"></i> Veri & Yedekleme Merkezi
+        </h3>
+        <button onclick="closeModal('modal-data')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <!-- FPL API Entegrasyonu -->
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-300">
+          <i class="fa-solid fa-globe text-pl-cyan"></i> Resmi FPL Lig ID Bağlantısı
+        </div>
+        <p class="text-xs text-slate-400">
+          FPL'deki liginizin ID numarasını girerek lig puanlarını otomatik bağlayabilirsiniz.
+        </p>
+        <div class="flex gap-2">
+          <input type="text" id="input-fpl-league-id" placeholder="Örn: 123456" class="flex-1 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-white focus:border-pl-cyan focus:outline-none" />
+          <button id="btn-fetch-fpl" class="px-3 py-1.5 rounded-lg bg-pl-cyan/20 text-pl-cyan border border-pl-cyan/40 text-xs font-bold hover:bg-pl-cyan/30 transition">
+            Bağlan
+          </button>
+        </div>
+        <div id="fpl-fetch-status" class="text-[11px] text-slate-400"></div>
+      </div>
+
+      <!-- JSON Yedek Alma & Yükleme -->
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
+        <div class="text-xs font-bold text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-file-export text-emerald-400"></i> Veri Yedeği (JSON)
+        </div>
+        <p class="text-xs text-slate-400">Tüm haftalık puanları tek tıkla dosya olarak indirin veya başka bir cihazda geri yükleyin.</p>
+        <div class="flex items-center gap-2">
+          <button id="btn-export-json" class="flex-1 py-2 px-3 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Yedeği İndir
+          </button>
+          <label class="flex-1 py-2 px-3 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold hover:bg-purple-500/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-upload"></i> Yedek Yükle
+            <input type="file" id="input-import-json" accept=".json" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Sıfırlama -->
+      <div class="pt-2 flex justify-between items-center text-xs">
+        <button id="btn-reset-data" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
+          <i class="fa-solid fa-trash-arrow-up"></i> GW1 Başlangıcına Sıfırla
+        </button>
+        <button onclick="closeModal('modal-data')" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold">
+          Kapat
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 opacity-0 pointer-events-none transition-all duration-300"></div>
+
+  <!-- Application Entry Script -->
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
