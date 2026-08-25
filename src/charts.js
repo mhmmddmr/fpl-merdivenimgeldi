@@ -76,6 +76,7 @@ export function renderRankChart(canvasId, progressionData) {
     }
 
     return {
+      teamId: item.team.id,
       label: `${item.team.name}`,
       data: item.ranks,
       borderColor,
@@ -182,6 +183,7 @@ export function renderPointsChart(canvasId, progressionData) {
     }
 
     return {
+      teamId: item.team.id,
       label: `${item.team.name}`,
       data: item.cumulativePoints,
       borderColor,
@@ -242,6 +244,73 @@ export function renderPointsChart(canvasId, progressionData) {
       }
     }
   });
+}
+
+/**
+ * Instant Spotlight on Hover (60fps no-redraw fast update)
+ */
+export function updateChartFocus(teamId, progressionData) {
+  setFocusedTeam(teamId);
+
+  // 1. Update Rank Chart if active
+  if (rankChartInstance && rankChartInstance.data && rankChartInstance.data.datasets) {
+    const { teams } = progressionData;
+    rankChartInstance.data.datasets.forEach(ds => {
+      const teamItem = teams.find(t => t.team.id === ds.teamId || t.team.name === ds.label);
+      const isTarget = teamId !== 'all' && (ds.teamId === teamId || (teamItem && teamItem.team.id === teamId));
+
+      if (teamId === 'all') {
+        ds.borderColor = teamItem ? teamItem.team.color : ds.borderColor;
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 3.2;
+        ds.pointRadius = 4.5;
+        ds.order = 1;
+      } else if (isTarget) {
+        ds.borderColor = teamItem ? teamItem.team.color : ds.borderColor;
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 5.5;
+        ds.pointRadius = 7.5;
+        ds.order = 0; // Bring to front
+      } else {
+        ds.borderColor = 'rgba(255, 255, 255, 0.07)';
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 1.2;
+        ds.pointRadius = 0;
+        ds.order = 2; // Behind
+      }
+    });
+    rankChartInstance.update('none');
+  }
+
+  // 2. Update Points Chart if active
+  if (pointsChartInstance && pointsChartInstance.data && pointsChartInstance.data.datasets) {
+    const { teams } = progressionData;
+    pointsChartInstance.data.datasets.forEach(ds => {
+      const teamItem = teams.find(t => t.team.id === ds.teamId || t.team.name === ds.label);
+      const isTarget = teamId !== 'all' && (ds.teamId === teamId || (teamItem && teamItem.team.id === teamId));
+
+      if (teamId === 'all') {
+        ds.borderColor = teamItem ? teamItem.team.color : ds.borderColor;
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 3.2;
+        ds.pointRadius = 3.5;
+        ds.order = 1;
+      } else if (isTarget) {
+        ds.borderColor = teamItem ? teamItem.team.color : ds.borderColor;
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 5.5;
+        ds.pointRadius = 7.5;
+        ds.order = 0;
+      } else {
+        ds.borderColor = 'rgba(255, 255, 255, 0.07)';
+        ds.backgroundColor = ds.borderColor;
+        ds.borderWidth = 1.2;
+        ds.pointRadius = 0;
+        ds.order = 2;
+      }
+    });
+    pointsChartInstance.update('none');
+  }
 }
 
 /**

@@ -19,6 +19,7 @@ import {
   renderRankChart,
   renderPointsChart,
   renderLadderMatrix,
+  updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
 } from './charts.js';
@@ -29,6 +30,7 @@ import { fetchFplLeagueStandings } from './fplApi.js';
 let leagueData = loadLeagueData();
 let selectedGameweek = null;
 let currentActiveChartTab = 'rank'; // Default to Sıralama Yarışı (Bump Chart)
+let pinnedTeamId = null; // When explicitly clicked/pinned
 
 // Safe Bootstrap Mechanism
 if (document.readyState === 'loading') {
@@ -89,18 +91,42 @@ function renderHeaderControls() {
 }
 
 /**
- * 2. Render Team Filter Pills for Chart
+ * 2. Render Team Filter Pills for Chart (Hover to Spotlight + Click to Pin)
  */
+function updateFilterPillsUI(activeId) {
+  const filterContainer = document.getElementById('team-filter-container');
+  if (!filterContainer) return;
+
+  filterContainer.querySelectorAll('.team-filter-chip').forEach(btn => {
+    const btnId = btn.getAttribute('data-filter');
+    const isSelected = btnId === activeId;
+
+    if (btnId === 'all') {
+      btn.className = `team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+        isSelected 
+          ? 'bg-white/20 text-white border border-white/30 shadow-sm' 
+          : 'bg-white/[0.04] text-slate-400 hover:text-white'
+      }`;
+    } else {
+      btn.className = `team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
+        isSelected 
+          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' 
+          : 'bg-white/[0.04] text-slate-400 hover:text-white'
+      }`;
+    }
+  });
+}
+
 function renderTeamFilterPills() {
   const filterContainer = document.getElementById('team-filter-container');
   if (!filterContainer) return;
 
-  const currentFocus = getFocusedTeam();
+  const currentFocus = pinnedTeamId || getFocusedTeam() || 'all';
 
   let pillsHtml = `
-    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
       currentFocus === 'all' 
-        ? 'bg-white/20 text-white border border-white/30' 
+        ? 'bg-white/20 text-white border border-white/30 shadow-sm' 
         : 'bg-white/[0.04] text-slate-400 hover:text-white'
     }">
       Tüm Takımlar
@@ -110,7 +136,7 @@ function renderTeamFilterPills() {
   leagueData.teams.forEach(t => {
     const isSelected = currentFocus === t.id;
     pillsHtml += `
-      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition ${
+      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
         isSelected 
           ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' 
           : 'bg-white/[0.04] text-slate-400 hover:text-white'
@@ -123,13 +149,43 @@ function renderTeamFilterPills() {
 
   filterContainer.innerHTML = pillsHtml;
 
+  const progData = getProgressionData(leagueData);
+
+  // Attach Hover (mouseenter) and Click events for each team button
   filterContainer.querySelectorAll('.team-filter-chip').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const teamId = e.currentTarget.getAttribute('data-filter');
-      setFocusedTeam(teamId);
-      renderTeamFilterPills();
-      renderActiveChart();
+    const teamId = btn.getAttribute('data-filter');
+
+    // 1. Mouse Enter -> Instant hover spotlight without clicking!
+    btn.addEventListener('mouseenter', () => {
+      updateFilterPillsUI(teamId);
+      updateChartFocus(teamId, progData);
     });
+
+    // 2. Click -> Lock/Pin or unpin
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (teamId === 'all') {
+        pinnedTeamId = null;
+        updateFilterPillsUI('all');
+        updateChartFocus('all', progData);
+      } else if (pinnedTeamId === teamId) {
+        // Toggle off if already pinned
+        pinnedTeamId = null;
+        updateFilterPillsUI('all');
+        updateChartFocus('all', progData);
+      } else {
+        pinnedTeamId = teamId;
+        updateFilterPillsUI(teamId);
+        updateChartFocus(teamId, progData);
+      }
+    });
+  });
+
+  // 3. Mouse Leave from container -> Reset to pinned team or all
+  filterContainer.addEventListener('mouseleave', () => {
+    const target = pinnedTeamId || 'all';
+    updateFilterPillsUI(target);
+    updateChartFocus(target, progData);
   });
 }
 
@@ -372,7 +428,7 @@ function renderStandingsTable() {
       : `<span class="text-slate-400 text-xs font-semibold">-${item.gapToLeader} P</span>`;
 
     return `
-      <tr class="table-row-item border-b border-white/[0.04] cursor-pointer" onclick="window.openManagerModal('${item.team.id}')">
+      <tr class="table-row-item border-b border-white/[0.04] cursor-pointer" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
         <!-- Rank -->
         <td class="py-3.5 px-3 sm:px-4 text-center whitespace-nowrap">
           <span class="rank-badge ${rankBadgeClass}">
@@ -435,6 +491,23 @@ function renderStandingsTable() {
       </tr>
     `;
   }).join('');
+
+  const progData = getProgressionData(leagueData);
+  tableBody.querySelectorAll('.table-row-item').forEach(row => {
+    const teamId = row.getAttribute('data-team-id');
+    if (!teamId) return;
+
+    row.addEventListener('mouseenter', () => {
+      updateFilterPillsUI(teamId);
+      updateChartFocus(teamId, progData);
+    });
+
+    row.addEventListener('mouseleave', () => {
+      const target = pinnedTeamId || 'all';
+      updateFilterPillsUI(target);
+      updateChartFocus(target, progData);
+    });
+  });
 }
 
 /**
