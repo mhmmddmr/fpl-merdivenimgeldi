@@ -6,81 +6,81 @@ export const INITIAL_TEAMS = [
     "id": "fe",
     "name": "Fe",
     "manager": "Muhammed Fe",
-    "color": "#00ff87",
-    "accent": "text-emerald-400",
-    "gradient": "linear-gradient(135deg, #059669, #00ff87)",
+    "color": "#00FF66",
+    "accent": "text-[#00FF66]",
+    "gradient": "linear-gradient(135deg, #059669, #00FF66)",
     "avatar": "👑"
   },
   {
     "id": "reis",
     "name": "Reis United",
     "manager": "Oğuz Ünal",
-    "color": "#a855f7",
-    "accent": "text-purple-400",
-    "gradient": "linear-gradient(135deg, #7c3aed, #a855f7)",
+    "color": "#D500F9",
+    "accent": "text-[#D500F9]",
+    "gradient": "linear-gradient(135deg, #7c3aed, #D500F9)",
     "avatar": "⚽"
   },
   {
     "id": "zirve",
     "name": "Yeniden Zirveye",
     "manager": "ŞAHİN KILINÇ",
-    "color": "#f43f5e",
-    "accent": "text-rose-400",
-    "gradient": "linear-gradient(135deg, #be123c, #f43f5e)",
+    "color": "#FF0055",
+    "accent": "text-[#FF0055]",
+    "gradient": "linear-gradient(135deg, #be123c, #FF0055)",
     "avatar": "🚀"
   },
   {
     "id": "hedef27",
     "name": "Hedef 27 🍆 🍑",
     "manager": "Ali Can Çakmak",
-    "color": "#38bdf8",
-    "accent": "text-sky-400",
-    "gradient": "linear-gradient(135deg, #0284c7, #38bdf8)",
+    "color": "#FFFFFF",
+    "accent": "text-white",
+    "gradient": "linear-gradient(135deg, #64748b, #FFFFFF)",
     "avatar": "🎯"
   },
   {
     "id": "kirmizisiyah",
     "name": "KırmızıSiyah",
     "manager": "Turgay Çavuş",
-    "color": "#ef4444",
-    "accent": "text-red-500",
-    "gradient": "linear-gradient(135deg, #991b1b, #ef4444)",
+    "color": "#FF2A2A",
+    "accent": "text-[#FF2A2A]",
+    "gradient": "linear-gradient(135deg, #991b1b, #FF2A2A)",
     "avatar": "🔴"
   },
   {
     "id": "explorer",
     "name": "Explorer",
     "manager": "ali zenginler",
-    "color": "#2dd4bf",
-    "accent": "text-teal-400",
-    "gradient": "linear-gradient(135deg, #0f766e, #2dd4bf)",
+    "color": "#00F0FF",
+    "accent": "text-[#00F0FF]",
+    "gradient": "linear-gradient(135deg, #0284c7, #00F0FF)",
     "avatar": "🧭"
   },
   {
     "id": "aliyntem",
     "name": "Aliyntem42",
     "manager": "Ali Yöntem",
-    "color": "#facc15",
-    "accent": "text-yellow-400",
-    "gradient": "linear-gradient(135deg, #ca8a04, #facc15)",
+    "color": "#FFE500",
+    "accent": "text-[#FFE500]",
+    "gradient": "linear-gradient(135deg, #ca8a04, #FFE500)",
     "avatar": "⭐"
   },
   {
     "id": "d3mon",
     "name": "D3mon FC",
     "manager": "Oğuz Çalışkanoğlu",
-    "color": "#818cf8",
-    "accent": "text-indigo-400",
-    "gradient": "linear-gradient(135deg, #4338ca, #818cf8)",
+    "color": "#2979FF",
+    "accent": "text-[#2979FF]",
+    "gradient": "linear-gradient(135deg, #1d4ed8, #2979FF)",
     "avatar": "😈"
   },
   {
     "id": "recobaba",
     "name": "Reco BaBa",
     "manager": "Recep Alper",
-    "color": "#fb923c",
-    "accent": "text-orange-400",
-    "gradient": "linear-gradient(135deg, #ea580c, #fb923c)",
+    "color": "#FF7700",
+    "accent": "text-[#FF7700]",
+    "gradient": "linear-gradient(135deg, #ea580c, #FF7700)",
     "avatar": "🔥"
   }
 ];
@@ -620,7 +620,7 @@ export const INITIAL_GAMEWEEKS = [
   }
 ];
 
-export const STORAGE_KEY = "fpl_merdivenim_geldi_v38_distinct_colors_store";
+export const STORAGE_KEY = "fpl_merdivenim_geldi_v38_laser_contrast_store";
 
 export function loadLeagueData() {
   try {

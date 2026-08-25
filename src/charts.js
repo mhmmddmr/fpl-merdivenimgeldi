@@ -59,17 +59,17 @@ export function renderRankChart(canvasId, progressionData) {
 
     let borderColor = item.team.color;
     let backgroundColor = item.team.color;
-    let borderWidth = 2.5;
-    let pointRadius = 4;
+    let borderWidth = 3.2;
+    let pointRadius = 4.5;
 
     if (focusedTeamId !== 'all') {
       if (isHighlightSingle) {
-        borderWidth = 4.5;
-        pointRadius = 6.5;
+        borderWidth = 5.5;
+        pointRadius = 7.5;
       } else {
-        borderColor = 'rgba(255, 255, 255, 0.08)';
+        borderColor = 'rgba(255, 255, 255, 0.07)';
         backgroundColor = borderColor;
-        borderWidth = 1;
+        borderWidth = 1.2;
         pointRadius = 0;
       }
     }
@@ -81,11 +81,11 @@ export function renderRankChart(canvasId, progressionData) {
       backgroundColor,
       borderWidth,
       pointRadius,
-      pointHoverRadius: 8,
+      pointHoverRadius: 9,
       pointBackgroundColor: borderColor,
-      pointBorderColor: '#120b24',
+      pointBorderColor: '#0a0618',
       pointBorderWidth: 2,
-      tension: 0.2,
+      tension: 0.25,
       order: isHighlightSingle ? 0 : 1,
       fill: false
     };
@@ -111,12 +111,12 @@ export function renderRankChart(canvasId, progressionData) {
             callback: (val) => `${val}. Sıra`
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         },
         x: {
           grid: {
-            color: 'rgba(255, 255, 255, 0.05)'
+            color: 'rgba(255, 255, 255, 0.04)'
           }
         }
       },
@@ -125,8 +125,9 @@ export function renderRankChart(canvasId, progressionData) {
           display: focusedTeamId === 'all',
           position: 'bottom',
           labels: {
-            boxWidth: 8,
-            font: { size: 11, weight: '600' }
+            boxWidth: 10,
+            padding: 14,
+            font: { size: 11, weight: '700' }
           }
         },
         tooltip: {
@@ -164,16 +165,16 @@ export function renderPointsChart(canvasId, progressionData) {
   const datasets = teams.map(item => {
     const isHighlightSingle = focusedTeamId !== 'all' && focusedTeamId === item.team.id;
     let borderColor = item.team.color;
-    let borderWidth = 2.5;
+    let borderWidth = 3.2;
     let pointRadius = 3.5;
 
     if (focusedTeamId !== 'all') {
       if (isHighlightSingle) {
-        borderWidth = 4.5;
-        pointRadius = 6.5;
+        borderWidth = 5.5;
+        pointRadius = 7.5;
       } else {
-        borderColor = 'rgba(255, 255, 255, 0.08)';
-        borderWidth = 1;
+        borderColor = 'rgba(255, 255, 255, 0.07)';
+        borderWidth = 1.2;
         pointRadius = 0;
       }
     }
@@ -185,8 +186,11 @@ export function renderPointsChart(canvasId, progressionData) {
       backgroundColor: borderColor,
       borderWidth,
       pointRadius,
-      pointHoverRadius: 7,
-      tension: 0.2,
+      pointHoverRadius: 8,
+      pointBackgroundColor: borderColor,
+      pointBorderColor: '#0a0618',
+      pointBorderWidth: 2,
+      tension: 0.25,
       fill: false
     };
   });
