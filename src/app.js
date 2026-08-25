@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.2.0';
+} from './data.js?v=3.3.0';
 
 import {
   calculateStandings,
@@ -14,7 +14,7 @@ import {
   getLeaderboardDominance,
   getLeagueRecords,
   getHeadToHead
-} from './stats.js?v=3.2.0';
+} from './stats.js?v=3.3.0';
 
 import {
   renderRankChart,
@@ -23,12 +23,12 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.2.0';
+} from './charts.js?v=3.3.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.2.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.3.0';
 
 // Clear previous outdated stores
-['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store'].forEach(k => {
+['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3'].forEach(k => {
   try { localStorage.removeItem(k); } catch(e) {}
 });
 

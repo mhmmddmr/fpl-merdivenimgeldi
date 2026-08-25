@@ -1,5 +1,5 @@
 // "Merdivenim Geldi" FPL League Data Store & Persistence Layer
-// Realistic 38-Week Premier League Season Simulation
+// Authentic Realistic 38-Week Premier League Season Simulation (Real-World FPL Distribution: 1870 - 2342 P)
 
 export const INITIAL_TEAMS = [
   {
@@ -89,539 +89,539 @@ export const INITIAL_GAMEWEEKS = [
   {
     "gw": 1,
     "scores": {
-      "fe": 67,
-      "reis": 61,
-      "zirve": 83,
-      "hedef27": 79,
-      "kirmizisiyah": 79,
-      "explorer": 57,
-      "aliyntem": 75,
-      "d3mon": 47,
-      "recobaba": 74
+      "fe": 61,
+      "reis": 71,
+      "zirve": 60,
+      "hedef27": 58,
+      "aliyntem": 65,
+      "kirmizisiyah": 60,
+      "d3mon": 52,
+      "recobaba": 55,
+      "explorer": 48
     }
   },
   {
     "gw": 2,
     "scores": {
-      "fe": 83,
-      "reis": 72,
-      "zirve": 40,
-      "hedef27": 77,
-      "kirmizisiyah": 43,
-      "explorer": 75,
-      "aliyntem": 56,
-      "d3mon": 71,
-      "recobaba": 74
+      "fe": 61,
+      "reis": 57,
+      "zirve": 55,
+      "hedef27": 48,
+      "aliyntem": 47,
+      "kirmizisiyah": 58,
+      "d3mon": 52,
+      "recobaba": 53,
+      "explorer": 52
     }
   },
   {
     "gw": 3,
     "scores": {
-      "fe": 65,
-      "reis": 44,
-      "zirve": 62,
-      "hedef27": 86,
-      "kirmizisiyah": 65,
-      "explorer": 48,
-      "aliyntem": 64,
-      "d3mon": 61,
-      "recobaba": 73
+      "fe": 52,
+      "reis": 53,
+      "zirve": 64,
+      "hedef27": 56,
+      "aliyntem": 51,
+      "kirmizisiyah": 50,
+      "d3mon": 49,
+      "recobaba": 52,
+      "explorer": 47
     }
   },
   {
     "gw": 4,
     "scores": {
-      "fe": 65,
-      "reis": 73,
-      "zirve": 80,
-      "hedef27": 67,
-      "kirmizisiyah": 63,
-      "explorer": 57,
-      "aliyntem": 65,
-      "d3mon": 43,
-      "recobaba": 64
+      "fe": 59,
+      "reis": 69,
+      "zirve": 64,
+      "hedef27": 59,
+      "aliyntem": 54,
+      "kirmizisiyah": 61,
+      "d3mon": 53,
+      "recobaba": 48,
+      "explorer": 56
     }
   },
   {
     "gw": 5,
     "scores": {
-      "fe": 64,
-      "reis": 67,
-      "zirve": 76,
-      "hedef27": 63,
-      "kirmizisiyah": 58,
-      "explorer": 45,
-      "aliyntem": 45,
-      "d3mon": 49,
-      "recobaba": 36
+      "fe": 57,
+      "reis": 49,
+      "zirve": 50,
+      "hedef27": 52,
+      "aliyntem": 51,
+      "kirmizisiyah": 53,
+      "d3mon": 44,
+      "recobaba": 48,
+      "explorer": 43
     }
   },
   {
     "gw": 6,
     "scores": {
-      "fe": 78,
-      "reis": 72,
-      "zirve": 57,
-      "hedef27": 60,
-      "kirmizisiyah": 57,
-      "explorer": 75,
-      "aliyntem": 49,
-      "d3mon": 33,
-      "recobaba": 55
+      "fe": 72,
+      "reis": 65,
+      "zirve": 74,
+      "hedef27": 91,
+      "aliyntem": 62,
+      "kirmizisiyah": 62,
+      "d3mon": 55,
+      "recobaba": 58,
+      "explorer": 59
     }
   },
   {
     "gw": 7,
     "scores": {
-      "fe": 57,
-      "reis": 57,
-      "zirve": 44,
-      "hedef27": 50,
-      "kirmizisiyah": 40,
-      "explorer": 32,
-      "aliyntem": 42,
-      "d3mon": 32,
-      "recobaba": 54
+      "fe": 42,
+      "reis": 39,
+      "zirve": 46,
+      "hedef27": 43,
+      "aliyntem": 46,
+      "kirmizisiyah": 36,
+      "d3mon": 33,
+      "recobaba": 41,
+      "explorer": 36
     }
   },
   {
     "gw": 8,
     "scores": {
-      "fe": 59,
-      "reis": 70,
-      "zirve": 62,
-      "hedef27": 53,
-      "kirmizisiyah": 57,
-      "explorer": 43,
-      "aliyntem": 42,
-      "d3mon": 42,
-      "recobaba": 32
+      "fe": 52,
+      "reis": 59,
+      "zirve": 50,
+      "hedef27": 50,
+      "aliyntem": 53,
+      "kirmizisiyah": 49,
+      "d3mon": 57,
+      "recobaba": 53,
+      "explorer": 46
     }
   },
   {
     "gw": 9,
     "scores": {
-      "fe": 62,
-      "reis": 104,
-      "zirve": 78,
-      "hedef27": 66,
-      "kirmizisiyah": 70,
-      "explorer": 68,
-      "aliyntem": 36,
-      "d3mon": 57,
-      "recobaba": 69
+      "fe": 78,
+      "reis": 67,
+      "zirve": 63,
+      "hedef27": 69,
+      "aliyntem": 60,
+      "kirmizisiyah": 67,
+      "d3mon": 56,
+      "recobaba": 63,
+      "explorer": 58
     }
   },
   {
     "gw": 10,
     "scores": {
-      "fe": 102,
-      "reis": 62,
-      "zirve": 74,
-      "hedef27": 68,
-      "kirmizisiyah": 74,
-      "explorer": 61,
-      "aliyntem": 33,
-      "d3mon": 74,
-      "recobaba": 40
+      "fe": 52,
+      "reis": 58,
+      "zirve": 47,
+      "hedef27": 48,
+      "aliyntem": 47,
+      "kirmizisiyah": 55,
+      "d3mon": 46,
+      "recobaba": 53,
+      "explorer": 38
     }
   },
   {
     "gw": 11,
     "scores": {
-      "fe": 61,
-      "reis": 58,
-      "zirve": 49,
-      "hedef27": 66,
-      "kirmizisiyah": 49,
-      "explorer": 67,
-      "aliyntem": 61,
-      "d3mon": 45,
-      "recobaba": 44
+      "fe": 60,
+      "reis": 56,
+      "zirve": 57,
+      "hedef27": 58,
+      "aliyntem": 53,
+      "kirmizisiyah": 63,
+      "d3mon": 60,
+      "recobaba": 52,
+      "explorer": 48
     }
   },
   {
     "gw": 12,
     "scores": {
-      "fe": 64,
-      "reis": 90,
-      "zirve": 71,
-      "hedef27": 65,
-      "kirmizisiyah": 74,
-      "explorer": 62,
-      "aliyntem": 67,
-      "d3mon": 68,
-      "recobaba": 64
+      "fe": 58,
+      "reis": 63,
+      "zirve": 65,
+      "hedef27": 53,
+      "aliyntem": 48,
+      "kirmizisiyah": 50,
+      "d3mon": 57,
+      "recobaba": 56,
+      "explorer": 50
     }
   },
   {
     "gw": 13,
     "scores": {
-      "fe": 75,
-      "reis": 43,
-      "zirve": 55,
-      "hedef27": 71,
-      "kirmizisiyah": 50,
-      "explorer": 47,
-      "aliyntem": 46,
-      "d3mon": 55,
-      "recobaba": 65
+      "fe": 57,
+      "reis": 58,
+      "zirve": 49,
+      "hedef27": 45,
+      "aliyntem": 43,
+      "kirmizisiyah": 42,
+      "d3mon": 46,
+      "recobaba": 40,
+      "explorer": 37
     }
   },
   {
     "gw": 14,
     "scores": {
-      "fe": 56,
-      "reis": 85,
-      "zirve": 80,
-      "hedef27": 90,
-      "kirmizisiyah": 94,
-      "explorer": 39,
-      "aliyntem": 85,
-      "d3mon": 72,
-      "recobaba": 62
+      "fe": 65,
+      "reis": 69,
+      "zirve": 69,
+      "hedef27": 59,
+      "aliyntem": 65,
+      "kirmizisiyah": 62,
+      "d3mon": 52,
+      "recobaba": 84,
+      "explorer": 46
     }
   },
   {
     "gw": 15,
     "scores": {
-      "fe": 60,
-      "reis": 46,
-      "zirve": 83,
-      "hedef27": 67,
-      "kirmizisiyah": 45,
-      "explorer": 72,
-      "aliyntem": 53,
-      "d3mon": 42,
-      "recobaba": 62
+      "fe": 67,
+      "reis": 60,
+      "zirve": 57,
+      "hedef27": 62,
+      "aliyntem": 49,
+      "kirmizisiyah": 49,
+      "d3mon": 45,
+      "recobaba": 40,
+      "explorer": 54
     }
   },
   {
     "gw": 16,
     "scores": {
-      "fe": 48,
-      "reis": 46,
-      "zirve": 61,
-      "hedef27": 39,
-      "kirmizisiyah": 47,
-      "explorer": 47,
-      "aliyntem": 60,
-      "d3mon": 46,
-      "recobaba": 63
+      "fe": 50,
+      "reis": 51,
+      "zirve": 49,
+      "hedef27": 42,
+      "aliyntem": 44,
+      "kirmizisiyah": 54,
+      "d3mon": 43,
+      "recobaba": 45,
+      "explorer": 40
     }
   },
   {
     "gw": 17,
     "scores": {
-      "fe": 60,
-      "reis": 68,
-      "zirve": 88,
-      "hedef27": 70,
-      "kirmizisiyah": 62,
-      "explorer": 59,
-      "aliyntem": 74,
-      "d3mon": 57,
-      "recobaba": 50
+      "fe": 64,
+      "reis": 63,
+      "zirve": 66,
+      "hedef27": 65,
+      "aliyntem": 71,
+      "kirmizisiyah": 58,
+      "d3mon": 62,
+      "recobaba": 58,
+      "explorer": 54
     }
   },
   {
     "gw": 18,
     "scores": {
-      "fe": 33,
-      "reis": 59,
-      "zirve": 58,
-      "hedef27": 32,
-      "kirmizisiyah": 51,
-      "explorer": 32,
+      "fe": 39,
+      "reis": 40,
+      "zirve": 36,
+      "hedef27": 47,
       "aliyntem": 46,
-      "d3mon": 45,
-      "recobaba": 32
+      "kirmizisiyah": 33,
+      "d3mon": 39,
+      "recobaba": 34,
+      "explorer": 39
     }
   },
   {
     "gw": 19,
     "scores": {
-      "fe": 66,
-      "reis": 88,
-      "zirve": 65,
-      "hedef27": 76,
-      "kirmizisiyah": 69,
-      "explorer": 67,
-      "aliyntem": 58,
-      "d3mon": 57,
-      "recobaba": 90
+      "fe": 72,
+      "reis": 77,
+      "zirve": 69,
+      "hedef27": 78,
+      "aliyntem": 90,
+      "kirmizisiyah": 63,
+      "d3mon": 58,
+      "recobaba": 55,
+      "explorer": 67
     }
   },
   {
     "gw": 20,
     "scores": {
-      "fe": 71,
-      "reis": 73,
-      "zirve": 85,
-      "hedef27": 45,
-      "kirmizisiyah": 63,
-      "explorer": 90,
-      "aliyntem": 81,
-      "d3mon": 50,
-      "recobaba": 44
+      "fe": 55,
+      "reis": 54,
+      "zirve": 63,
+      "hedef27": 60,
+      "aliyntem": 54,
+      "kirmizisiyah": 52,
+      "d3mon": 57,
+      "recobaba": 45,
+      "explorer": 41
     }
   },
   {
     "gw": 21,
     "scores": {
-      "fe": 61,
-      "reis": 71,
-      "zirve": 71,
-      "hedef27": 66,
-      "kirmizisiyah": 36,
-      "explorer": 58,
-      "aliyntem": 66,
-      "d3mon": 48,
-      "recobaba": 85
+      "fe": 57,
+      "reis": 54,
+      "zirve": 52,
+      "hedef27": 55,
+      "aliyntem": 54,
+      "kirmizisiyah": 47,
+      "d3mon": 50,
+      "recobaba": 48,
+      "explorer": 47
     }
   },
   {
     "gw": 22,
     "scores": {
-      "fe": 85,
-      "reis": 50,
-      "zirve": 52,
-      "hedef27": 77,
-      "kirmizisiyah": 52,
-      "explorer": 53,
-      "aliyntem": 78,
-      "d3mon": 64,
-      "recobaba": 43
+      "fe": 70,
+      "reis": 67,
+      "zirve": 59,
+      "hedef27": 56,
+      "aliyntem": 62,
+      "kirmizisiyah": 56,
+      "d3mon": 61,
+      "recobaba": 58,
+      "explorer": 45
     }
   },
   {
     "gw": 23,
     "scores": {
-      "fe": 61,
-      "reis": 62,
+      "fe": 53,
+      "reis": 56,
       "zirve": 60,
-      "hedef27": 74,
-      "kirmizisiyah": 77,
-      "explorer": 53,
-      "aliyntem": 69,
-      "d3mon": 62,
-      "recobaba": 54
+      "hedef27": 58,
+      "aliyntem": 44,
+      "kirmizisiyah": 57,
+      "d3mon": 51,
+      "recobaba": 51,
+      "explorer": 50
     }
   },
   {
     "gw": 24,
     "scores": {
-      "fe": 71,
+      "fe": 67,
       "reis": 64,
-      "zirve": 72,
-      "hedef27": 73,
-      "kirmizisiyah": 53,
-      "explorer": 58,
-      "aliyntem": 34,
-      "d3mon": 47,
-      "recobaba": 82
+      "zirve": 68,
+      "hedef27": 69,
+      "aliyntem": 55,
+      "kirmizisiyah": 59,
+      "d3mon": 63,
+      "recobaba": 53,
+      "explorer": 50
     }
   },
   {
     "gw": 25,
     "scores": {
-      "fe": 114,
-      "reis": 62,
-      "zirve": 73,
-      "hedef27": 114,
-      "kirmizisiyah": 101,
-      "explorer": 100,
-      "aliyntem": 94,
-      "d3mon": 97,
-      "recobaba": 107
+      "fe": 110,
+      "reis": 94,
+      "zirve": 87,
+      "hedef27": 93,
+      "aliyntem": 83,
+      "kirmizisiyah": 83,
+      "d3mon": 83,
+      "recobaba": 68,
+      "explorer": 80
     }
   },
   {
     "gw": 26,
     "scores": {
-      "fe": 47,
-      "reis": 79,
-      "zirve": 74,
-      "hedef27": 71,
-      "kirmizisiyah": 46,
-      "explorer": 56,
-      "aliyntem": 48,
-      "d3mon": 60,
-      "recobaba": 74
+      "fe": 48,
+      "reis": 59,
+      "zirve": 46,
+      "hedef27": 49,
+      "aliyntem": 47,
+      "kirmizisiyah": 47,
+      "d3mon": 50,
+      "recobaba": 50,
+      "explorer": 40
     }
   },
   {
     "gw": 27,
     "scores": {
-      "fe": 63,
-      "reis": 69,
-      "zirve": 73,
-      "hedef27": 65,
-      "kirmizisiyah": 64,
-      "explorer": 37,
-      "aliyntem": 90,
-      "d3mon": 39,
-      "recobaba": 76
+      "fe": 70,
+      "reis": 70,
+      "zirve": 69,
+      "hedef27": 55,
+      "aliyntem": 65,
+      "kirmizisiyah": 52,
+      "d3mon": 61,
+      "recobaba": 48,
+      "explorer": 46
     }
   },
   {
     "gw": 28,
     "scores": {
-      "fe": 69,
-      "reis": 59,
-      "zirve": 51,
-      "hedef27": 56,
-      "kirmizisiyah": 88,
-      "explorer": 71,
-      "aliyntem": 52,
-      "d3mon": 80,
-      "recobaba": 78
+      "fe": 53,
+      "reis": 47,
+      "zirve": 47,
+      "hedef27": 51,
+      "aliyntem": 47,
+      "kirmizisiyah": 41,
+      "d3mon": 44,
+      "recobaba": 37,
+      "explorer": 34
     }
   },
   {
     "gw": 29,
     "scores": {
-      "fe": 48,
-      "reis": 44,
-      "zirve": 35,
-      "hedef27": 60,
-      "kirmizisiyah": 37,
-      "explorer": 32,
-      "aliyntem": 32,
-      "d3mon": 58,
-      "recobaba": 39
+      "fe": 43,
+      "reis": 34,
+      "zirve": 40,
+      "hedef27": 36,
+      "aliyntem": 35,
+      "kirmizisiyah": 41,
+      "d3mon": 42,
+      "recobaba": 30,
+      "explorer": 31
     }
   },
   {
     "gw": 30,
     "scores": {
-      "fe": 56,
-      "reis": 69,
-      "zirve": 63,
-      "hedef27": 54,
-      "kirmizisiyah": 39,
-      "explorer": 62,
-      "aliyntem": 67,
-      "d3mon": 72,
-      "recobaba": 49
+      "fe": 59,
+      "reis": 67,
+      "zirve": 65,
+      "hedef27": 56,
+      "aliyntem": 62,
+      "kirmizisiyah": 67,
+      "d3mon": 53,
+      "recobaba": 56,
+      "explorer": 61
     }
   },
   {
     "gw": 31,
     "scores": {
-      "fe": 51,
-      "reis": 78,
-      "zirve": 67,
-      "hedef27": 66,
-      "kirmizisiyah": 33,
-      "explorer": 58,
-      "aliyntem": 72,
-      "d3mon": 66,
-      "recobaba": 99
+      "fe": 56,
+      "reis": 53,
+      "zirve": 64,
+      "hedef27": 54,
+      "aliyntem": 56,
+      "kirmizisiyah": 49,
+      "d3mon": 57,
+      "recobaba": 46,
+      "explorer": 45
     }
   },
   {
     "gw": 32,
     "scores": {
-      "fe": 64,
-      "reis": 65,
-      "zirve": 58,
-      "hedef27": 35,
-      "kirmizisiyah": 57,
-      "explorer": 48,
-      "aliyntem": 70,
-      "d3mon": 60,
-      "recobaba": 34
+      "fe": 55,
+      "reis": 62,
+      "zirve": 57,
+      "hedef27": 51,
+      "aliyntem": 53,
+      "kirmizisiyah": 53,
+      "d3mon": 55,
+      "recobaba": 51,
+      "explorer": 49
     }
   },
   {
     "gw": 33,
     "scores": {
-      "fe": 66,
-      "reis": 41,
-      "zirve": 50,
-      "hedef27": 62,
-      "kirmizisiyah": 67,
-      "explorer": 46,
-      "aliyntem": 65,
-      "d3mon": 55,
-      "recobaba": 69
+      "fe": 67,
+      "reis": 55,
+      "zirve": 56,
+      "hedef27": 56,
+      "aliyntem": 62,
+      "kirmizisiyah": 58,
+      "d3mon": 57,
+      "recobaba": 48,
+      "explorer": 47
     }
   },
   {
     "gw": 34,
     "scores": {
-      "fe": 45,
-      "reis": 98,
-      "zirve": 83,
-      "hedef27": 114,
-      "kirmizisiyah": 100,
-      "explorer": 71,
-      "aliyntem": 81,
-      "d3mon": 80,
-      "recobaba": 32
+      "fe": 90,
+      "reis": 101,
+      "zirve": 87,
+      "hedef27": 82,
+      "aliyntem": 79,
+      "kirmizisiyah": 74,
+      "d3mon": 75,
+      "recobaba": 79,
+      "explorer": 67
     }
   },
   {
     "gw": 35,
     "scores": {
-      "fe": 66,
-      "reis": 72,
-      "zirve": 72,
-      "hedef27": 85,
-      "kirmizisiyah": 52,
-      "explorer": 43,
-      "aliyntem": 50,
-      "d3mon": 66,
-      "recobaba": 58
+      "fe": 55,
+      "reis": 66,
+      "zirve": 56,
+      "hedef27": 51,
+      "aliyntem": 61,
+      "kirmizisiyah": 59,
+      "d3mon": 50,
+      "recobaba": 42,
+      "explorer": 43
     }
   },
   {
     "gw": 36,
     "scores": {
-      "fe": 60,
-      "reis": 62,
-      "zirve": 55,
-      "hedef27": 94,
-      "kirmizisiyah": 70,
-      "explorer": 47,
-      "aliyntem": 74,
-      "d3mon": 46,
-      "recobaba": 72
+      "fe": 61,
+      "reis": 49,
+      "zirve": 56,
+      "hedef27": 54,
+      "aliyntem": 48,
+      "kirmizisiyah": 54,
+      "d3mon": 55,
+      "recobaba": 54,
+      "explorer": 53
     }
   },
   {
     "gw": 37,
     "scores": {
-      "fe": 109,
-      "reis": 90,
-      "zirve": 99,
-      "hedef27": 99,
-      "kirmizisiyah": 76,
-      "explorer": 57,
-      "aliyntem": 77,
-      "d3mon": 104,
-      "recobaba": 91
+      "fe": 86,
+      "reis": 87,
+      "zirve": 102,
+      "hedef27": 86,
+      "aliyntem": 83,
+      "kirmizisiyah": 69,
+      "d3mon": 67,
+      "recobaba": 75,
+      "explorer": 74
     }
   },
   {
     "gw": 38,
     "scores": {
-      "fe": 77,
-      "reis": 52,
-      "zirve": 47,
-      "hedef27": 78,
-      "kirmizisiyah": 82,
-      "explorer": 63,
-      "aliyntem": 63,
-      "d3mon": 32,
-      "recobaba": 62
+      "fe": 69,
+      "reis": 55,
+      "zirve": 60,
+      "hedef27": 60,
+      "aliyntem": 65,
+      "kirmizisiyah": 51,
+      "d3mon": 51,
+      "recobaba": 58,
+      "explorer": 49
     }
   }
 ];
 
-export const DATASET_VERSION = "2026_realistic_v3";
-export const STORAGE_KEY = "fpl_ladder_v2026_realistic_v3";
+export const DATASET_VERSION = "2026_authentic_real_v4";
+export const STORAGE_KEY = "fpl_ladder_v2026_authentic_real_v4";
 
 export function loadLeagueData() {
   try {
