@@ -43,7 +43,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <!-- Premium Design System CSS -->
-  <link rel="stylesheet" href="./styles.css?v=3.0.0" />
+  <link rel="stylesheet" href="./styles.css?v=3.1.0" />
 </head>
 
 <body class="selection:bg-emerald-500 selection:text-slate-950 bg-[#0a0618] text-slate-100 min-h-screen">
@@ -200,12 +200,20 @@
         <div class="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-white/5">
-                <th class="py-3 px-3 sm:px-4 text-center whitespace-nowrap">Sıra</th>
+              <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-white/5 select-none">
+                <th class="py-3 px-3 sm:px-4 text-center whitespace-nowrap sortable-th" data-sort="rank">
+                  Sıra <span id="sort-icon-rank" class="text-[10px] ml-0.5 text-emerald-400">▲</span>
+                </th>
                 <th class="py-3 px-2 text-center hidden sm:table-cell whitespace-nowrap">Değişim</th>
-                <th class="py-3 px-3 sm:px-4 whitespace-nowrap">Takım & Menajer</th>
-                <th class="py-3 px-3 text-center whitespace-nowrap">GW Puan</th>
-                <th class="py-3 px-3 text-center whitespace-nowrap">Toplam Puan</th>
+                <th class="py-3 px-3 sm:px-4 whitespace-nowrap sortable-th" data-sort="name">
+                  Takım & Menajer <span id="sort-icon-name" class="text-[10px] ml-0.5 opacity-30">↕</span>
+                </th>
+                <th class="py-3 px-3 text-center whitespace-nowrap sortable-th" data-sort="gwPoints">
+                  GW Puan <span id="sort-icon-gwPoints" class="text-[10px] ml-0.5 opacity-30">↕</span>
+                </th>
+                <th class="py-3 px-3 text-center whitespace-nowrap sortable-th" data-sort="totalPoints">
+                  Toplam Puan <span id="sort-icon-totalPoints" class="text-[10px] ml-0.5 opacity-30">↕</span>
+                </th>
                 <th class="py-3 px-3 text-center hidden md:table-cell whitespace-nowrap">Zirve Farkı</th>
                 <th class="py-3 px-3 text-center hidden lg:table-cell whitespace-nowrap">Son Form</th>
                 <th class="py-3 px-3 sm:px-4 text-right whitespace-nowrap"></th>
@@ -386,6 +394,6 @@
   <div id="toast" class="fixed bottom-6 right-6 z-50 opacity-0 pointer-events-none transition-all duration-300"></div>
 
   <!-- Application Entry Script -->
-  <script type="module" src="./src/app.js?v=3.0.0"></script>
+  <script type="module" src="./src/app.js?v=3.1.0"></script>
 </body>
 </html>

@@ -31,6 +31,8 @@ let leagueData = loadLeagueData();
 let selectedGameweek = null;
 let currentActiveChartTab = 'rank'; // Default to Sıralama Yarışı (Bump Chart)
 let pinnedTeamId = null; // When explicitly clicked/pinned
+let tableSortKey = 'rank'; // 'rank' | 'name' | 'gwPoints' | 'totalPoints'
+let tableSortOrder = 'asc'; // 'asc' | 'desc'
 
 // Safe Bootstrap Mechanism
 if (document.readyState === 'loading') {
@@ -203,7 +205,7 @@ function makeTooltipHtml(text) {
 }
 
 /**
- * 3. Render 4 Top Highlight Cards
+ * 3. Render 4 Top Highlight Cards (with Ambient Glows & Tabular 3XL Scale)
  */
 function renderHighlightCards() {
   const highlights = getStatHighlights(leagueData, selectedGameweek);
@@ -212,6 +214,7 @@ function renderHighlightCards() {
   // 1. Current Leader(s)
   const leaderCard = document.getElementById('card-leader');
   if (leaderCard) {
+    leaderCard.className = "fpl-card p-5 fpl-card-interactive card-glow-gold";
     const isMultiple = highlights.leaders.length > 1;
     const topScore = highlights.leaders[0]?.totalPoints || 0;
 
@@ -231,7 +234,7 @@ function renderHighlightCards() {
       const leader = highlights.leaders[0];
       bodyHtml = `
         <div class="flex items-center gap-3 my-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0" style="background: ${leader.team.gradient}">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-amber-400/30" style="background: ${leader.team.gradient}">
             ${leader.team.avatar}
           </div>
           <div class="min-w-0">
@@ -244,7 +247,7 @@ function renderHighlightCards() {
 
     leaderCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-amber-400 bg-amber-400/10 border border-amber-400/20">
+        <span class="fpl-tag text-amber-300 bg-amber-400/15 border border-amber-400/30">
           <i class="fa-solid fa-crown text-[10px]"></i> Güncel Lider${isMultiple ? 'ler' : ''}
         </span>
         <div class="flex items-center">
@@ -254,8 +257,8 @@ function renderHighlightCards() {
       </div>
       ${bodyHtml}
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400">Toplam Puan</span>
-        <span class="text-2xl font-extrabold text-emerald-400 font-display">${topScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+        <span class="text-xs text-slate-400 font-medium">Toplam Puan</span>
+        <span class="text-3xl font-black text-emerald-400 font-display tabular-nums">${topScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
       </div>
     `;
   }
@@ -263,6 +266,7 @@ function renderHighlightCards() {
   // 2. Gameweek Winner (Haftanın Fatihi)
   const gwWinnerCard = document.getElementById('card-gw-winner');
   if (gwWinnerCard) {
+    gwWinnerCard.className = "fpl-card p-5 fpl-card-interactive card-glow-purple";
     const isMultiple = highlights.gwWinners.length > 1;
     let bodyHtml = '';
 
@@ -281,7 +285,7 @@ function renderHighlightCards() {
       const winner = highlights.gwWinners[0];
       bodyHtml = `
         <div class="flex items-center gap-3 my-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0" style="background: ${winner.team.gradient}">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-purple-400/30" style="background: ${winner.team.gradient}">
             ${winner.team.avatar}
           </div>
           <div class="min-w-0">
@@ -294,7 +298,7 @@ function renderHighlightCards() {
 
     gwWinnerCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-purple-400 bg-purple-400/10 border border-purple-400/20">
+        <span class="fpl-tag text-purple-300 bg-purple-400/15 border border-purple-400/30">
           <i class="fa-solid fa-bolt text-[10px]"></i> Haftanın Fatihi
         </span>
         <div class="flex items-center">
@@ -304,8 +308,8 @@ function renderHighlightCards() {
       </div>
       ${bodyHtml}
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400">Haftalık Skor</span>
-        <span class="text-2xl font-extrabold text-purple-400 font-display">${highlights.maxGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+        <span class="text-xs text-slate-400 font-medium">Haftalık Skor</span>
+        <span class="text-3xl font-black text-purple-400 font-display tabular-nums">${highlights.maxGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
       </div>
     `;
   }
@@ -313,10 +317,11 @@ function renderHighlightCards() {
   // 3. Ladder Climber (Merdiveni Tırmanan)
   const climberCard = document.getElementById('card-climber');
   if (climberCard) {
+    climberCard.className = "fpl-card p-5 fpl-card-interactive card-glow-cyan";
     if (highlights.topClimber) {
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
+          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
             <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> Haftanın Çıkışı
           </span>
           <div class="flex items-center">
@@ -329,14 +334,14 @@ function renderHighlightCards() {
           <div class="text-xs text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
         </div>
         <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-          <span class="text-xs text-slate-400">Sıralama Değişimi</span>
-          <span class="text-2xl font-extrabold text-cyan-400 font-display">▲ +${highlights.topClimber.climb}</span>
+          <span class="text-xs text-slate-400 font-medium">Sıralama Değişimi</span>
+          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">▲ +${highlights.topClimber.climb}</span>
         </div>
       `;
     } else {
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
+          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
             <i class="fa-solid fa-stairs text-[10px]"></i> Merdiven Durumu
           </span>
           <div class="flex items-center">
@@ -359,9 +364,10 @@ function renderHighlightCards() {
   // 4. Wooden Spoon / Average Card (Lig İstatistikleri)
   const averageCard = document.getElementById('card-average');
   if (averageCard) {
+    averageCard.className = "fpl-card p-5 fpl-card-interactive card-glow-emerald";
     averageCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+        <span class="fpl-tag text-emerald-300 bg-emerald-400/15 border border-emerald-400/30">
           <i class="fa-solid fa-chart-simple text-[10px]"></i> Lig İstatistikleri
         </span>
         <div class="flex items-center">
@@ -370,40 +376,78 @@ function renderHighlightCards() {
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2 my-3">
-        <div class="p-2 rounded-xl bg-white/[0.04]">
+        <div class="p-2 rounded-xl bg-white/[0.04] border border-white/5">
           <div class="text-[11px] text-slate-400 font-medium">Hafta Ortalaması</div>
-          <div class="text-lg font-black text-emerald-400 font-display">${highlights.gwAverage} P</div>
+          <div class="text-xl font-black text-emerald-400 font-display tabular-nums">${highlights.gwAverage} P</div>
         </div>
-        <div class="p-2 rounded-xl bg-white/[0.04]">
+        <div class="p-2 rounded-xl bg-white/[0.04] border border-white/5">
           <div class="text-[11px] text-slate-400 font-medium">En Düşük Skor</div>
-          <div class="text-lg font-black text-rose-400 font-display">${highlights.minGwScore} P</div>
+          <div class="text-xl font-black text-rose-400 font-display tabular-nums">${highlights.minGwScore} P</div>
         </div>
       </div>
       <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
         <span>Genel Lig Ortalaması</span>
-        <span class="font-bold text-white">${highlights.overallAverage} P</span>
+        <span class="font-bold text-white tabular-nums">${highlights.overallAverage} P</span>
       </div>
     `;
   }
 }
 
 /**
- * 4. Render Standings Table
+ * 4. Render Standings Table (with Interactive Column Sorting & Podium Styling)
  */
+export function handleTableSort(sortKey) {
+  if (tableSortKey === sortKey) {
+    tableSortOrder = tableSortOrder === 'asc' ? 'desc' : 'asc';
+  } else {
+    tableSortKey = sortKey;
+    tableSortOrder = (sortKey === 'rank' || sortKey === 'name') ? 'asc' : 'desc';
+  }
+  renderStandingsTable();
+}
+
 function renderStandingsTable() {
   const tableBody = document.getElementById('standings-tbody');
   if (!tableBody) return;
 
   const standings = calculateStandings(leagueData, selectedGameweek);
 
+  // Apply active column sorting
+  standings.sort((a, b) => {
+    const factor = tableSortOrder === 'asc' ? 1 : -1;
+    if (tableSortKey === 'rank') return (a.rank - b.rank) * factor;
+    if (tableSortKey === 'name') return a.team.name.localeCompare(b.team.name, 'tr') * factor;
+    if (tableSortKey === 'gwPoints') return (a.gwPoints - b.gwPoints) * factor;
+    if (tableSortKey === 'totalPoints') return (a.totalPoints - b.totalPoints) * factor;
+    return 0;
+  });
+
+  // Update sort indicators on headers
+  ['rank', 'name', 'gwPoints', 'totalPoints'].forEach(key => {
+    const icon = document.getElementById(`sort-icon-${key}`);
+    if (icon) {
+      if (tableSortKey === key) {
+        icon.className = 'text-[10px] ml-0.5 text-emerald-400 font-bold';
+        icon.innerText = tableSortOrder === 'asc' ? '▲' : '▼';
+      } else {
+        icon.className = 'text-[10px] ml-0.5 opacity-25';
+        icon.innerText = '↕';
+      }
+    }
+  });
+
   tableBody.innerHTML = standings.map((item) => {
     let rankBadgeClass = "rank-badge-default";
+    let crownIcon = '';
     if (item.rank === 1) {
       rankBadgeClass = "rank-badge-1";
+      crownIcon = ' 👑';
     } else if (item.rank === 2) {
       rankBadgeClass = "rank-badge-2";
     } else if (item.rank === 3) {
       rankBadgeClass = "rank-badge-3";
+    } else if (item.rank === 9) {
+      rankBadgeClass = "rank-badge-last";
     }
 
     let changeHtml = `<span class="text-slate-500 text-xs font-semibold">▬</span>`;
@@ -416,7 +460,7 @@ function renderStandingsTable() {
     const formHtml = item.form.map(score => {
       let bg = "bg-white/[0.05] text-slate-300 border border-white/10";
       if (score >= 75) {
-        bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold";
       } else if (score < 55) {
         bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
       }
@@ -424,8 +468,8 @@ function renderStandingsTable() {
     }).join(' ');
 
     const gapText = item.gapToLeader === 0 
-      ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-bold text-xs">Lider</span>` 
-      : `<span class="text-slate-400 text-xs font-semibold">-${item.gapToLeader} P</span>`;
+      ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-bold text-xs border border-emerald-500/20">Lider</span>` 
+      : `<span class="text-slate-400 text-xs font-semibold tabular-nums">-${item.gapToLeader} P</span>`;
 
     return `
       <tr class="table-row-item border-b border-white/[0.04] cursor-pointer" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
@@ -444,12 +488,12 @@ function renderStandingsTable() {
         <!-- Team & Manager -->
         <td class="py-3.5 px-3 sm:px-4">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm shrink-0 text-white" style="background: ${item.team.gradient}">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm shrink-0 text-white ring-1 ring-white/10" style="background: ${item.team.gradient}">
               ${item.team.avatar}
             </div>
             <div class="min-w-0">
               <div class="font-bold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate">
-                ${item.team.name}
+                ${item.team.name}${crownIcon}
               </div>
               <div class="text-xs text-slate-400 truncate">${item.team.manager}</div>
             </div>
@@ -458,14 +502,14 @@ function renderStandingsTable() {
 
         <!-- GW Score -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="inline-block px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-200 font-bold text-sm">
+          <span class="inline-block px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/5 text-slate-200 font-bold text-sm tabular-nums">
             ${item.gwPoints}
           </span>
         </td>
 
         <!-- Total Points -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="text-base font-extrabold text-emerald-400 font-display">
+          <span class="text-base sm:text-lg font-black text-emerald-400 font-display tabular-nums">
             ${item.totalPoints}
           </span>
         </td>
@@ -585,6 +629,14 @@ function setupEventListeners() {
 
       currentActiveChartTab = target.getAttribute('data-tab');
       renderActiveChart();
+    });
+  });
+
+  // Sortable Table Headers
+  document.querySelectorAll('.sortable-th').forEach(th => {
+    th.addEventListener('click', (e) => {
+      const sortKey = e.currentTarget.getAttribute('data-sort');
+      if (sortKey) handleTableSort(sortKey);
     });
   });
 
@@ -745,20 +797,26 @@ function updateH2HView() {
   const h2h = getHeadToHead(leagueData, t1Id, t2Id);
   if (!h2h) return;
 
+  const totalBoth = (h2h.t1Total + h2h.t2Total) || 1;
+  const t1TotalPct = Math.round((h2h.t1Total / totalBoth) * 100);
+  const t2TotalPct = 100 - t1TotalPct;
+
   container.innerHTML = `
     <!-- Top H2H Scoreboard -->
-    <div class="grid grid-cols-3 items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-center mb-6">
+    <div class="grid grid-cols-3 items-center gap-4 p-5 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-center mb-5">
       <div>
-        <div class="text-2xl">${h2h.t1.avatar}</div>
-        <div class="font-bold text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
+        <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md mb-2" style="background: ${h2h.t1.gradient}">
+          ${h2h.t1.avatar}
+        </div>
+        <div class="font-black text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
         <div class="text-xs text-slate-400 truncate">${h2h.t1.manager}</div>
-        <div class="mt-2 text-2xl font-black text-emerald-400 font-display">${h2h.t1Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-400">${h2h.t1Total} Toplam Puan</div>
+        <div class="mt-2 text-2xl font-black text-emerald-400 font-display tabular-nums">${h2h.t1Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
+        <div class="text-xs text-slate-300 font-medium">${h2h.t1Total} Toplam Puan</div>
       </div>
 
       <div class="flex flex-col items-center justify-center">
-        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">VS</span>
-        <div class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 mt-2 font-mono">
+        <span class="text-xs font-black uppercase tracking-widest text-slate-400 bg-white/[0.06] px-3 py-1 rounded-full">VS</span>
+        <div class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 mt-2 font-mono">
           ${h2h.draws} Beraberlik
         </div>
         <div class="text-xs font-bold ${h2h.diff >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-2">
@@ -767,11 +825,26 @@ function updateH2HView() {
       </div>
 
       <div>
-        <div class="text-2xl">${h2h.t2.avatar}</div>
-        <div class="font-bold text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
+        <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md mb-2" style="background: ${h2h.t2.gradient}">
+          ${h2h.t2.avatar}
+        </div>
+        <div class="font-black text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
         <div class="text-xs text-slate-400 truncate">${h2h.t2.manager}</div>
-        <div class="mt-2 text-2xl font-black text-purple-400 font-display">${h2h.t2Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-400">${h2h.t2Total} Toplam Puan</div>
+        <div class="mt-2 text-2xl font-black text-purple-400 font-display tabular-nums">${h2h.t2Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
+        <div class="text-xs text-slate-300 font-medium">${h2h.t2Total} Toplam Puan</div>
+      </div>
+    </div>
+
+    <!-- Comparative Progress Bar ("Tale of the Tape") -->
+    <div class="mb-5 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
+      <div class="flex justify-between text-xs font-bold text-slate-400">
+        <span class="text-emerald-400">${h2h.t1.name} (%${t1TotalPct})</span>
+        <span>Toplam Puan Güç Dengesi</span>
+        <span class="text-purple-400">(%${t2TotalPct}) ${h2h.t2.name}</span>
+      </div>
+      <div class="w-full h-3 rounded-full bg-slate-900 overflow-hidden flex">
+        <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500" style="width: ${t1TotalPct}%"></div>
+        <div class="h-full bg-gradient-to-r from-fuchsia-500 to-purple-500 transition-all duration-500" style="width: ${t2TotalPct}%"></div>
       </div>
     </div>
 
@@ -781,16 +854,16 @@ function updateH2HView() {
     </h4>
     <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
       ${h2h.matchups.map(m => {
-        let t1Class = m.winner === 't1' ? 'text-emerald-400 font-bold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let t2Class = m.winner === 't2' ? 'text-purple-400 font-bold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let badge = m.winner === 't1' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">${h2h.t1.name}</span>` :
-                    (m.winner === 't2' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">${h2h.t2.name}</span>` :
+        let t1Class = m.winner === 't1' ? 'text-emerald-400 font-extrabold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
+        let t2Class = m.winner === 't2' ? 'text-purple-400 font-extrabold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
+        let badge = m.winner === 't1' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${h2h.t1.name}</span>` :
+                    (m.winner === 't2' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">${h2h.t2.name}</span>` :
                     `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Berabere</span>`);
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
-            <span class="font-bold text-slate-400 w-16">GW ${m.gw}</span>
-            <div class="flex items-center gap-4 font-display">
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm hover:bg-white/[0.06] transition">
+            <span class="font-bold text-slate-400 w-16 tabular-nums">GW ${m.gw}</span>
+            <div class="flex items-center gap-4 font-display tabular-nums">
               <span class="${t1Class}">${m.s1} P</span>
               <span class="text-slate-400">-</span>
               <span class="${t2Class}">${m.s2} P</span>
@@ -824,40 +897,50 @@ window.openManagerModal = function(teamId) {
   const maxScore = Math.max(...scores);
   const minScore = Math.min(...scores);
   const avgScore = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+  const weeksAtFirst = teamProg.ranks.filter(r => r === 1).length;
+  const podiumWeeks = teamProg.ranks.filter(r => r <= 3).length;
 
   const container = document.getElementById('manager-modal-content');
   if (container) {
     container.innerHTML = `
       <!-- Manager Header -->
-      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-6">
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white" style="background: ${team.gradient}">
+      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-5">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white ring-2 ring-white/20" style="background: ${team.gradient}">
           ${team.avatar}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
             <h3 class="text-lg font-black text-white truncate">${team.name}</h3>
-            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
               #${currentStanding.rank}. Sıra
             </span>
           </div>
           <p class="text-xs text-slate-400 truncate">${team.manager}</p>
           <div class="mt-2 flex flex-wrap gap-2 text-xs">
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Toplam: <b class="text-white">${currentStanding.totalPoints} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Ortalama: <b class="text-white">${avgScore} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Galibiyet: <b class="text-white">${currentStanding.winsCount}</b></span>
+            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Toplam: <b class="text-white tabular-nums">${currentStanding.totalPoints} P</b></span>
+            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Ortalama: <b class="text-white tabular-nums">${avgScore} P</b></span>
+            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Galibiyet: <b class="text-white tabular-nums">${currentStanding.winsCount}</b></span>
           </div>
         </div>
       </div>
 
-      <!-- Quick Metrics -->
-      <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-          <div class="text-xs text-emerald-400 font-semibold">En İyi Hafta Skoru</div>
-          <div class="text-2xl font-black mt-1 font-display">${maxScore} P</div>
+      <!-- Quick 4-Grid Metrics -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+          <div class="text-[11px] text-emerald-400 font-semibold">En Yüksek Skor</div>
+          <div class="text-xl font-black mt-1 font-display tabular-nums">${maxScore} P</div>
         </div>
-        <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300">
-          <div class="text-xs text-rose-400 font-semibold">En Düşük Hafta Skoru</div>
-          <div class="text-2xl font-black mt-1 font-display">${minScore} P</div>
+        <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300">
+          <div class="text-[11px] text-rose-400 font-semibold">En Düşük Skor</div>
+          <div class="text-xl font-black mt-1 font-display tabular-nums">${minScore} P</div>
+        </div>
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
+          <div class="text-[11px] text-amber-400 font-semibold">1. Sıra Haftası</div>
+          <div class="text-xl font-black mt-1 font-display tabular-nums">${weeksAtFirst} Hafta</div>
+        </div>
+        <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">
+          <div class="text-[11px] text-cyan-400 font-semibold">İlk 3 (Podyum)</div>
+          <div class="text-xl font-black mt-1 font-display tabular-nums">${podiumWeeks} Hafta</div>
         </div>
       </div>
 
@@ -867,11 +950,11 @@ window.openManagerModal = function(teamId) {
       </h4>
       <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
         ${progData.gwList.map((gw, idx) => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
-            <span class="font-bold text-slate-400">Gameweek ${gw}</span>
-            <span class="text-slate-300">${teamProg.ranks[idx]}. Sıra</span>
-            <span class="font-extrabold text-emerald-400 font-display">${teamProg.gwScores[idx]} Puan</span>
-            <span class="text-xs text-slate-400">Kümülatif: ${teamProg.cumulativePoints[idx]} P</span>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm hover:bg-white/[0.06] transition">
+            <span class="font-bold text-slate-400 tabular-nums">Gameweek ${gw}</span>
+            <span class="text-slate-300 font-medium">${teamProg.ranks[idx]}. Sıra</span>
+            <span class="font-extrabold text-emerald-400 font-display tabular-nums">${teamProg.gwScores[idx]} Puan</span>
+            <span class="text-xs text-slate-400 tabular-nums">Kümülatif: ${teamProg.cumulativePoints[idx]} P</span>
           </div>
         `).join('')}
       </div>
