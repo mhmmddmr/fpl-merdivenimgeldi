@@ -1,9 +1,18 @@
-// Chart.js Visualizations for "Merdivenim Geldi"
+// Chart.js Visualizations & Ladder Matrix for "Merdivenim Geldi"
 
 let rankChartInstance = null;
 let pointsChartInstance = null;
 let weeklyChartInstance = null;
 let dominanceChartInstance = null;
+let focusedTeamId = 'all'; // 'all' or specific teamId
+
+export function setFocusedTeam(teamId) {
+  focusedTeamId = teamId;
+}
+
+export function getFocusedTeam() {
+  return focusedTeamId;
+}
 
 // Clean dark theme defaults for Chart.js
 function setChartDefaults() {
@@ -22,12 +31,12 @@ function setChartDefaults() {
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
   Chart.defaults.plugins.legend.labels.boxWidth = 8;
-  Chart.defaults.plugins.legend.labels.padding = 12;
-  Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '500' };
+  Chart.defaults.plugins.legend.labels.padding = 10;
+  Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
 }
 
 /**
- * 1. Sıralama Değişimi (Bump Chart / Rank Progression)
+ * 1. Sıralama Değişimi (Bump Chart / Rank Progression with Focus & Spotlight)
  */
 export function renderRankChart(canvasId, progressionData) {
   setChartDefaults();
@@ -39,22 +48,48 @@ export function renderRankChart(canvasId, progressionData) {
   }
 
   const { gwList, teams } = progressionData;
-  const labels = gwList.map(gw => `Hafta ${gw}`);
+  const labels = gwList.map(gw => `GW ${gw}`);
 
-  const datasets = teams.map(item => ({
-    label: `${item.team.name}`,
-    data: item.ranks,
-    borderColor: item.team.color,
-    backgroundColor: item.team.color,
-    borderWidth: 2.5,
-    pointRadius: gwList.length === 1 ? 7 : 5,
-    pointHoverRadius: 9,
-    pointBackgroundColor: item.team.color,
-    pointBorderColor: '#120b24',
-    pointBorderWidth: 2,
-    tension: 0.3,
-    fill: false
-  }));
+  const datasets = teams.map(item => {
+    const isFocused = focusedTeamId === 'all' || focusedTeamId === item.team.id;
+    const isHighlightSingle = focusedTeamId !== 'all' && focusedTeamId === item.team.id;
+
+    let borderColor = item.team.color;
+    let backgroundColor = item.team.color;
+    let borderWidth = 2;
+    let pointRadius = 3.5;
+    let zIndex = 1;
+
+    if (focusedTeamId !== 'all') {
+      if (isHighlightSingle) {
+        borderWidth = 4;
+        pointRadius = 6;
+        zIndex = 10;
+      } else {
+        borderColor = 'rgba(255, 255, 255, 0.08)';
+        backgroundColor = 'rgba(255, 255, 255, 0.08)';
+        borderWidth = 1;
+        pointRadius = 0;
+        zIndex = 0;
+      }
+    }
+
+    return {
+      label: `${item.team.name}`,
+      data: item.ranks,
+      borderColor,
+      backgroundColor,
+      borderWidth,
+      pointRadius,
+      pointHoverRadius: 8,
+      pointBackgroundColor: borderColor,
+      pointBorderColor: '#120b24',
+      pointBorderWidth: 2,
+      tension: 0.15, // Straighter lines to prevent tangled spaghetti look
+      order: isHighlightSingle ? 0 : 1,
+      fill: false
+    };
+  });
 
   rankChartInstance = new Chart(ctx, {
     type: 'line',
@@ -63,7 +98,7 @@ export function renderRankChart(canvasId, progressionData) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: {
-        mode: 'index',
+        mode: focusedTeamId === 'all' ? 'nearest' : 'index',
         intersect: false,
       },
       scales: {
@@ -87,10 +122,11 @@ export function renderRankChart(canvasId, progressionData) {
       },
       plugins: {
         legend: {
+          display: focusedTeamId === 'all',
           position: 'bottom',
           labels: {
             boxWidth: 8,
-            font: { size: 11 }
+            font: { size: 10 }
           }
         },
         tooltip: {
@@ -118,19 +154,37 @@ export function renderPointsChart(canvasId, progressionData) {
   }
 
   const { gwList, teams } = progressionData;
-  const labels = gwList.map(gw => `Hafta ${gw}`);
+  const labels = gwList.map(gw => `GW ${gw}`);
 
-  const datasets = teams.map(item => ({
-    label: `${item.team.name}`,
-    data: item.cumulativePoints,
-    borderColor: item.team.color,
-    backgroundColor: item.team.color,
-    borderWidth: 2.5,
-    pointRadius: 5,
-    pointHoverRadius: 8,
-    tension: 0.25,
-    fill: false
-  }));
+  const datasets = teams.map(item => {
+    const isHighlightSingle = focusedTeamId !== 'all' && focusedTeamId === item.team.id;
+    let borderColor = item.team.color;
+    let borderWidth = 2;
+    let pointRadius = 3;
+
+    if (focusedTeamId !== 'all') {
+      if (isHighlightSingle) {
+        borderWidth = 4;
+        pointRadius = 6;
+      } else {
+        borderColor = 'rgba(255, 255, 255, 0.08)';
+        borderWidth = 1;
+        pointRadius = 0;
+      }
+    }
+
+    return {
+      label: `${item.team.name}`,
+      data: item.cumulativePoints,
+      borderColor,
+      backgroundColor: borderColor,
+      borderWidth,
+      pointRadius,
+      pointHoverRadius: 7,
+      tension: 0.15,
+      fill: false
+    };
+  });
 
   pointsChartInstance = new Chart(ctx, {
     type: 'line',
@@ -139,7 +193,7 @@ export function renderPointsChart(canvasId, progressionData) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: {
-        mode: 'index',
+        mode: focusedTeamId === 'all' ? 'nearest' : 'index',
         intersect: false,
       },
       scales: {
@@ -160,10 +214,11 @@ export function renderPointsChart(canvasId, progressionData) {
       },
       plugins: {
         legend: {
+          display: focusedTeamId === 'all',
           position: 'bottom',
           labels: {
             boxWidth: 8,
-            font: { size: 11 }
+            font: { size: 10 }
           }
         }
       }
@@ -183,9 +238,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
     weeklyChartInstance.destroy();
   }
 
-  // Sort by GW score descending
   const sorted = [...standings].sort((a, b) => b.gwPoints - a.gwPoints);
-
   const labels = sorted.map(s => s.team.name);
   const data = sorted.map(s => s.gwPoints);
   const bgColors = sorted.map(s => s.team.color);
@@ -201,7 +254,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
           backgroundColor: bgColors,
           borderRadius: 6,
           borderWidth: 0,
-          barThickness: 24
+          barThickness: 22
         }
       ]
     },
@@ -291,4 +344,62 @@ export function renderDominanceChart(canvasId, dominanceData) {
       cutout: '70%'
     }
   });
+}
+
+/**
+ * 5. Merdiven Matrisi (Ultra-Clean Heatmap Table View)
+ */
+export function renderLadderMatrix(containerId, progressionData) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const { gwList, teams } = progressionData;
+
+  let tableHtml = `
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead>
+          <tr class="text-[10px] uppercase font-bold text-slate-400 border-b border-white/5">
+            <th class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap">Takım</th>
+            ${gwList.map(gw => `<th class="py-2.5 px-2 text-center whitespace-nowrap">GW ${gw}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/[0.04]">
+  `;
+
+  teams.forEach(item => {
+    tableHtml += `
+      <tr class="hover:bg-white/[0.03] transition">
+        <td class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap font-bold text-white flex items-center gap-2">
+          <span class="text-sm">${item.team.avatar}</span>
+          <span class="truncate max-w-[110px]">${item.team.name}</span>
+        </td>
+    `;
+
+    item.ranks.forEach(rank => {
+      let badgeStyle = "bg-white/[0.05] text-slate-400 border-white/10";
+      if (rank === 1) badgeStyle = "bg-amber-400/25 text-amber-300 border-amber-400/40 font-black";
+      else if (rank === 2) badgeStyle = "bg-slate-300/20 text-slate-200 border-slate-300/30 font-bold";
+      else if (rank === 3) badgeStyle = "bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold";
+      else if (rank >= 7) badgeStyle = "bg-rose-500/15 text-rose-300 border-rose-500/20";
+
+      tableHtml += `
+        <td class="py-2 px-1.5 text-center whitespace-nowrap">
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-md text-[11px] border ${badgeStyle}">
+            ${rank}
+          </span>
+        </td>
+      `;
+    });
+
+    tableHtml += `</tr>`;
+  });
+
+  tableHtml += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = tableHtml;
 }

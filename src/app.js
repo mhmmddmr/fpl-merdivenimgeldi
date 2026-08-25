@@ -19,7 +19,10 @@ import {
   renderRankChart,
   renderPointsChart,
   renderWeeklyScoreChart,
-  renderDominanceChart
+  renderDominanceChart,
+  renderLadderMatrix,
+  setFocusedTeam,
+  getFocusedTeam
 } from './charts.js';
 
 import { fetchFplLeagueStandings } from './fplApi.js';
@@ -27,7 +30,7 @@ import { fetchFplLeagueStandings } from './fplApi.js';
 // Application State
 let leagueData = loadLeagueData();
 let selectedGameweek = null;
-let currentActiveChartTab = 'weekly'; // Default to 'weekly' on first load for better 1-GW visual impact!
+let currentActiveChartTab = 'matrix'; // Default to ultra-clean Matrix View!
 
 // DOM Elements Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,9 +43,6 @@ function initApp() {
   const gws = [...leagueData.gameweeks].sort((a, b) => a.gw - b.gw);
   if (gws.length > 0) {
     selectedGameweek = gws[gws.length - 1].gw;
-    if (gws.length > 1) {
-      currentActiveChartTab = 'rank';
-    }
   }
 }
 
@@ -53,6 +53,7 @@ export function renderAll() {
   renderHeaderControls();
   renderHighlightCards();
   renderStandingsTable();
+  renderTeamFilterPills();
   renderActiveChart();
 }
 
@@ -64,7 +65,6 @@ function renderHeaderControls() {
   const latestGw = gws.length > 0 ? gws[gws.length - 1].gw : 1;
   if (!selectedGameweek) selectedGameweek = latestGw;
 
-  // Render GW selector dropdown in table header
   const gwSelect = document.getElementById('gameweek-select');
   if (gwSelect) {
     gwSelect.innerHTML = gws.map(g => `
@@ -74,7 +74,6 @@ function renderHeaderControls() {
     `).join('');
   }
 
-  // Update hero badge
   const heroBadge = document.getElementById('current-gw-badge');
   if (heroBadge) {
     heroBadge.innerText = `Gameweek ${selectedGameweek} • Toplam ${latestGw} Hafta`;
@@ -82,7 +81,45 @@ function renderHeaderControls() {
 }
 
 /**
- * 2. Render 4 Top Highlight Cards
+ * 2. Render Team Filter Pills for Chart
+ */
+function renderTeamFilterPills() {
+  const filterContainer = document.getElementById('team-filter-container');
+  if (!filterContainer) return;
+
+  const currentFocus = getFocusedTeam();
+
+  let pillsHtml = `
+    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition ${currentFocus === 'all' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/[0.04] text-slate-400 hover:text-white'}">
+      Tüm Takımlar
+    </button>
+  `;
+
+  leagueData.teams.forEach(t => {
+    const isSelected = currentFocus === t.id;
+    pillsHtml += `
+      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition ${isSelected ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-white/[0.04] text-slate-400 hover:text-white'}">
+        <span>${t.avatar}</span>
+        <span class="truncate max-w-[80px]">${t.name}</span>
+      </button>
+    `;
+  });
+
+  filterContainer.innerHTML = pillsHtml;
+
+  // Add click listeners
+  filterContainer.querySelectorAll('.team-filter-chip').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const teamId = e.currentTarget.getAttribute('data-filter');
+      setFocusedTeam(teamId);
+      renderTeamFilterPills();
+      renderActiveChart();
+    });
+  });
+}
+
+/**
+ * 3. Render 4 Top Highlight Cards
  */
 function renderHighlightCards() {
   const highlights = getStatHighlights(leagueData, selectedGameweek);
@@ -252,7 +289,7 @@ function renderHighlightCards() {
 }
 
 /**
- * 3. Render Standings Table
+ * 4. Render Standings Table
  */
 function renderStandingsTable() {
   const tableBody = document.getElementById('standings-tbody');
@@ -261,7 +298,6 @@ function renderStandingsTable() {
   const standings = calculateStandings(leagueData, selectedGameweek);
 
   tableBody.innerHTML = standings.map((item) => {
-    // Rank styling
     let rankBadgeClass = "rank-badge-default";
     if (item.rank === 1) {
       rankBadgeClass = "rank-badge-1";
@@ -271,7 +307,6 @@ function renderStandingsTable() {
       rankBadgeClass = "rank-badge-3";
     }
 
-    // Rank Change
     let changeHtml = `<span class="text-slate-500 text-xs font-semibold">▬</span>`;
     if (item.rankChange > 0) {
       changeHtml = `<span class="text-emerald-400 text-xs font-bold flex items-center justify-center">▲ ${item.rankChange}</span>`;
@@ -279,11 +314,10 @@ function renderStandingsTable() {
       changeHtml = `<span class="text-rose-400 text-xs font-bold flex items-center justify-center">▼ ${Math.abs(item.rankChange)}</span>`;
     }
 
-    // Form Sparkline Pills
     const formHtml = item.form.map(score => {
       let bg = "bg-white/[0.05] text-slate-300 border border-white/10";
-      if (score >= 38) bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-      else if (score < 28) bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
+      if (score >= 75) bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+      else if (score < 55) bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
       return `<span class="form-pill ${bg}">${score}</span>`;
     }).join(' ');
 
@@ -358,7 +392,7 @@ function renderStandingsTable() {
 }
 
 /**
- * 4. Render Selected Chart
+ * 5. Render Selected Chart or Matrix
  */
 function renderActiveChart() {
   const progData = getProgressionData(leagueData);
@@ -366,22 +400,43 @@ function renderActiveChart() {
   const dominanceData = getLeaderboardDominance(leagueData);
   const highlights = getStatHighlights(leagueData, selectedGameweek);
 
-  if (currentActiveChartTab === 'rank') {
-    renderRankChart('chart-canvas', progData);
-  } else if (currentActiveChartTab === 'points') {
-    renderPointsChart('chart-canvas', progData);
-  } else if (currentActiveChartTab === 'weekly') {
-    renderWeeklyScoreChart('chart-canvas', standings, highlights?.gwAverage || 0);
-  } else if (currentActiveChartTab === 'dominance') {
-    renderDominanceChart('chart-canvas', dominanceData);
+  const canvasContainer = document.getElementById('chart-canvas-wrapper');
+  const matrixContainer = document.getElementById('chart-matrix-wrapper');
+  const filterPillsContainer = document.getElementById('team-filter-section');
+
+  if (currentActiveChartTab === 'matrix') {
+    if (canvasContainer) canvasContainer.classList.add('hidden');
+    if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
+    if (matrixContainer) {
+      matrixContainer.classList.remove('hidden');
+      renderLadderMatrix('chart-matrix-wrapper', progData);
+    }
+  } else {
+    if (matrixContainer) matrixContainer.classList.add('hidden');
+    if (canvasContainer) canvasContainer.classList.remove('hidden');
+
+    if (currentActiveChartTab === 'rank' || currentActiveChartTab === 'points') {
+      if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
+    } else {
+      if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
+    }
+
+    if (currentActiveChartTab === 'rank') {
+      renderRankChart('chart-canvas', progData);
+    } else if (currentActiveChartTab === 'points') {
+      renderPointsChart('chart-canvas', progData);
+    } else if (currentActiveChartTab === 'weekly') {
+      renderWeeklyScoreChart('chart-canvas', standings, highlights?.gwAverage || 0);
+    } else if (currentActiveChartTab === 'dominance') {
+      renderDominanceChart('chart-canvas', dominanceData);
+    }
   }
 }
 
 /**
- * 5. Event Listeners Setup
+ * 6. Event Listeners Setup
  */
 function setupEventListeners() {
-  // Gameweek dropdown change
   const gwSelect = document.getElementById('gameweek-select');
   if (gwSelect) {
     gwSelect.addEventListener('change', (e) => {
@@ -413,7 +468,6 @@ function setupEventListeners() {
   document.getElementById('btn-records')?.addEventListener('click', openRecordsModal);
   document.getElementById('btn-data-management')?.addEventListener('click', openDataManagementModal);
 
-  // Trigger confetti on header logo click
   document.getElementById('logo-box')?.addEventListener('click', triggerCelebration);
 }
 
@@ -445,7 +499,6 @@ function openAddGameweekModal() {
   const gwNumberInput = document.getElementById('input-gw-number');
   if (gwNumberInput) gwNumberInput.value = nextGw;
 
-  // Generate 9 inputs for teams
   if (formContainer) {
     formContainer.innerHTML = leagueData.teams.map(team => `
       <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
@@ -472,7 +525,6 @@ function openAddGameweekModal() {
     `).join('');
   }
 
-  // Prepopulate if editing existing GW
   gwNumberInput?.addEventListener('change', (e) => {
     const gwVal = parseInt(e.target.value, 10);
     const existingGw = leagueData.gameweeks.find(g => g.gw === gwVal);

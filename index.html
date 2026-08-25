@@ -164,19 +164,22 @@
       <div class="lg:col-span-5 space-y-4">
         <div class="fpl-card p-5 sm:p-6">
           <!-- Chart Tabs Switcher -->
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-white/5">
             <h3 class="text-base font-extrabold text-white flex items-center gap-2 font-display">
               <i class="fa-solid fa-chart-simple text-cyan-400"></i> Görsel Analiz
             </h3>
-            <div class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-white/5 text-xs">
-              <button data-tab="weekly" class="chart-tab-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold transition">
-                Haftalık
+            <div class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-white/5 text-xs flex-wrap">
+              <button data-tab="matrix" class="chart-tab-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold transition">
+                🪜 Merdiven
               </button>
               <button data-tab="rank" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
-                Sıralama (Bump)
+                📈 Sıralama
               </button>
               <button data-tab="points" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
                 Kümülatif
+              </button>
+              <button data-tab="weekly" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
+                Haftalık
               </button>
               <button data-tab="dominance" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">
                 Zirve
@@ -184,13 +187,28 @@
             </div>
           </div>
 
+          <!-- Team Focus Chips (Shown for Line Charts) -->
+          <div id="team-filter-section" class="hidden mb-3">
+            <div class="text-[11px] text-slate-400 mb-1.5 font-medium flex items-center gap-1">
+              <i class="fa-solid fa-filter text-emerald-400"></i> Tek Bir Takımı Vurgula:
+            </div>
+            <div id="team-filter-container" class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto py-1">
+              <!-- Dynamic Team Filter Chips -->
+            </div>
+          </div>
+
+          <!-- Merdiven Matrix Container (Heatmap View) -->
+          <div id="chart-matrix-wrapper" class="w-full max-h-[380px] overflow-y-auto">
+            <!-- Dynamic Matrix Table -->
+          </div>
+
           <!-- Chart Canvas Container -->
-          <div class="relative h-[380px] w-full">
+          <div id="chart-canvas-wrapper" class="relative h-[360px] w-full hidden">
             <canvas id="chart-canvas"></canvas>
           </div>
 
           <div class="mt-3 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-circle-info"></i> Menajerlerin üstüne gelerek detaylı grafiği inceleyebilirsiniz.
+            <i class="fa-solid fa-circle-info"></i> Takım isimlerine tıklayarak o takımın basamak hareketlerini tek başına takip edebilirsiniz.
           </div>
         </div>
       </div>
@@ -218,7 +236,6 @@
       </div>
 
       <form id="form-add-gw" class="flex flex-col flex-1 overflow-hidden mt-4">
-        <!-- Hafta Numarası Seçimi -->
         <div class="mb-4 flex items-center justify-between bg-white/[0.04] p-3 rounded-xl border border-white/5">
           <label for="input-gw-number" class="text-xs font-bold text-slate-300">Hafta (Gameweek) No:</label>
           <div class="flex items-center gap-2">
@@ -229,7 +246,6 @@
 
         <div class="text-xs text-slate-400 mb-2 font-medium">9 Takımın bu haftaki puanlarını girin:</div>
 
-        <!-- 9 Takım Puan Inputları -->
         <div id="gw-form-inputs" class="space-y-2 overflow-y-auto pr-1 flex-1 max-h-72">
           <!-- Dynamic Team Score Inputs -->
         </div>
@@ -256,7 +272,6 @@
         <button onclick="closeModal('modal-h2h')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">&times;</button>
       </div>
 
-      <!-- Menajer Seçiciler -->
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div>
           <label class="text-[11px] text-slate-400 font-bold block mb-1">1. Menajer:</label>
@@ -320,7 +335,6 @@
         <button onclick="closeModal('modal-data')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">&times;</button>
       </div>
 
-      <!-- FPL API Entegrasyonu -->
       <div class="p-4 rounded-xl bg-white/[0.04] border border-white/5 space-y-3">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-300">
           <i class="fa-solid fa-globe text-cyan-400"></i> Resmi FPL Lig ID Bağlantısı
@@ -337,7 +351,6 @@
         <div id="fpl-fetch-status" class="text-[11px] text-slate-400"></div>
       </div>
 
-      <!-- JSON Yedek Alma & Yükleme -->
       <div class="p-4 rounded-xl bg-white/[0.04] border border-white/5 space-y-3">
         <div class="text-xs font-bold text-slate-300 flex items-center gap-2">
           <i class="fa-solid fa-file-export text-emerald-400"></i> Veri Yedeği (JSON)
@@ -354,7 +367,6 @@
         </div>
       </div>
 
-      <!-- Sıfırlama -->
       <div class="pt-2 flex justify-between items-center text-xs">
         <button id="btn-reset-data" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
           <i class="fa-solid fa-trash-arrow-up"></i> GW1 Başlangıcına Sıfırla
