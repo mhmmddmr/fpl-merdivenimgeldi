@@ -1,24 +1,48 @@
 /* ==========================================================================
-   "Merdivenim Geldi" Premium Design System
-   Premier League Elite Dark Palette & Glassmorphism
+   "Merdivenim Geldi" Light & Dark Modern Design System
+   Premier League Inspired Crisp & Clean Theme
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
 :root {
+  /* Light Theme (Default) */
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-surface-glass: rgba(255, 255, 255, 0.9);
+  
+  --border-subtle: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --border-focus: #10b981;
+
+  --pl-primary: #38003c;
+  --pl-green: #059669;
+  --pl-green-light: #10b981;
+  --pl-magenta: #e11d48;
+  --pl-cyan: #0284c7;
+  --pl-gold: #d97706;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+}
+
+.dark {
+  /* Dark Theme */
   --bg-main: #0a0618;
   --bg-surface: #120b24;
   --bg-surface-elevated: #1a1233;
-  --bg-surface-glass: rgba(18, 11, 36, 0.75);
+  --bg-surface-glass: rgba(18, 11, 36, 0.85);
   
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
   --border-focus: rgba(0, 255, 135, 0.5);
 
+  --pl-primary: #38003c;
   --pl-green: #00ff87;
-  --pl-green-glow: rgba(0, 255, 135, 0.25);
-  --pl-purple: #38003c;
-  --pl-purple-light: #58005e;
+  --pl-green-light: #00ff87;
   --pl-magenta: #e90052;
   --pl-cyan: #04f5ff;
   --pl-gold: #fbbf24;
@@ -26,6 +50,7 @@
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 * {
@@ -35,9 +60,9 @@
 body {
   background-color: var(--bg-main);
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 0, 60, 0.5) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(233, 0, 82, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 30% at 10% 80%, rgba(0, 255, 135, 0.08) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 0, 60, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(225, 29, 72, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 10% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -45,17 +70,23 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 0, 60, 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(233, 0, 82, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 10% 80%, rgba(0, 255, 135, 0.08) 0%, transparent 50%);
 }
 
 /* Glass Surface Components */
 .fpl-card {
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 1.25rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: var(--card-shadow);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease;
 }
 
 .fpl-card:hover {
@@ -64,6 +95,10 @@ body {
 
 .fpl-card-interactive:hover {
   transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+}
+
+.dark .fpl-card-interactive:hover {
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
 }
 
@@ -79,8 +114,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--pl-green), var(--pl-cyan), var(--pl-magenta));
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #0284c7, #e11d48);
 }
 
 /* Typography Helpers */
@@ -95,15 +130,27 @@ body {
 }
 
 ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.dark ::-webkit-scrollbar-track {
   background: rgba(10, 6, 24, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 9999px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
@@ -121,6 +168,13 @@ body {
 }
 
 .rank-badge-1 {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.dark .rank-badge-1 {
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(217, 119, 6, 0.35));
   border: 1px solid rgba(251, 191, 36, 0.5);
   color: #fde68a;
@@ -128,18 +182,36 @@ body {
 }
 
 .rank-badge-2 {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.dark .rank-badge-2 {
   background: linear-gradient(135deg, rgba(203, 213, 225, 0.2), rgba(148, 163, 184, 0.3));
   border: 1px solid rgba(203, 213, 225, 0.4);
   color: #f1f5f9;
 }
 
 .rank-badge-3 {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.dark .rank-badge-3 {
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(194, 65, 12, 0.3));
   border: 1px solid rgba(249, 115, 22, 0.4);
   color: #fdba74;
 }
 
 .rank-badge-default {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.dark .rank-badge-default {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #94a3b8;
@@ -161,10 +233,14 @@ body {
 
 /* Table Row Smooth Styling */
 .table-row-item {
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .table-row-item:hover {
+  background-color: #f8fafc;
+}
+
+.dark .table-row-item:hover {
   background-color: rgba(255, 255, 255, 0.035);
 }
 
@@ -184,34 +260,46 @@ body {
 
 /* Button & Controls */
 .btn-primary {
-  background: linear-gradient(135deg, #00ff87, #00df73);
-  color: #06190f;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ffffff;
   font-weight: 700;
   border-radius: 0.875rem;
   padding: 0.5rem 1rem;
-  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
   opacity: 0.95;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 255, 135, 0.35);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
-  color: #e2e8f0;
+  color: #334155;
   font-weight: 600;
   border-radius: 0.875rem;
   padding: 0.5rem 0.875rem;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dark .btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  box-shadow: none;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
   border-color: var(--border-hover);
+  color: #0f172a;
+}
+
+.dark .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
 }
 

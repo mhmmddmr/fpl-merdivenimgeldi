@@ -30,14 +30,42 @@ import { fetchFplLeagueStandings } from './fplApi.js';
 // Application State
 let leagueData = loadLeagueData();
 let selectedGameweek = null;
-let currentActiveChartTab = 'matrix'; // Default to ultra-clean Matrix View!
+let currentActiveChartTab = 'matrix'; // Default to Matrix View
+let currentTheme = localStorage.getItem('fpl_merdiven_theme') || 'light';
 
 // DOM Elements Initialization
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initApp();
   setupEventListeners();
   renderAll();
 });
+
+function initTheme() {
+  if (currentTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  updateThemeIcon();
+}
+
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('fpl_merdiven_theme', currentTheme);
+  initTheme();
+  renderAll();
+}
+
+function updateThemeIcon() {
+  const btn = document.getElementById('btn-toggle-theme');
+  if (btn) {
+    btn.innerHTML = currentTheme === 'dark' 
+      ? `<i class="fa-solid fa-sun text-amber-400"></i>` 
+      : `<i class="fa-solid fa-moon text-slate-600"></i>`;
+    btn.title = currentTheme === 'dark' ? 'Aydınlık Temaya Geç' : 'Karanlık Temaya Geç';
+  }
+}
 
 function initApp() {
   const gws = [...leagueData.gameweeks].sort((a, b) => a.gw - b.gw);
@@ -88,9 +116,14 @@ function renderTeamFilterPills() {
   if (!filterContainer) return;
 
   const currentFocus = getFocusedTeam();
+  const isDark = document.documentElement.classList.contains('dark');
 
   let pillsHtml = `
-    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition ${currentFocus === 'all' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/[0.04] text-slate-400 hover:text-white'}">
+    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+      currentFocus === 'all' 
+        ? (isDark ? 'bg-white/20 text-white border border-white/30' : 'bg-slate-900 text-white') 
+        : (isDark ? 'bg-white/[0.04] text-slate-400 hover:text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200')
+    }">
       Tüm Takımlar
     </button>
   `;
@@ -98,16 +131,19 @@ function renderTeamFilterPills() {
   leagueData.teams.forEach(t => {
     const isSelected = currentFocus === t.id;
     pillsHtml += `
-      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition ${isSelected ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-white/[0.04] text-slate-400 hover:text-white'}">
+      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition ${
+        isSelected 
+          ? (isDark ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-emerald-600 text-white font-bold shadow-md') 
+          : (isDark ? 'bg-white/[0.04] text-slate-400 hover:text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/60')
+      }">
         <span>${t.avatar}</span>
-        <span class="truncate max-w-[80px]">${t.name}</span>
+        <span class="truncate max-w-[85px]">${t.name}</span>
       </button>
     `;
   });
 
   filterContainer.innerHTML = pillsHtml;
 
-  // Add click listeners
   filterContainer.querySelectorAll('.team-filter-chip').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const teamId = e.currentTarget.getAttribute('data-filter');
@@ -125,6 +161,8 @@ function renderHighlightCards() {
   const highlights = getStatHighlights(leagueData, selectedGameweek);
   if (!highlights) return;
 
+  const isDark = document.documentElement.classList.contains('dark');
+
   // 1. Current Leader(s)
   const leaderCard = document.getElementById('card-leader');
   if (leaderCard) {
@@ -136,9 +174,9 @@ function renderHighlightCards() {
       bodyHtml = `
         <div class="space-y-1.5 my-2.5">
           ${highlights.leaders.map(l => `
-            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-white/[0.04] text-xs">
-              <span class="font-bold text-white">${l.team.name}</span>
-              <span class="text-slate-400 text-[11px]">${l.team.manager}</span>
+            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.04]' : 'bg-slate-50 border border-slate-100'} text-xs">
+              <span class="font-bold text-slate-900 dark:text-white">${l.team.name}</span>
+              <span class="text-slate-500 dark:text-slate-400 text-[11px]">${l.team.manager}</span>
             </div>
           `).join('')}
         </div>
@@ -151,8 +189,8 @@ function renderHighlightCards() {
             ${leader.team.avatar}
           </div>
           <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${leader.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${leader.team.manager}</div>
+            <div class="text-base font-extrabold text-slate-900 dark:text-white truncate">${leader.team.name}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${leader.team.manager}</div>
           </div>
         </div>
       `;
@@ -160,15 +198,15 @@ function renderHighlightCards() {
 
     leaderCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-amber-400 bg-amber-400/10 border border-amber-400/20">
+        <span class="fpl-tag text-amber-700 bg-amber-50 border border-amber-200 dark:text-amber-400 dark:bg-amber-400/10 dark:border-amber-400/20">
           <i class="fa-solid fa-crown text-[10px]"></i> Güncel Lider${isMultiple ? 'ler' : ''}
         </span>
-        <span class="text-xs font-semibold text-slate-400">${isMultiple ? `${highlights.leaders.length} Takım Zirvede` : '1. Basamak'}</span>
+        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">${isMultiple ? `${highlights.leaders.length} Takım Zirvede` : '1. Basamak'}</span>
       </div>
       ${bodyHtml}
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400">Toplam Puan</span>
-        <span class="text-2xl font-extrabold text-emerald-400 font-display">${topScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+      <div class="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-baseline justify-between">
+        <span class="text-xs text-slate-500 dark:text-slate-400">Toplam Puan</span>
+        <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-display">${topScore} <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">P</span></span>
       </div>
     `;
   }
@@ -183,9 +221,9 @@ function renderHighlightCards() {
       bodyHtml = `
         <div class="space-y-1.5 my-2.5">
           ${highlights.gwWinners.map(w => `
-            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-white/[0.04] text-xs">
-              <span class="font-bold text-white">${w.team.name}</span>
-              <span class="text-slate-400 text-[11px]">${w.team.manager}</span>
+            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.04]' : 'bg-slate-50 border border-slate-100'} text-xs">
+              <span class="font-bold text-slate-900 dark:text-white">${w.team.name}</span>
+              <span class="text-slate-500 dark:text-slate-400 text-[11px]">${w.team.manager}</span>
             </div>
           `).join('')}
         </div>
@@ -198,8 +236,8 @@ function renderHighlightCards() {
             ${winner.team.avatar}
           </div>
           <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${winner.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${winner.team.manager}</div>
+            <div class="text-base font-extrabold text-slate-900 dark:text-white truncate">${winner.team.name}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${winner.team.manager}</div>
           </div>
         </div>
       `;
@@ -207,15 +245,15 @@ function renderHighlightCards() {
 
     gwWinnerCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-purple-400 bg-purple-400/10 border border-purple-400/20">
+        <span class="fpl-tag text-purple-700 bg-purple-50 border border-purple-200 dark:text-purple-400 dark:bg-purple-400/10 dark:border-purple-400/20">
           <i class="fa-solid fa-bolt text-[10px]"></i> Haftanın Fatihi
         </span>
-        <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">GW ${selectedGameweek}</span>
       </div>
       ${bodyHtml}
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400">Haftalık Skor</span>
-        <span class="text-2xl font-extrabold text-purple-400 font-display">${highlights.maxGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+      <div class="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-baseline justify-between">
+        <span class="text-xs text-slate-500 dark:text-slate-400">Haftalık Skor</span>
+        <span class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 font-display">${highlights.maxGwScore} <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">P</span></span>
       </div>
     `;
   }
@@ -226,35 +264,35 @@ function renderHighlightCards() {
     if (highlights.topClimber) {
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
+          <span class="fpl-tag text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-400/10 dark:border-cyan-400/20">
             <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> Haftanın Çıkışı
           </span>
-          <span class="text-xs font-semibold text-cyan-400">+${highlights.topClimber.climb} Sıra</span>
+          <span class="text-xs font-semibold text-cyan-600 dark:text-cyan-400">+${highlights.topClimber.climb} Sıra</span>
         </div>
         <div class="my-3">
-          <div class="text-base font-extrabold text-white truncate">${highlights.topClimber.team.name}</div>
-          <div class="text-xs text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white truncate">${highlights.topClimber.team.name}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
         </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-          <span class="text-xs text-slate-400">Sıralama Değişimi</span>
-          <span class="text-2xl font-extrabold text-cyan-400 font-display">▲ +${highlights.topClimber.climb}</span>
+        <div class="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-baseline justify-between">
+          <span class="text-xs text-slate-500 dark:text-slate-400">Sıralama Değişimi</span>
+          <span class="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400 font-display">▲ +${highlights.topClimber.climb}</span>
         </div>
       `;
     } else {
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
+          <span class="fpl-tag text-cyan-700 bg-cyan-50 border border-cyan-200 dark:text-cyan-400 dark:bg-cyan-400/10 dark:border-cyan-400/20">
             <i class="fa-solid fa-stairs text-[10px]"></i> Merdiven Durumu
           </span>
-          <span class="text-xs font-semibold text-slate-400">1. Hafta</span>
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">1. Hafta</span>
         </div>
         <div class="my-3">
-          <div class="text-sm font-bold text-white">İlk Hafta Başlangıcı</div>
-          <div class="text-xs text-slate-400 mt-0.5">Sıralama hareketleri 2. haftadan itibaren grafiğe yansır.</div>
+          <div class="text-sm font-bold text-slate-800 dark:text-white">İlk Hafta Başlangıcı</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Sıralama hareketleri 2. haftadan itibaren grafiğe yansır.</div>
         </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+        <div class="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span>Toplam Takım</span>
-          <span class="font-bold text-white">9 Menajer</span>
+          <span class="font-bold text-slate-800 dark:text-white">9 Menajer</span>
         </div>
       `;
     }
@@ -265,24 +303,24 @@ function renderHighlightCards() {
   if (averageCard) {
     averageCard.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="fpl-tag text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+        <span class="fpl-tag text-emerald-700 bg-emerald-50 border border-emerald-200 dark:text-emerald-400 dark:bg-emerald-400/10 dark:border-emerald-400/20">
           <i class="fa-solid fa-chart-simple text-[10px]"></i> Lig İstatistikleri
         </span>
-        <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">GW ${selectedGameweek}</span>
       </div>
       <div class="grid grid-cols-2 gap-2 my-3">
-        <div class="p-2 rounded-xl bg-white/[0.04]">
-          <div class="text-[11px] text-slate-400 font-medium">Hafta Ortalaması</div>
-          <div class="text-lg font-black text-emerald-400 font-display">${highlights.gwAverage} P</div>
+        <div class="p-2 rounded-xl ${isDark ? 'bg-white/[0.04]' : 'bg-slate-50 border border-slate-100'}">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Hafta Ortalaması</div>
+          <div class="text-lg font-black text-emerald-600 dark:text-emerald-400 font-display">${highlights.gwAverage} P</div>
         </div>
-        <div class="p-2 rounded-xl bg-white/[0.04]">
-          <div class="text-[11px] text-slate-400 font-medium">En Düşük Skor</div>
-          <div class="text-lg font-black text-rose-400 font-display">${highlights.minGwScore} P</div>
+        <div class="p-2 rounded-xl ${isDark ? 'bg-white/[0.04]' : 'bg-slate-50 border border-slate-100'}">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">En Düşük Skor</div>
+          <div class="text-lg font-black text-rose-600 dark:text-rose-400 font-display">${highlights.minGwScore} P</div>
         </div>
       </div>
-      <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+      <div class="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>Genel Lig Ortalaması</span>
-        <span class="font-bold text-white">${highlights.overallAverage} P</span>
+        <span class="font-bold text-slate-800 dark:text-white">${highlights.overallAverage} P</span>
       </div>
     `;
   }
@@ -296,6 +334,7 @@ function renderStandingsTable() {
   if (!tableBody) return;
 
   const standings = calculateStandings(leagueData, selectedGameweek);
+  const isDark = document.documentElement.classList.contains('dark');
 
   tableBody.innerHTML = standings.map((item) => {
     let rankBadgeClass = "rank-badge-default";
@@ -307,26 +346,36 @@ function renderStandingsTable() {
       rankBadgeClass = "rank-badge-3";
     }
 
-    let changeHtml = `<span class="text-slate-500 text-xs font-semibold">▬</span>`;
+    let changeHtml = `<span class="text-slate-400 dark:text-slate-500 text-xs font-semibold">▬</span>`;
     if (item.rankChange > 0) {
-      changeHtml = `<span class="text-emerald-400 text-xs font-bold flex items-center justify-center">▲ ${item.rankChange}</span>`;
+      changeHtml = `<span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-center">▲ ${item.rankChange}</span>`;
     } else if (item.rankChange < 0) {
-      changeHtml = `<span class="text-rose-400 text-xs font-bold flex items-center justify-center">▼ ${Math.abs(item.rankChange)}</span>`;
+      changeHtml = `<span class="text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center justify-center">▼ ${Math.abs(item.rankChange)}</span>`;
     }
 
     const formHtml = item.form.map(score => {
-      let bg = "bg-white/[0.05] text-slate-300 border border-white/10";
-      if (score >= 75) bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-      else if (score < 55) bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
+      let bg = isDark 
+        ? "bg-white/[0.05] text-slate-300 border border-white/10" 
+        : "bg-slate-100 text-slate-700 border border-slate-200";
+
+      if (score >= 75) {
+        bg = isDark 
+          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" 
+          : "bg-emerald-100 text-emerald-800 border border-emerald-300";
+      } else if (score < 55) {
+        bg = isDark 
+          ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" 
+          : "bg-rose-100 text-rose-800 border border-rose-300";
+      }
       return `<span class="form-pill ${bg}">${score}</span>`;
     }).join(' ');
 
     const gapText = item.gapToLeader === 0 
-      ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-bold text-xs">Lider</span>` 
-      : `<span class="text-slate-400 text-xs font-semibold">-${item.gapToLeader} P</span>`;
+      ? `<span class="px-2 py-0.5 rounded-md ${isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'} font-bold text-xs">Lider</span>` 
+      : `<span class="text-slate-500 dark:text-slate-400 text-xs font-semibold">-${item.gapToLeader} P</span>`;
 
     return `
-      <tr class="table-row-item border-b border-white/[0.05] cursor-pointer" onclick="window.openManagerModal('${item.team.id}')">
+      <tr class="table-row-item border-b border-slate-100 dark:border-white/[0.04] cursor-pointer" onclick="window.openManagerModal('${item.team.id}')">
         <!-- Rank -->
         <td class="py-3.5 px-3 sm:px-4 text-center whitespace-nowrap">
           <span class="rank-badge ${rankBadgeClass}">
@@ -342,28 +391,28 @@ function renderStandingsTable() {
         <!-- Team & Manager -->
         <td class="py-3.5 px-3 sm:px-4">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-md shrink-0" style="background: ${item.team.gradient}">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm shrink-0 text-white" style="background: ${item.team.gradient}">
               ${item.team.avatar}
             </div>
             <div class="min-w-0">
-              <div class="font-bold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate">
+              <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                 ${item.team.name}
               </div>
-              <div class="text-xs text-slate-400 truncate">${item.team.manager}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${item.team.manager}</div>
             </div>
           </div>
         </td>
 
         <!-- GW Score -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="inline-block px-2.5 py-1 rounded-lg bg-white/[0.05] font-bold text-sm text-slate-200">
+          <span class="inline-block px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.05] text-slate-200' : 'bg-slate-100 text-slate-800'} font-bold text-sm">
             ${item.gwPoints}
           </span>
         </td>
 
         <!-- Total Points -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="text-base font-extrabold text-emerald-400 font-display">
+          <span class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-display">
             ${item.totalPoints}
           </span>
         </td>
@@ -382,7 +431,7 @@ function renderStandingsTable() {
 
         <!-- Action -->
         <td class="py-3.5 px-3 sm:px-4 text-right whitespace-nowrap">
-          <button class="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-slate-400 hover:text-white transition flex items-center justify-center ml-auto" title="Menajer Detayı">
+          <button class="w-8 h-8 rounded-lg ${isDark ? 'bg-white/[0.05] hover:bg-white/[0.12] text-slate-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900'} transition flex items-center justify-center ml-auto" title="Menajer Detayı">
             <i class="fa-solid fa-chevron-right text-xs"></i>
           </button>
         </td>
@@ -445,17 +494,20 @@ function setupEventListeners() {
     });
   }
 
+  // Theme switcher
+  document.getElementById('btn-toggle-theme')?.addEventListener('click', toggleTheme);
+
   // Chart Tabs Switcher
   const chartTabButtons = document.querySelectorAll('.chart-tab-btn');
   chartTabButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       chartTabButtons.forEach(b => {
-        b.classList.remove('bg-emerald-500', 'text-slate-950', 'font-bold');
-        b.classList.add('text-slate-400', 'hover:text-white');
+        b.classList.remove('bg-emerald-600', 'text-white', 'dark:bg-emerald-500', 'dark:text-slate-950', 'font-bold');
+        b.classList.add('text-slate-500', 'hover:text-slate-900', 'dark:text-slate-400', 'dark:hover:text-white');
       });
       const target = e.currentTarget;
-      target.classList.add('bg-emerald-500', 'text-slate-950', 'font-bold');
-      target.classList.remove('text-slate-400', 'hover:text-white');
+      target.classList.add('bg-emerald-600', 'text-white', 'dark:bg-emerald-500', 'dark:text-slate-950', 'font-bold');
+      target.classList.remove('text-slate-500', 'hover:text-slate-900', 'dark:text-slate-400', 'dark:hover:text-white');
 
       currentActiveChartTab = target.getAttribute('data-tab');
       renderActiveChart();
@@ -480,7 +532,7 @@ export function triggerCelebration() {
       particleCount: 70,
       spread: 60,
       origin: { y: 0.6 },
-      colors: ['#00ff87', '#e90052', '#04f5ff', '#fbbf24']
+      colors: ['#059669', '#e11d48', '#0284c7', '#d97706']
     });
   }
 }
@@ -492,6 +544,7 @@ function openAddGameweekModal() {
   const modal = document.getElementById('modal-add-gw');
   if (!modal) return;
 
+  const isDark = document.documentElement.classList.contains('dark');
   const gws = [...leagueData.gameweeks].sort((a, b) => a.gw - b.gw);
   const nextGw = gws.length > 0 ? gws[gws.length - 1].gw + 1 : 1;
 
@@ -501,12 +554,12 @@ function openAddGameweekModal() {
 
   if (formContainer) {
     formContainer.innerHTML = leagueData.teams.map(team => `
-      <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+      <div class="flex items-center justify-between p-3 rounded-xl ${isDark ? 'bg-white/[0.04] border border-white/[0.06]' : 'bg-slate-50 border border-slate-200'}">
         <div class="flex items-center gap-3">
           <span class="text-xl">${team.avatar}</span>
           <div>
-            <div class="font-bold text-sm text-white">${team.name}</div>
-            <div class="text-xs text-slate-400">${team.manager}</div>
+            <div class="font-bold text-sm text-slate-900 dark:text-white">${team.name}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">${team.manager}</div>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -517,7 +570,7 @@ function openAddGameweekModal() {
             placeholder="0" 
             min="0" 
             max="200"
-            class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-center font-bold focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+            class="w-20 px-3 py-1.5 rounded-lg ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'} border text-center font-bold focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
           <span class="text-xs text-slate-500">Puan</span>
         </div>
@@ -606,10 +659,12 @@ function updateH2HView() {
   const container = document.getElementById('h2h-results-container');
   if (!container) return;
 
+  const isDark = document.documentElement.classList.contains('dark');
+
   if (t1Id === t2Id) {
     container.innerHTML = `
-      <div class="p-8 text-center text-slate-400">
-        <i class="fa-solid fa-people-arrows text-3xl mb-2 text-slate-600"></i>
+      <div class="p-8 text-center text-slate-500 dark:text-slate-400">
+        <i class="fa-solid fa-people-arrows text-3xl mb-2 text-slate-400"></i>
         <p>Lütfen karşılaştırmak için 2 farklı menajer seçin.</p>
       </div>
     `;
@@ -621,52 +676,52 @@ function updateH2HView() {
 
   container.innerHTML = `
     <!-- Top H2H Scoreboard -->
-    <div class="grid grid-cols-3 items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-center mb-6">
+    <div class="grid grid-cols-3 items-center gap-4 p-4 rounded-2xl ${isDark ? 'bg-white/[0.04] border border-white/[0.06]' : 'bg-slate-50 border border-slate-200'} text-center mb-6">
       <div>
         <div class="text-2xl">${h2h.t1.avatar}</div>
-        <div class="font-bold text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
-        <div class="text-xs text-slate-400 truncate">${h2h.t1.manager}</div>
-        <div class="mt-2 text-2xl font-black text-emerald-400 font-display">${h2h.t1Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-400">${h2h.t1Total} Toplam Puan</div>
+        <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${h2h.t1.manager}</div>
+        <div class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-400 font-display">${h2h.t1Wins} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">Galibiyet</span></div>
+        <div class="text-xs text-slate-500 dark:text-slate-400">${h2h.t1Total} Toplam Puan</div>
       </div>
 
       <div class="flex flex-col items-center justify-center">
-        <span class="text-xs font-bold uppercase tracking-widest text-slate-500">VS</span>
-        <div class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 mt-2 font-mono">
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">VS</span>
+        <div class="text-xs px-2.5 py-1 rounded-full ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'} mt-2 font-mono">
           ${h2h.draws} Beraberlik
         </div>
-        <div class="text-xs font-bold ${h2h.diff >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-2">
+        <div class="text-xs font-bold ${h2h.diff >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} mt-2">
           Fark: ${h2h.diff > 0 ? '+' : ''}${h2h.diff} P
         </div>
       </div>
 
       <div>
         <div class="text-2xl">${h2h.t2.avatar}</div>
-        <div class="font-bold text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
-        <div class="text-xs text-slate-400 truncate">${h2h.t2.manager}</div>
-        <div class="mt-2 text-2xl font-black text-purple-400 font-display">${h2h.t2Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-400">${h2h.t2Total} Toplam Puan</div>
+        <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${h2h.t2.manager}</div>
+        <div class="mt-2 text-2xl font-black text-purple-600 dark:text-purple-400 font-display">${h2h.t2Wins} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">Galibiyet</span></div>
+        <div class="text-xs text-slate-500 dark:text-slate-400">${h2h.t2Total} Toplam Puan</div>
       </div>
     </div>
 
     <!-- Week by Week Matchups -->
-    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-      <i class="fa-solid fa-list-ol text-emerald-400"></i> Hafta Hafta Kapışma Karnesi
+    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-list-ol text-emerald-600 dark:text-emerald-400"></i> Hafta Hafta Kapışma Karnesi
     </h4>
     <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
       ${h2h.matchups.map(m => {
-        let t1Class = m.winner === 't1' ? 'text-emerald-400 font-bold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let t2Class = m.winner === 't2' ? 'text-purple-400 font-bold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let badge = m.winner === 't1' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">${h2h.t1.name}</span>` :
-                    (m.winner === 't2' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">${h2h.t2.name}</span>` :
-                    `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Berabere</span>`);
+        let t1Class = m.winner === 't1' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (m.winner === 'draw' ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500');
+        let t2Class = m.winner === 't2' ? 'text-purple-600 dark:text-purple-400 font-bold' : (m.winner === 'draw' ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500');
+        let badge = m.winner === 't1' ? `<span class="text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-100 text-emerald-800'}">${h2h.t1.name}</span>` :
+                    (m.winner === 't2' ? `<span class="text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-purple-500/20 text-purple-300' : 'bg-purple-100 text-purple-800'}">${h2h.t2.name}</span>` :
+                    `<span class="text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-600'}">Berabere</span>`);
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
-            <span class="font-bold text-slate-400 w-16">GW ${m.gw}</span>
+          <div class="flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'bg-white/[0.03] border border-white/[0.05]' : 'bg-slate-50 border border-slate-200'} text-xs sm:text-sm">
+            <span class="font-bold text-slate-500 dark:text-slate-400 w-16">GW ${m.gw}</span>
             <div class="flex items-center gap-4 font-display">
               <span class="${t1Class}">${m.s1} P</span>
-              <span class="text-slate-600">-</span>
+              <span class="text-slate-400">-</span>
               <span class="${t2Class}">${m.s2} P</span>
             </div>
             <div>${badge}</div>
@@ -687,6 +742,7 @@ window.openManagerModal = function(teamId) {
   const team = leagueData.teams.find(t => t.id === teamId);
   if (!team) return;
 
+  const isDark = document.documentElement.classList.contains('dark');
   const progData = getProgressionData(leagueData);
   const teamProg = progData.teams.find(tp => tp.team.id === teamId);
   const standings = calculateStandings(leagueData, selectedGameweek);
@@ -703,49 +759,49 @@ window.openManagerModal = function(teamId) {
   if (container) {
     container.innerHTML = `
       <!-- Manager Header -->
-      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-6">
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg shrink-0" style="background: ${team.gradient}">
+      <div class="flex items-center gap-4 p-4 rounded-2xl ${isDark ? 'bg-white/[0.04] border border-white/[0.06]' : 'bg-slate-50 border border-slate-200'} mb-6">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white" style="background: ${team.gradient}">
           ${team.avatar}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <h3 class="text-lg font-black text-white truncate">${team.name}</h3>
-            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+            <h3 class="text-lg font-black text-slate-900 dark:text-white truncate">${team.name}</h3>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}">
               #${currentStanding.rank}. Sıra
             </span>
           </div>
-          <p class="text-xs text-slate-400 truncate">${team.manager}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${team.manager}</p>
           <div class="mt-2 flex flex-wrap gap-2 text-xs">
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Toplam: <b class="text-white">${currentStanding.totalPoints} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Ortalama: <b class="text-white">${avgScore} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Galibiyet: <b class="text-white">${currentStanding.winsCount}</b></span>
+            <span class="px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.05] text-slate-300' : 'bg-white text-slate-700 border border-slate-200'}">Toplam: <b class="text-slate-900 dark:text-white">${currentStanding.totalPoints} P</b></span>
+            <span class="px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.05] text-slate-300' : 'bg-white text-slate-700 border border-slate-200'}">Ortalama: <b class="text-slate-900 dark:text-white">${avgScore} P</b></span>
+            <span class="px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/[0.05] text-slate-300' : 'bg-white text-slate-700 border border-slate-200'}">Galibiyet: <b class="text-slate-900 dark:text-white">${currentStanding.winsCount}</b></span>
           </div>
         </div>
       </div>
 
       <!-- Quick Metrics -->
       <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-          <div class="text-xs text-emerald-400 font-semibold">En İyi Hafta Skoru</div>
-          <div class="text-2xl font-black text-emerald-300 mt-1 font-display">${maxScore} P</div>
+        <div class="p-3.5 rounded-xl ${isDark ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300' : 'bg-emerald-50 border border-emerald-200 text-emerald-900'}">
+          <div class="text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'} font-semibold">En İyi Hafta Skoru</div>
+          <div class="text-2xl font-black mt-1 font-display">${maxScore} P</div>
         </div>
-        <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20">
-          <div class="text-xs text-rose-400 font-semibold">En Düşük Hafta Skoru</div>
-          <div class="text-2xl font-black text-rose-300 mt-1 font-display">${minScore} P</div>
+        <div class="p-3.5 rounded-xl ${isDark ? 'bg-rose-500/10 border border-rose-500/20 text-rose-300' : 'bg-rose-50 border border-rose-200 text-rose-900'}">
+          <div class="text-xs ${isDark ? 'text-rose-400' : 'text-rose-700'} font-semibold">En Düşük Hafta Skoru</div>
+          <div class="text-2xl font-black mt-1 font-display">${minScore} P</div>
         </div>
       </div>
 
       <!-- Week by Week History -->
-      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-chart-line text-emerald-400"></i> Haftalık Performans Geçmişi
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-chart-line text-emerald-600 dark:text-emerald-400"></i> Haftalık Performans Geçmişi
       </h4>
       <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
         ${progData.gwList.map((gw, idx) => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
-            <span class="font-bold text-slate-400">Gameweek ${gw}</span>
-            <span class="text-slate-300">${teamProg.ranks[idx]}. Sıra</span>
-            <span class="font-extrabold text-emerald-400 font-display">${teamProg.gwScores[idx]} Puan</span>
-            <span class="text-xs text-slate-500">Kümülatif: ${teamProg.cumulativePoints[idx]} P</span>
+          <div class="flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'bg-white/[0.03] border border-white/[0.05]' : 'bg-slate-50 border border-slate-200'} text-xs sm:text-sm">
+            <span class="font-bold text-slate-500 dark:text-slate-400">Gameweek ${gw}</span>
+            <span class="text-slate-700 dark:text-slate-300">${teamProg.ranks[idx]}. Sıra</span>
+            <span class="font-extrabold text-emerald-600 dark:text-emerald-400 font-display">${teamProg.gwScores[idx]} Puan</span>
+            <span class="text-xs text-slate-400">Kümülatif: ${teamProg.cumulativePoints[idx]} P</span>
           </div>
         `).join('')}
       </div>
@@ -763,6 +819,7 @@ function openRecordsModal() {
   const modal = document.getElementById('modal-records');
   if (!modal) return;
 
+  const isDark = document.documentElement.classList.contains('dark');
   const records = getLeagueRecords(leagueData);
   const dominance = getLeaderboardDominance(leagueData);
   const container = document.getElementById('records-content');
@@ -774,68 +831,68 @@ function openRecordsModal() {
     container.innerHTML = `
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <!-- Merdiven Kralı -->
-        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-          <div class="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+        <div class="p-4 rounded-2xl ${isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}">
+          <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-crown text-base"></i> Merdiven Kralı
           </div>
-          <div class="text-base font-extrabold text-white mt-2">${records.merdivenKrali.team.name}</div>
-          <div class="text-xs text-slate-400">${records.merdivenKrali.team.manager}</div>
-          <div class="mt-2 text-xl font-black text-amber-400 font-display">
-            ${records.merdivenKrali.weeksAtNumberOne} Hafta <span class="text-xs text-slate-400 font-normal">Zirvede Kaldı</span>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white mt-2">${records.merdivenKrali.team.name}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">${records.merdivenKrali.team.manager}</div>
+          <div class="mt-2 text-xl font-black text-amber-600 dark:text-amber-400 font-display">
+            ${records.merdivenKrali.weeksAtNumberOne} Hafta <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Zirvede Kaldı</span>
           </div>
         </div>
 
         <!-- En Yüksek Tek Hafta Skoru -->
-        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-          <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+        <div class="p-4 rounded-2xl ${isDark ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-200'}">
+          <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-fire text-base"></i> Hafta Rekoru
           </div>
-          <div class="text-base font-extrabold text-white mt-2 truncate" title="${highTeams}">${highTeams}</div>
-          <div class="text-xs text-slate-400">Gameweek ${records.highestScoreRecord.gw}</div>
-          <div class="mt-2 text-xl font-black text-emerald-400 font-display">
-            ${records.highestScoreRecord.score} Puan <span class="text-xs text-slate-400 font-normal">Tek Haftada</span>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white mt-2 truncate" title="${highTeams}">${highTeams}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">Gameweek ${records.highestScoreRecord.gw}</div>
+          <div class="mt-2 text-xl font-black text-emerald-600 dark:text-emerald-400 font-display">
+            ${records.highestScoreRecord.score} Puan <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Tek Haftada</span>
           </div>
         </div>
 
         <!-- En İstikrarlı Menajer -->
-        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
-          <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+        <div class="p-4 rounded-2xl ${isDark ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-cyan-50 border border-cyan-200'}">
+          <div class="flex items-center gap-2 text-cyan-600 dark:text-cyan-400 text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-bullseye text-base"></i> İstikrar Abidesi
           </div>
-          <div class="text-base font-extrabold text-white mt-2">${records.mostConsistent.team.name}</div>
-          <div class="text-xs text-slate-400">${records.mostConsistent.team.manager}</div>
-          <div class="mt-2 text-xl font-black text-cyan-400 font-display">
-            ${records.mostConsistent.avg} P <span class="text-xs text-slate-400 font-normal">(Sapma: ±${records.mostConsistent.stdDev})</span>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white mt-2">${records.mostConsistent.team.name}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">${records.mostConsistent.team.manager}</div>
+          <div class="mt-2 text-xl font-black text-cyan-600 dark:text-cyan-400 font-display">
+            ${records.mostConsistent.avg} P <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">(Sapma: ±${records.mostConsistent.stdDev})</span>
           </div>
         </div>
 
         <!-- En Soğuk Duş -->
-        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20">
-          <div class="flex items-center gap-2 text-rose-400 text-xs font-bold uppercase tracking-wider">
+        <div class="p-4 rounded-2xl ${isDark ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-rose-50 border border-rose-200'}">
+          <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-snowflake text-base"></i> En Soğuk Duş
           </div>
-          <div class="text-base font-extrabold text-white mt-2 truncate" title="${lowTeams}">${lowTeams}</div>
-          <div class="text-xs text-slate-400">Gameweek ${records.lowestScoreRecord.gw}</div>
-          <div class="mt-2 text-xl font-black text-rose-400 font-display">
-            ${records.lowestScoreRecord.score} Puan <span class="text-xs text-slate-400 font-normal">En Düşük Skor</span>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white mt-2 truncate" title="${lowTeams}">${lowTeams}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">Gameweek ${records.lowestScoreRecord.gw}</div>
+          <div class="mt-2 text-xl font-black text-rose-600 dark:text-rose-400 font-display">
+            ${records.lowestScoreRecord.score} Puan <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">En Düşük Skor</span>
           </div>
         </div>
       </div>
 
       <!-- Zirvede Kalma Tablosu -->
-      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-trophy text-yellow-400"></i> Liderlik Koltuğu Süreleri
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-trophy text-amber-500 dark:text-yellow-400"></i> Liderlik Koltuğu Süreleri
       </h4>
       <div class="space-y-2 max-h-48 overflow-y-auto">
         ${dominance.map(d => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
+          <div class="flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'bg-white/[0.03] border border-white/[0.05]' : 'bg-slate-50 border border-slate-200'} text-xs sm:text-sm">
             <div class="flex items-center gap-2">
               <span>${d.team.avatar}</span>
-              <span class="font-bold text-white">${d.team.name}</span>
+              <span class="font-bold text-slate-900 dark:text-white">${d.team.name}</span>
             </div>
             <div class="flex items-center gap-3 font-display">
-              <span class="text-amber-400 font-bold">${d.weeksAtNumberOne} Hafta Lider</span>
-              <span class="text-slate-400 text-xs">${d.weeksInTop3} Hafta İlk 3</span>
+              <span class="text-amber-600 dark:text-amber-400 font-bold">${d.weeksAtNumberOne} Hafta Lider</span>
+              <span class="text-slate-500 dark:text-slate-400 text-xs">${d.weeksInTop3} Hafta İlk 3</span>
             </div>
           </div>
         `).join('')}
@@ -871,7 +928,7 @@ document.getElementById('btn-fetch-fpl')?.addEventListener('click', async () => 
   }
 
   if (statusEl) {
-    statusEl.innerHTML = `<span class="text-cyan-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> FPL sunucularına bağlanılıyor...</span>`;
+    statusEl.innerHTML = `<span class="text-cyan-600 dark:text-cyan-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> FPL sunucularına bağlanılıyor...</span>`;
   }
 
   try {
@@ -880,12 +937,12 @@ document.getElementById('btn-fetch-fpl')?.addEventListener('click', async () => 
     saveLeagueData(leagueData);
 
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-check mr-1"></i> Lig bağlandı: <b>${fetched.leagueName}</b>!</span>`;
+      statusEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-check mr-1"></i> Lig bağlandı: <b>${fetched.leagueName}</b>!</span>`;
     }
     showToast(`FPL Lig bilgileri başarıyla bağlandı!`, 'success');
   } catch (err) {
     if (statusEl) {
-      statusEl.innerHTML = `<span class="text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ${err.message}</span>`;
+      statusEl.innerHTML = `<span class="text-rose-600 dark:text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ${err.message}</span>`;
     }
   }
 });
@@ -958,11 +1015,11 @@ function showToast(message, type = 'info') {
   const toast = document.getElementById('toast');
   if (!toast) return;
 
-  let bg = "bg-slate-900 border-slate-700 text-white";
-  if (type === 'success') bg = "bg-emerald-950 border-emerald-500 text-emerald-200";
-  if (type === 'error') bg = "bg-rose-950 border-rose-500 text-rose-200";
+  let bg = "bg-slate-900 text-white shadow-xl";
+  if (type === 'success') bg = "bg-emerald-800 text-white";
+  if (type === 'error') bg = "bg-rose-800 text-white";
 
-  toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border shadow-2xl transition-all duration-300 flex items-center gap-3 ${bg}`;
+  toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 flex items-center gap-3 ${bg}`;
   toast.innerHTML = `
     <span class="text-xs font-semibold">${message}</span>
     <button onclick="this.parentElement.classList.add('opacity-0', 'pointer-events-none')" class="text-xs opacity-60 hover:opacity-100">&times;</button>
