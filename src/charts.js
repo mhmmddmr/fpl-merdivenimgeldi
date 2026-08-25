@@ -89,6 +89,7 @@ export function renderRankChart(canvasId, progressionData) {
       pointBorderWidth: 2,
       tension: 0.25,
       order: isHighlightSingle ? 0 : 1,
+      clip: false,
       fill: false
     };
   });
@@ -101,10 +102,10 @@ export function renderRankChart(canvasId, progressionData) {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          top: 20,
-          bottom: 12,
-          left: 8,
-          right: 14
+          top: 24,
+          bottom: 16,
+          left: 10,
+          right: 15
         }
       },
       interaction: {
@@ -114,24 +115,16 @@ export function renderRankChart(canvasId, progressionData) {
       scales: {
         y: {
           reverse: true,
-          min: 0.65,
-          max: 9.35,
+          min: 1,
+          max: 9,
           ticks: {
             stepSize: 1,
-            callback: (val) => {
-              if (val >= 1 && val <= 9 && Number.isInteger(val)) {
-                return `${val}. Sıra`;
-              }
-              return '';
-            }
+            color: '#cbd5e1',
+            font: { weight: '700', size: 11 },
+            callback: (val) => `${val}. Sıra`
           },
           grid: {
-            color: (c) => {
-              if (c.tick && c.tick.value >= 1 && c.tick.value <= 9 && Number.isInteger(c.tick.value)) {
-                return 'rgba(255, 255, 255, 0.05)';
-              }
-              return 'transparent';
-            }
+            color: 'rgba(255, 255, 255, 0.06)'
           }
         },
         x: {
@@ -213,6 +206,7 @@ export function renderPointsChart(canvasId, progressionData) {
       pointBorderColor: '#0a0618',
       pointBorderWidth: 2,
       tension: 0.25,
+      clip: false,
       fill: false
     };
   });
