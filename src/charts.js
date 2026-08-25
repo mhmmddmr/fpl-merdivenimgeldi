@@ -12,23 +12,18 @@ export function getFocusedTeam() {
   return focusedTeamId;
 }
 
-function isDarkMode() {
-  return document.documentElement.classList.contains('dark');
-}
-
-// Clean theme defaults for Chart.js
+// Premier League Dark Theme Defaults for Chart.js
 function setChartDefaults() {
   if (typeof Chart === 'undefined') return;
-  const dark = isDarkMode();
 
-  Chart.defaults.color = dark ? '#94a3b8' : '#475569';
+  Chart.defaults.color = '#94a3b8';
   Chart.defaults.font.family = "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif";
-  Chart.defaults.plugins.tooltip.backgroundColor = dark ? 'rgba(18, 11, 36, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(18, 11, 36, 0.95)';
   Chart.defaults.plugins.tooltip.titleColor = '#ffffff';
   Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 13 };
   Chart.defaults.plugins.tooltip.bodyColor = '#e2e8f0';
   Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
-  Chart.defaults.plugins.tooltip.borderColor = dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)';
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.12)';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 12;
   Chart.defaults.plugins.tooltip.cornerRadius = 10;
@@ -51,10 +46,11 @@ export function renderRankChart(canvasId, progressionData) {
     rankChartInstance.destroy();
     rankChartInstance = null;
   }
-  const existing = Chart.getChart(ctx);
-  if (existing) existing.destroy();
+  if (typeof Chart !== 'undefined') {
+    const existing = Chart.getChart(ctx);
+    if (existing) existing.destroy();
+  }
 
-  const dark = isDarkMode();
   const { gwList, teams } = progressionData;
   const labels = gwList.map(gw => `GW ${gw}`);
 
@@ -71,7 +67,7 @@ export function renderRankChart(canvasId, progressionData) {
         borderWidth = 4.5;
         pointRadius = 6.5;
       } else {
-        borderColor = dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+        borderColor = 'rgba(255, 255, 255, 0.08)';
         backgroundColor = borderColor;
         borderWidth = 1;
         pointRadius = 0;
@@ -87,7 +83,7 @@ export function renderRankChart(canvasId, progressionData) {
       pointRadius,
       pointHoverRadius: 8,
       pointBackgroundColor: borderColor,
-      pointBorderColor: dark ? '#120b24' : '#ffffff',
+      pointBorderColor: '#120b24',
       pointBorderWidth: 2,
       tension: 0.2,
       order: isHighlightSingle ? 0 : 1,
@@ -115,12 +111,12 @@ export function renderRankChart(canvasId, progressionData) {
             callback: (val) => `${val}. Sıra`
           },
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
+            color: 'rgba(255, 255, 255, 0.06)'
           }
         },
         x: {
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         }
       },
@@ -157,10 +153,11 @@ export function renderPointsChart(canvasId, progressionData) {
     pointsChartInstance.destroy();
     pointsChartInstance = null;
   }
-  const existing = Chart.getChart(ctx);
-  if (existing) existing.destroy();
+  if (typeof Chart !== 'undefined') {
+    const existing = Chart.getChart(ctx);
+    if (existing) existing.destroy();
+  }
 
-  const dark = isDarkMode();
   const { gwList, teams } = progressionData;
   const labels = gwList.map(gw => `GW ${gw}`);
 
@@ -175,7 +172,7 @@ export function renderPointsChart(canvasId, progressionData) {
         borderWidth = 4.5;
         pointRadius = 6.5;
       } else {
-        borderColor = dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+        borderColor = 'rgba(255, 255, 255, 0.08)';
         borderWidth = 1;
         pointRadius = 0;
       }
@@ -208,7 +205,7 @@ export function renderPointsChart(canvasId, progressionData) {
         y: {
           beginAtZero: false,
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
+            color: 'rgba(255, 255, 255, 0.06)'
           },
           ticks: {
             callback: (val) => `${val} P`
@@ -216,7 +213,7 @@ export function renderPointsChart(canvasId, progressionData) {
         },
         x: {
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         }
       },
@@ -248,7 +245,6 @@ export function renderLadderMatrix(containerId, progressionData, currentStanding
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const dark = isDarkMode();
   const { gwList, teams } = progressionData;
 
   // Sort teams according to current standings ranking (1st place at top)
@@ -274,47 +270,37 @@ export function renderLadderMatrix(containerId, progressionData, currentStanding
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs border-collapse">
         <thead>
-          <tr class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5">
-            <th class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#120b24] z-10 whitespace-nowrap shadow-sm dark:shadow-none"># Takım</th>
+          <tr class="text-[10px] uppercase font-bold text-slate-400 border-b border-white/5">
+            <th class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap"># Takım</th>
             ${gwList.map(gw => `<th class="py-2.5 px-2 text-center whitespace-nowrap">GW ${gw}</th>`).join('')}
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
+        <tbody class="divide-y divide-white/[0.04]">
   `;
 
   sortedTeams.forEach((item, index) => {
     const currentRank = (currentStandings?.find(s => s.team.id === item.team.id)?.rank) ?? (index + 1);
 
     tableHtml += `
-      <tr class="hover:bg-slate-50 dark:hover:bg-white/[0.03] transition">
-        <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#120b24] z-10 whitespace-nowrap font-bold text-slate-800 dark:text-white flex items-center gap-2 shadow-sm dark:shadow-none">
-          <span class="text-[11px] font-extrabold w-4 text-slate-400 dark:text-slate-500">${currentRank}.</span>
+      <tr class="hover:bg-white/[0.03] transition">
+        <td class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap font-bold text-white flex items-center gap-2">
+          <span class="text-[11px] font-extrabold w-4 text-slate-500">${currentRank}.</span>
           <span class="text-sm">${item.team.avatar}</span>
           <span class="truncate max-w-[110px]">${item.team.name}</span>
         </td>
     `;
 
     item.ranks.forEach(rank => {
-      let badgeStyle = dark 
-        ? "bg-white/[0.05] text-slate-400 border-white/10" 
-        : "bg-slate-100 text-slate-600 border-slate-200";
+      let badgeStyle = "bg-white/[0.05] text-slate-400 border-white/10";
 
       if (rank === 1) {
-        badgeStyle = dark 
-          ? "bg-amber-400/25 text-amber-300 border-amber-400/40 font-black" 
-          : "bg-amber-100 text-amber-900 border-amber-300 font-black";
+        badgeStyle = "bg-amber-400/25 text-amber-300 border-amber-400/40 font-black";
       } else if (rank === 2) {
-        badgeStyle = dark 
-          ? "bg-slate-300/20 text-slate-200 border-slate-300/30 font-bold" 
-          : "bg-slate-200 text-slate-800 border-slate-300 font-bold";
+        badgeStyle = "bg-slate-300/20 text-slate-200 border-slate-300/30 font-bold";
       } else if (rank === 3) {
-        badgeStyle = dark 
-          ? "bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold" 
-          : "bg-orange-100 text-orange-900 border-orange-300 font-bold";
+        badgeStyle = "bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold";
       } else if (rank >= 7) {
-        badgeStyle = dark 
-          ? "bg-rose-500/15 text-rose-300 border-rose-500/20" 
-          : "bg-rose-50 text-rose-700 border-rose-200";
+        badgeStyle = "bg-rose-500/15 text-rose-300 border-rose-500/20";
       }
 
       tableHtml += `
