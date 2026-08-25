@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.6.0';
+} from './data.js?v=3.7.0';
 
 import {
   calculateStandings,
@@ -17,7 +17,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=3.6.0';
+} from './stats.js?v=3.7.0';
 
 import {
   renderRankChart,
@@ -26,9 +26,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.6.0';
+} from './charts.js?v=3.7.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.6.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.7.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -486,31 +486,36 @@ function renderLeagueBadgesSection() {
     }
 
     return `
-      <div class="fpl-card p-3.5 fpl-card-interactive flex flex-col justify-between ${badge.glowClass}">
+      <div class="fpl-card p-4 fpl-card-interactive flex flex-col justify-between ${badge.glowClass}">
         <div>
-          <!-- Badge Header -->
-          <div class="flex items-center justify-between gap-1 mb-1">
-            <div class="flex items-center gap-1.5 min-w-0">
-              <span class="text-lg p-1 rounded-lg bg-white/5 border border-white/10 shrink-0">${badge.icon}</span>
-              <h4 class="font-extrabold text-white text-xs truncate">${badge.title}</h4>
-            </div>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400 shrink-0 tabular-nums">
-              ${badge.holders.length} Takım
+          <!-- Visual 3D Badge Image -->
+          <div class="relative group/badge mb-2.5 text-center">
+            <img 
+              src="${badge.image}" 
+              alt="${badge.title}" 
+              class="w-20 h-20 object-cover rounded-2xl shadow-xl ring-2 ring-white/15 mx-auto transition-transform duration-300 group-hover/badge:scale-105" 
+              loading="lazy"
+            />
+            <span class="absolute -bottom-1.5 right-1/2 translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-slate-900/90 border border-white/20 text-slate-300 backdrop-blur-sm whitespace-nowrap shadow-md">
+              ${badge.holders.length} Takım Kazandı
             </span>
           </div>
 
-          <!-- Description -->
-          <p class="text-[10px] text-slate-400 leading-tight">${badge.desc}</p>
+          <!-- Badge Title & Desc -->
+          <div class="text-center mt-2.5 mb-2">
+            <h4 class="font-extrabold text-white text-sm tracking-tight">${badge.title}</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">${badge.desc}</p>
+          </div>
 
           <!-- List of Holders -->
           ${holdersHtml}
         </div>
 
         <!-- Card Footer -->
-        <div class="pt-2 mt-2.5 border-t border-white/5 flex items-center justify-between text-[9px] text-slate-500 font-medium">
-          <span>Başarım Durumu</span>
+        <div class="pt-2 mt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-medium">
+          <span>Rozet Durumu</span>
           <span class="font-bold ${badge.holders.length > 0 ? 'text-emerald-400' : 'text-slate-500'}">
-            ${badge.holders.length > 0 ? 'Aktif' : 'Kilitli'}
+            ${badge.holders.length > 0 ? '🏆 Açık' : '🔒 Kilitli'}
           </span>
         </div>
       </div>
@@ -1106,16 +1111,18 @@ window.openManagerModal = function(teamId) {
           </h4>
           <span class="text-xs font-bold text-amber-400">${unlockedCount} / ${badges.length} Açıldı</span>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           ${badges.map(b => `
-            <div class="p-2.5 rounded-xl border transition flex items-start gap-2.5 ${
+            <div class="p-3 rounded-2xl border transition flex items-center gap-3 ${
               b.unlocked 
                 ? `${b.badgeClass} shadow-md` 
                 : 'bg-white/[0.02] border-white/5 text-slate-500 opacity-60'
             }">
-              <div class="text-2xl p-1 rounded-lg ${b.unlocked ? 'bg-white/10' : 'bg-white/[0.03] grayscale'}">
-                ${b.icon}
-              </div>
+              <img 
+                src="${b.image}" 
+                alt="${b.name}" 
+                class="w-12 h-12 rounded-xl object-cover ring-2 ${b.unlocked ? 'ring-white/20 shadow-md' : 'ring-white/5 grayscale brightness-50'} shrink-0"
+              />
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
                   <div class="font-black text-xs ${b.unlocked ? 'text-white' : 'text-slate-400'}">${b.name}</div>
@@ -1124,7 +1131,7 @@ window.openManagerModal = function(teamId) {
                     : `<span class="text-[9px] text-slate-500"><i class="fa-solid fa-lock text-[8px]"></i> Kilitli</span>`
                   }
                 </div>
-                <div class="text-[10px] ${b.unlocked ? 'text-slate-300' : 'text-slate-500'} mt-0.5 leading-snug">${b.desc}</div>
+                <div class="text-[11px] ${b.unlocked ? 'text-slate-300' : 'text-slate-500'} mt-0.5 leading-snug">${b.desc}</div>
               </div>
             </div>
           `).join('')}
