@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.3.0';
+} from './data.js?v=3.3.1';
 
 import {
   calculateStandings,
@@ -14,7 +14,7 @@ import {
   getLeaderboardDominance,
   getLeagueRecords,
   getHeadToHead
-} from './stats.js?v=3.3.0';
+} from './stats.js?v=3.3.1';
 
 import {
   renderRankChart,
@@ -23,9 +23,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.3.0';
+} from './charts.js?v=3.3.1';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.3.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.3.1';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3'].forEach(k => {
@@ -320,11 +320,13 @@ function renderHighlightCards() {
     `;
   }
 
-  // 3. Ladder Climber (Merdiveni Tırmanan)
+  // 3. Ladder Climber (Merdiveni Tırmanan / Zirve Takipçisi)
   const climberCard = document.getElementById('card-climber');
   if (climberCard) {
     climberCard.className = "fpl-card p-5 fpl-card-interactive card-glow-cyan";
-    if (highlights.topClimber) {
+    const standings = calculateStandings(leagueData, selectedGameweek);
+
+    if (highlights.topClimber && highlights.topClimber.climb > 0) {
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
           <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
@@ -335,33 +337,72 @@ function renderHighlightCards() {
             ${makeTooltipHtml('Bir önceki haftaya göre lig tablosunda en fazla basamak tırmanan (sıra kazanan) takım.')}
           </div>
         </div>
-        <div class="my-3">
-          <div class="text-base font-extrabold text-white truncate">${highlights.topClimber.team.name}</div>
-          <div class="text-xs text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
+        <div class="flex items-center gap-3 my-3">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${highlights.topClimber.team.gradient}">
+            ${highlights.topClimber.team.avatar}
+          </div>
+          <div class="min-w-0">
+            <div class="text-base font-extrabold text-white truncate">${highlights.topClimber.team.name}</div>
+            <div class="text-xs text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
+          </div>
         </div>
         <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
           <span class="text-xs text-slate-400 font-medium">Sıralama Değişimi</span>
           <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">▲ +${highlights.topClimber.climb}</span>
         </div>
       `;
-    } else {
+    } else if (selectedGameweek === 1) {
+      // GW 1 Opening Haul Leader
+      const gw1Leader = highlights.gwWinners[0] || standings[0];
       climberCard.innerHTML = `
         <div class="flex items-center justify-between">
           <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
-            <i class="fa-solid fa-stairs text-[10px]"></i> Merdiven Durumu
+            <i class="fa-solid fa-flag-checkered text-[10px]"></i> En İyi Açılış
           </span>
           <div class="flex items-center">
             <span class="text-xs font-semibold text-slate-400">1. Hafta</span>
-            ${makeTooltipHtml('Sezonun başlangıç haftası. Sıralama yükselişleri 2. haftadan itibaren takip edilir.')}
+            ${makeTooltipHtml('Sezonun 1. haftasında en yüksek başlangıç puanı toplayan takım.')}
           </div>
         </div>
-        <div class="my-3">
-          <div class="text-sm font-bold text-white">İlk Hafta Başlangıcı</div>
-          <div class="text-xs text-slate-400 mt-0.5">Sıralama hareketleri 2. haftadan itibaren grafiğe yansır.</div>
+        <div class="flex items-center gap-3 my-3">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${gw1Leader.team.gradient}">
+            ${gw1Leader.team.avatar}
+          </div>
+          <div class="min-w-0">
+            <div class="text-base font-extrabold text-white truncate">${gw1Leader.team.name}</div>
+            <div class="text-xs text-slate-400 truncate">${gw1Leader.team.manager}</div>
+          </div>
         </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-          <span>Toplam Takım</span>
-          <span class="font-bold text-white">9 Menajer</span>
+        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
+          <span class="text-xs text-slate-400 font-medium">Açılış Skoru</span>
+          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">${gw1Leader.gwPoints} <span class="text-xs text-slate-400 font-normal">P</span></span>
+        </div>
+      `;
+    } else {
+      // Follower / Challenger (Zirve Takipçisi)
+      const challenger = standings.length > 1 ? standings[1] : standings[0];
+      climberCard.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
+            <i class="fa-solid fa-crosshairs text-[10px]"></i> Zirve Takipçisi
+          </span>
+          <div class="flex items-center">
+            <span class="text-xs font-semibold text-slate-400">2. Basamak</span>
+            ${makeTooltipHtml('Lideri en yakından takip eden 2. sıradaki şampiyonluk adayı.')}
+          </div>
+        </div>
+        <div class="flex items-center gap-3 my-3">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${challenger.team.gradient}">
+            ${challenger.team.avatar}
+          </div>
+          <div class="min-w-0">
+            <div class="text-base font-extrabold text-white truncate">${challenger.team.name}</div>
+            <div class="text-xs text-slate-400 truncate">${challenger.team.manager}</div>
+          </div>
+        </div>
+        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
+          <span class="text-xs text-slate-400 font-medium">Liderle Fark</span>
+          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">-${challenger.gapToLeader} <span class="text-xs text-slate-400 font-normal">P</span></span>
         </div>
       `;
     }
