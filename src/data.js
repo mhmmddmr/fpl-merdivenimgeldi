@@ -17,14 +17,14 @@ export const INITIAL_TEAMS = [
     "manager": "Oğuz Ünal",
     "color": "#a855f7",
     "accent": "text-purple-400",
-    "gradient": "linear-gradient(135deg, #6b21a8, #a855f7)",
+    "gradient": "linear-gradient(135deg, #7c3aed, #a855f7)",
     "avatar": "⚽"
   },
   {
     "id": "zirve",
     "name": "Yeniden Zirveye",
     "manager": "ŞAHİN KILINÇ",
-    "color": "#e90052",
+    "color": "#f43f5e",
     "accent": "text-rose-400",
     "gradient": "linear-gradient(135deg, #be123c, #f43f5e)",
     "avatar": "🚀"
@@ -33,9 +33,9 @@ export const INITIAL_TEAMS = [
     "id": "hedef27",
     "name": "Hedef 27 🍆 🍑",
     "manager": "Ali Can Çakmak",
-    "color": "#f43f5e",
-    "accent": "text-pink-400",
-    "gradient": "linear-gradient(135deg, #ec4899, #f43f5e)",
+    "color": "#38bdf8",
+    "accent": "text-sky-400",
+    "gradient": "linear-gradient(135deg, #0284c7, #38bdf8)",
     "avatar": "🎯"
   },
   {
@@ -43,33 +43,33 @@ export const INITIAL_TEAMS = [
     "name": "KırmızıSiyah",
     "manager": "Turgay Çavuş",
     "color": "#ef4444",
-    "accent": "text-red-400",
-    "gradient": "linear-gradient(135deg, #dc2626, #1f2937)",
+    "accent": "text-red-500",
+    "gradient": "linear-gradient(135deg, #991b1b, #ef4444)",
     "avatar": "🔴"
   },
   {
     "id": "explorer",
     "name": "Explorer",
     "manager": "ali zenginler",
-    "color": "#04f5ff",
-    "accent": "text-cyan-400",
-    "gradient": "linear-gradient(135deg, #0284c7, #04f5ff)",
+    "color": "#2dd4bf",
+    "accent": "text-teal-400",
+    "gradient": "linear-gradient(135deg, #0f766e, #2dd4bf)",
     "avatar": "🧭"
   },
   {
     "id": "aliyntem",
     "name": "Aliyntem42",
     "manager": "Ali Yöntem",
-    "color": "#fbbf24",
-    "accent": "text-amber-400",
-    "gradient": "linear-gradient(135deg, #d97706, #fbbf24)",
+    "color": "#facc15",
+    "accent": "text-yellow-400",
+    "gradient": "linear-gradient(135deg, #ca8a04, #facc15)",
     "avatar": "⭐"
   },
   {
     "id": "d3mon",
     "name": "D3mon FC",
     "manager": "Oğuz Çalışkanoğlu",
-    "color": "#6366f1",
+    "color": "#818cf8",
     "accent": "text-indigo-400",
     "gradient": "linear-gradient(135deg, #4338ca, #818cf8)",
     "avatar": "😈"
@@ -78,9 +78,9 @@ export const INITIAL_TEAMS = [
     "id": "recobaba",
     "name": "Reco BaBa",
     "manager": "Recep Alper",
-    "color": "#f97316",
+    "color": "#fb923c",
     "accent": "text-orange-400",
-    "gradient": "linear-gradient(135deg, #c2410c, #fb923c)",
+    "gradient": "linear-gradient(135deg, #ea580c, #fb923c)",
     "avatar": "🔥"
   }
 ];
@@ -620,7 +620,7 @@ export const INITIAL_GAMEWEEKS = [
   }
 ];
 
-export const STORAGE_KEY = "fpl_merdivenim_geldi_v38_full_store";
+export const STORAGE_KEY = "fpl_merdivenim_geldi_v38_distinct_colors_store";
 
 export function loadLeagueData() {
   try {
