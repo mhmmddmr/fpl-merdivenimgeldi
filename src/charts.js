@@ -244,29 +244,51 @@ export function renderPointsChart(canvasId, progressionData) {
 /**
  * 3. Merdiven Matrisi (Ultra-Clean Heatmap Table View)
  */
-export function renderLadderMatrix(containerId, progressionData) {
+export function renderLadderMatrix(containerId, progressionData, currentStandings = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const dark = isDarkMode();
   const { gwList, teams } = progressionData;
 
+  // Sort teams according to current standings ranking (1st place at top)
+  let sortedTeams = [...teams];
+  if (currentStandings && currentStandings.length > 0) {
+    const rankMap = new Map();
+    currentStandings.forEach((s, idx) => rankMap.set(s.team.id, s.rank ?? idx + 1));
+    sortedTeams.sort((a, b) => {
+      const rA = rankMap.get(a.team.id) ?? 99;
+      const rB = rankMap.get(b.team.id) ?? 99;
+      return rA - rB;
+    });
+  } else {
+    // Fallback: sort by last GW rank
+    sortedTeams.sort((a, b) => {
+      const rA = a.ranks[a.ranks.length - 1] ?? 99;
+      const rB = b.ranks[b.ranks.length - 1] ?? 99;
+      return rA - rB;
+    });
+  }
+
   let tableHtml = `
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs border-collapse">
         <thead>
           <tr class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/5">
-            <th class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#120b24] z-10 whitespace-nowrap shadow-sm dark:shadow-none">Takım</th>
+            <th class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#120b24] z-10 whitespace-nowrap shadow-sm dark:shadow-none"># Takım</th>
             ${gwList.map(gw => `<th class="py-2.5 px-2 text-center whitespace-nowrap">GW ${gw}</th>`).join('')}
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
   `;
 
-  teams.forEach(item => {
+  sortedTeams.forEach((item, index) => {
+    const currentRank = (currentStandings?.find(s => s.team.id === item.team.id)?.rank) ?? (index + 1);
+
     tableHtml += `
       <tr class="hover:bg-slate-50 dark:hover:bg-white/[0.03] transition">
         <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#120b24] z-10 whitespace-nowrap font-bold text-slate-800 dark:text-white flex items-center gap-2 shadow-sm dark:shadow-none">
+          <span class="text-[11px] font-extrabold w-4 text-slate-400 dark:text-slate-500">${currentRank}.</span>
           <span class="text-sm">${item.team.avatar}</span>
           <span class="truncate max-w-[110px]">${item.team.name}</span>
         </td>

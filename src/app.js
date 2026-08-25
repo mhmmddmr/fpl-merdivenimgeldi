@@ -457,10 +457,12 @@ function renderActiveChart() {
   if (pointsWrapper) pointsWrapper.classList.add('hidden');
   if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
 
+  const standings = calculateStandings(leagueData, selectedGameweek);
+
   if (currentActiveChartTab === 'matrix') {
     if (matrixContainer) {
       matrixContainer.classList.remove('hidden');
-      renderLadderMatrix('chart-matrix-wrapper', progData);
+      renderLadderMatrix('chart-matrix-wrapper', progData, standings);
     }
   } else if (currentActiveChartTab === 'rank') {
     if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
