@@ -620,14 +620,15 @@ export const INITIAL_GAMEWEEKS = [
   }
 ];
 
-export const STORAGE_KEY = "fpl_merdivenim_geldi_v38_realistic_season_store";
+export const DATASET_VERSION = "2026_realistic_v3";
+export const STORAGE_KEY = "fpl_ladder_v2026_realistic_v3";
 
 export function loadLeagueData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed.teams && parsed.gameweeks && parsed.gameweeks.length >= 38) {
+      if (parsed.version === DATASET_VERSION && parsed.teams && parsed.gameweeks && parsed.gameweeks.length >= 38) {
         return parsed;
       }
     }
@@ -636,6 +637,7 @@ export function loadLeagueData() {
   }
 
   const defaultData = {
+    version: DATASET_VERSION,
     leagueName: "Merdivenim Geldi",
     leagueId: "",
     lastUpdated: new Date().toISOString(),
@@ -648,6 +650,7 @@ export function loadLeagueData() {
 
 export function saveLeagueData(data) {
   try {
+    data.version = DATASET_VERSION;
     data.lastUpdated = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (err) {
@@ -657,6 +660,7 @@ export function saveLeagueData(data) {
 
 export function resetLeagueData() {
   const defaultData = {
+    version: DATASET_VERSION,
     leagueName: "Merdivenim Geldi",
     leagueId: "",
     lastUpdated: new Date().toISOString(),
