@@ -133,6 +133,19 @@ function renderTeamFilterPills() {
   });
 }
 
+function makeTooltipHtml(text) {
+  return `
+    <div class="relative group/tip inline-flex items-center ml-1 cursor-help">
+      <span class="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white flex items-center justify-center text-[10px] transition-colors">
+        <i class="fa-solid fa-circle-info"></i>
+      </span>
+      <div class="absolute right-0 top-6 hidden group-hover/tip:block z-40 w-56 p-2.5 rounded-xl bg-[#1e1438] border border-white/15 shadow-2xl text-[11px] font-normal leading-relaxed text-slate-200 pointer-events-none backdrop-blur-md">
+        ${text}
+      </div>
+    </div>
+  `;
+}
+
 /**
  * 3. Render 4 Top Highlight Cards
  */
@@ -178,7 +191,10 @@ function renderHighlightCards() {
         <span class="fpl-tag text-amber-400 bg-amber-400/10 border border-amber-400/20">
           <i class="fa-solid fa-crown text-[10px]"></i> Güncel Lider${isMultiple ? 'ler' : ''}
         </span>
-        <span class="text-xs font-semibold text-slate-400">${isMultiple ? `${highlights.leaders.length} Takım Zirvede` : '1. Basamak'}</span>
+        <div class="flex items-center">
+          <span class="text-xs font-semibold text-slate-400">${isMultiple ? `${highlights.leaders.length} Takım Zirvede` : '1. Basamak'}</span>
+          ${makeTooltipHtml('Seçili hafta itibarıyla toplam puan tablosunda 1. sırada yer alan şampiyonluk adayı.')}
+        </div>
       </div>
       ${bodyHtml}
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
@@ -225,7 +241,10 @@ function renderHighlightCards() {
         <span class="fpl-tag text-purple-400 bg-purple-400/10 border border-purple-400/20">
           <i class="fa-solid fa-bolt text-[10px]"></i> Haftanın Fatihi
         </span>
-        <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+        <div class="flex items-center">
+          <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+          ${makeTooltipHtml('Seçili haftada 9 menajer arasında en yüksek haftalık skoru toplayan takım.')}
+        </div>
       </div>
       ${bodyHtml}
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
@@ -244,7 +263,10 @@ function renderHighlightCards() {
           <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
             <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> Haftanın Çıkışı
           </span>
-          <span class="text-xs font-semibold text-cyan-400">+${highlights.topClimber.climb} Sıra</span>
+          <div class="flex items-center">
+            <span class="text-xs font-semibold text-cyan-400">+${highlights.topClimber.climb} Sıra</span>
+            ${makeTooltipHtml('Bir önceki haftaya göre lig tablosunda en fazla basamak tırmanan (sıra kazanan) takım.')}
+          </div>
         </div>
         <div class="my-3">
           <div class="text-base font-extrabold text-white truncate">${highlights.topClimber.team.name}</div>
@@ -261,7 +283,10 @@ function renderHighlightCards() {
           <span class="fpl-tag text-cyan-400 bg-cyan-400/10 border border-cyan-400/20">
             <i class="fa-solid fa-stairs text-[10px]"></i> Merdiven Durumu
           </span>
-          <span class="text-xs font-semibold text-slate-400">1. Hafta</span>
+          <div class="flex items-center">
+            <span class="text-xs font-semibold text-slate-400">1. Hafta</span>
+            ${makeTooltipHtml('Sezonun başlangıç haftası. Sıralama yükselişleri 2. haftadan itibaren takip edilir.')}
+          </div>
         </div>
         <div class="my-3">
           <div class="text-sm font-bold text-white">İlk Hafta Başlangıcı</div>
@@ -283,7 +308,10 @@ function renderHighlightCards() {
         <span class="fpl-tag text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
           <i class="fa-solid fa-chart-simple text-[10px]"></i> Lig İstatistikleri
         </span>
-        <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+        <div class="flex items-center">
+          <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
+          ${makeTooltipHtml('Seçili haftanın lig ortalaması, o haftadaki en düşük skor ve genel sezon ortalaması.')}
+        </div>
       </div>
       <div class="grid grid-cols-2 gap-2 my-3">
         <div class="p-2 rounded-xl bg-white/[0.04]">
