@@ -99,6 +99,14 @@ export function renderRankChart(canvasId, progressionData) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 12,
+          left: 8,
+          right: 14
+        }
+      },
       interaction: {
         mode: focusedTeamId === 'all' ? 'nearest' : 'index',
         intersect: false,
@@ -106,14 +114,24 @@ export function renderRankChart(canvasId, progressionData) {
       scales: {
         y: {
           reverse: true,
-          min: 1,
-          max: 9,
+          min: 0.65,
+          max: 9.35,
           ticks: {
             stepSize: 1,
-            callback: (val) => `${val}. Sıra`
+            callback: (val) => {
+              if (val >= 1 && val <= 9 && Number.isInteger(val)) {
+                return `${val}. Sıra`;
+              }
+              return '';
+            }
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.05)'
+            color: (c) => {
+              if (c.tick && c.tick.value >= 1 && c.tick.value <= 9 && Number.isInteger(c.tick.value)) {
+                return 'rgba(255, 255, 255, 0.05)';
+              }
+              return 'transparent';
+            }
           }
         },
         x: {
@@ -205,6 +223,14 @@ export function renderPointsChart(canvasId, progressionData) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 12,
+          left: 8,
+          right: 14
+        }
+      },
       interaction: {
         mode: focusedTeamId === 'all' ? 'nearest' : 'index',
         intersect: false,
