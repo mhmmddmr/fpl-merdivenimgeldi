@@ -33,13 +33,23 @@ let selectedGameweek = null;
 let currentActiveChartTab = 'matrix'; // Default to Matrix View
 let currentTheme = localStorage.getItem('fpl_merdiven_theme') || 'light';
 
-// DOM Elements Initialization
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  initApp();
-  setupEventListeners();
-  renderAll();
-});
+// Safe Bootstrap Mechanism for modern ES Modules
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+  bootstrapApp();
+}
+
+function bootstrapApp() {
+  try {
+    initTheme();
+    initApp();
+    setupEventListeners();
+    renderAll();
+  } catch (err) {
+    console.error("Bootstrap error:", err);
+  }
+}
 
 function initTheme() {
   if (currentTheme === 'dark') {
