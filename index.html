@@ -118,108 +118,113 @@
       </div>
     </section>
 
-    <!-- 3. Standings Table & Charts Split -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- Sol Taraf: Puan Durumu Tablosu (7 cols) -->
-      <div class="lg:col-span-7 space-y-4">
-        <div class="fpl-card p-5 sm:p-6">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-white/5">
+    <!-- 3. Görsel Analiz & Grafikler (YATAY TAM GENİŞLİK) -->
+    <section class="w-full">
+      <div class="fpl-card p-5 sm:p-6">
+        <!-- Chart Header & Tabs -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-white/5">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
             <div>
-              <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 font-display">
-                <i class="fa-solid fa-ranking-star text-emerald-600 dark:text-emerald-400"></i> Lig Puan Durumu
-              </h2>
-              <span id="current-gw-badge" class="text-xs text-slate-500 dark:text-slate-400">Gameweek 1</span>
-            </div>
-
-            <!-- Hafta Filtresi -->
-            <div class="flex items-center gap-2">
-              <label for="gameweek-select" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Hafta:</label>
-              <select id="gameweek-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:border-emerald-500 shadow-sm">
-                <!-- Dynamic Gameweek Options -->
-              </select>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white font-display">
+                Görsel Analiz & Grafikler
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Lig genelindeki basamak değişimleri ve puan performansları</p>
             </div>
           </div>
 
-          <!-- Table Container -->
-          <div class="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-white/5">
-                  <th class="py-3 px-3 sm:px-4 text-center whitespace-nowrap">Sıra</th>
-                  <th class="py-3 px-2 text-center hidden sm:table-cell whitespace-nowrap">Değişim</th>
-                  <th class="py-3 px-3 sm:px-4 whitespace-nowrap">Takım & Menajer</th>
-                  <th class="py-3 px-3 text-center whitespace-nowrap">GW Puan</th>
-                  <th class="py-3 px-3 text-center whitespace-nowrap">Toplam</th>
-                  <th class="py-3 px-3 text-center hidden md:table-cell whitespace-nowrap">Fark</th>
-                  <th class="py-3 px-3 text-center hidden lg:table-cell whitespace-nowrap">Form</th>
-                  <th class="py-3 px-3 sm:px-4 text-right whitespace-nowrap"></th>
-                </tr>
-              </thead>
-              <tbody id="standings-tbody" class="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                <!-- Dynamic Standings Rows -->
-              </tbody>
-            </table>
+          <!-- Tab Butonları -->
+          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200 dark:border-white/5 text-xs flex-wrap">
+            <button data-tab="matrix" class="chart-tab-btn px-3 py-1.5 rounded-lg bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-bold transition">
+              🪜 Merdiven Matrisi
+            </button>
+            <button data-tab="rank" class="chart-tab-btn px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
+              📈 Sıralama (Bump)
+            </button>
+            <button data-tab="points" class="chart-tab-btn px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
+              📊 Kümülatif Puan
+            </button>
+            <button data-tab="weekly" class="chart-tab-btn px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
+              🎯 Haftalık Puan
+            </button>
+            <button data-tab="dominance" class="chart-tab-btn px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
+              🥧 Zirve Süresi
+            </button>
           </div>
         </div>
-      </div>
 
-      <!-- Sağ Taraf: İnteraktif Grafikler & Analiz (5 cols) -->
-      <div class="lg:col-span-5 space-y-4">
-        <div class="fpl-card p-5 sm:p-6">
-          <!-- Chart Tabs Switcher -->
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100 dark:border-white/5">
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2 font-display">
-              <i class="fa-solid fa-chart-simple text-cyan-600 dark:text-cyan-400"></i> Görsel Analiz
-            </h3>
-            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200 dark:border-white/5 text-xs flex-wrap">
-              <button data-tab="matrix" class="chart-tab-btn px-2.5 py-1 rounded-lg bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-bold transition">
-                🪜 Merdiven
-              </button>
-              <button data-tab="rank" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
-                📈 Sıralama
-              </button>
-              <button data-tab="points" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
-                Kümülatif
-              </button>
-              <button data-tab="weekly" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
-                Haftalık
-              </button>
-              <button data-tab="dominance" class="chart-tab-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition">
-                Zirve
-              </button>
-            </div>
+        <!-- Team Focus Chips (Shown for Line Charts) -->
+        <div id="team-filter-section" class="hidden mb-4 p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5">
+          <div class="text-xs text-slate-600 dark:text-slate-400 mb-2 font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-filter text-emerald-600 dark:text-emerald-400"></i> Tek Bir Takımı Vurgula (Diğerleri Silikleşir):
           </div>
-
-          <!-- Team Focus Chips (Shown for Line Charts) -->
-          <div id="team-filter-section" class="hidden mb-3">
-            <div class="text-[11px] text-slate-500 dark:text-slate-400 mb-1.5 font-medium flex items-center gap-1">
-              <i class="fa-solid fa-filter text-emerald-600 dark:text-emerald-400"></i> Tek Bir Takımı Vurgula:
-            </div>
-            <div id="team-filter-container" class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto py-1">
-              <!-- Dynamic Team Filter Chips -->
-            </div>
-          </div>
-
-          <!-- Merdiven Matrix Container (Heatmap View) -->
-          <div id="chart-matrix-wrapper" class="w-full max-h-[380px] overflow-y-auto">
-            <!-- Dynamic Matrix Table -->
-          </div>
-
-          <!-- Chart Canvas Container -->
-          <div id="chart-canvas-wrapper" class="relative h-[360px] w-full hidden">
-            <canvas id="chart-canvas"></canvas>
-          </div>
-
-          <div class="mt-3 text-center text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-circle-info"></i> Takım isimlerine tıklayarak o takımın basamak hareketlerini tek başına takip edebilirsiniz.
+          <div id="team-filter-container" class="flex flex-wrap gap-2 py-0.5">
+            <!-- Dynamic Team Filter Chips -->
           </div>
         </div>
+
+        <!-- Merdiven Matrix Container (Heatmap View) -->
+        <div id="chart-matrix-wrapper" class="w-full overflow-x-auto">
+          <!-- Dynamic Matrix Table -->
+        </div>
+
+        <!-- Chart Canvas Container (Full Width Expansive) -->
+        <div id="chart-canvas-wrapper" class="relative h-[420px] w-full hidden">
+          <canvas id="chart-canvas"></canvas>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-white/5 text-center text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-400"></i> Grafikteki noktaların üzerine gelerek haftalık sıralama ve puan ayrıntılarını görebilirsiniz.
+        </div>
       </div>
+    </section>
 
-    </div>
+    <!-- 4. Lig Puan Durumu Tablosu (ALT BÖLÜM - TAM GENİŞLİK) -->
+    <section class="w-full">
+      <div class="fpl-card p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-white/5">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 font-display">
+              <i class="fa-solid fa-ranking-star text-emerald-600 dark:text-emerald-400"></i> Lig Puan Durumu Tablosu
+            </h2>
+            <span id="current-gw-badge" class="text-xs text-slate-500 dark:text-slate-400">Gameweek 1</span>
+          </div>
 
-    <!-- 4. Footer -->
+          <!-- Hafta Filtresi -->
+          <div class="flex items-center gap-2">
+            <label for="gameweek-select" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Görüntülenen Hafta:</label>
+            <select id="gameweek-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:border-emerald-500 shadow-sm">
+              <!-- Dynamic Gameweek Options -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-white/5">
+                <th class="py-3 px-3 sm:px-4 text-center whitespace-nowrap">Sıra</th>
+                <th class="py-3 px-2 text-center hidden sm:table-cell whitespace-nowrap">Değişim</th>
+                <th class="py-3 px-3 sm:px-4 whitespace-nowrap">Takım & Menajer</th>
+                <th class="py-3 px-3 text-center whitespace-nowrap">GW Puan</th>
+                <th class="py-3 px-3 text-center whitespace-nowrap">Toplam Puan</th>
+                <th class="py-3 px-3 text-center hidden md:table-cell whitespace-nowrap">Zirve Farkı</th>
+                <th class="py-3 px-3 text-center hidden lg:table-cell whitespace-nowrap">Son Form</th>
+                <th class="py-3 px-3 sm:px-4 text-right whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody id="standings-tbody" class="divide-y divide-slate-100 dark:divide-white/[0.04]">
+              <!-- Dynamic Standings Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Footer -->
     <footer class="text-center py-6 text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-white/5 space-y-1">
       <p class="font-medium">🏆 <b>Merdivenim Geldi</b> • Fantasy Premier League Özel Lig Takip Paneli</p>
       <p class="text-slate-400 dark:text-slate-600">Veriler güvenli bir şekilde tarayıcınızda ve GitHub üzerinde saklanır.</p>
