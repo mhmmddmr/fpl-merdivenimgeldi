@@ -1,9 +1,6 @@
 // Chart.js Visualizations & Ladder Matrix for "Merdivenim Geldi"
 
-let rankChartInstance = null;
-let pointsChartInstance = null;
-let weeklyChartInstance = null;
-let dominanceChartInstance = null;
+let activeChartInstance = null;
 let focusedTeamId = 'all'; // 'all' or specific teamId
 
 export function setFocusedTeam(teamId) {
@@ -41,6 +38,17 @@ function setChartDefaults() {
   Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
 }
 
+function clearCanvasChart(ctx) {
+  if (activeChartInstance) {
+    activeChartInstance.destroy();
+    activeChartInstance = null;
+  }
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    existingChart.destroy();
+  }
+}
+
 /**
  * 1. Sıralama Değişimi (Bump Chart / Rank Progression with Focus & Spotlight)
  */
@@ -49,9 +57,7 @@ export function renderRankChart(canvasId, progressionData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  if (rankChartInstance) {
-    rankChartInstance.destroy();
-  }
+  clearCanvasChart(ctx);
 
   const dark = isDarkMode();
   const { gwList, teams } = progressionData;
@@ -62,13 +68,13 @@ export function renderRankChart(canvasId, progressionData) {
 
     let borderColor = item.team.color;
     let backgroundColor = item.team.color;
-    let borderWidth = 2;
-    let pointRadius = 3.5;
+    let borderWidth = 2.5;
+    let pointRadius = 4;
 
     if (focusedTeamId !== 'all') {
       if (isHighlightSingle) {
-        borderWidth = 4;
-        pointRadius = 6;
+        borderWidth = 4.5;
+        pointRadius = 6.5;
       } else {
         borderColor = dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
         backgroundColor = borderColor;
@@ -88,13 +94,13 @@ export function renderRankChart(canvasId, progressionData) {
       pointBackgroundColor: borderColor,
       pointBorderColor: dark ? '#120b24' : '#ffffff',
       pointBorderWidth: 2,
-      tension: 0.15,
+      tension: 0.2,
       order: isHighlightSingle ? 0 : 1,
       fill: false
     };
   });
 
-  rankChartInstance = new Chart(ctx, {
+  activeChartInstance = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -114,12 +120,12 @@ export function renderRankChart(canvasId, progressionData) {
             callback: (val) => `${val}. Sıra`
           },
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'
+            color: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
           }
         },
         x: {
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'
+            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
           }
         }
       },
@@ -129,7 +135,7 @@ export function renderRankChart(canvasId, progressionData) {
           position: 'bottom',
           labels: {
             boxWidth: 8,
-            font: { size: 10 }
+            font: { size: 11, weight: '600' }
           }
         },
         tooltip: {
@@ -152,9 +158,7 @@ export function renderPointsChart(canvasId, progressionData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  if (pointsChartInstance) {
-    pointsChartInstance.destroy();
-  }
+  clearCanvasChart(ctx);
 
   const dark = isDarkMode();
   const { gwList, teams } = progressionData;
@@ -163,13 +167,13 @@ export function renderPointsChart(canvasId, progressionData) {
   const datasets = teams.map(item => {
     const isHighlightSingle = focusedTeamId !== 'all' && focusedTeamId === item.team.id;
     let borderColor = item.team.color;
-    let borderWidth = 2;
-    let pointRadius = 3;
+    let borderWidth = 2.5;
+    let pointRadius = 3.5;
 
     if (focusedTeamId !== 'all') {
       if (isHighlightSingle) {
-        borderWidth = 4;
-        pointRadius = 6;
+        borderWidth = 4.5;
+        pointRadius = 6.5;
       } else {
         borderColor = dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
         borderWidth = 1;
@@ -185,12 +189,12 @@ export function renderPointsChart(canvasId, progressionData) {
       borderWidth,
       pointRadius,
       pointHoverRadius: 7,
-      tension: 0.15,
+      tension: 0.2,
       fill: false
     };
   });
 
-  pointsChartInstance = new Chart(ctx, {
+  activeChartInstance = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -204,7 +208,7 @@ export function renderPointsChart(canvasId, progressionData) {
         y: {
           beginAtZero: false,
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'
+            color: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
           },
           ticks: {
             callback: (val) => `${val} P`
@@ -212,7 +216,7 @@ export function renderPointsChart(canvasId, progressionData) {
         },
         x: {
           grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'
+            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
           }
         }
       },
@@ -222,7 +226,14 @@ export function renderPointsChart(canvasId, progressionData) {
           position: 'bottom',
           labels: {
             boxWidth: 8,
-            font: { size: 10 }
+            font: { size: 11, weight: '600' }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return ` ${context.dataset.label}: ${context.raw} Puan`;
+            }
           }
         }
       }
@@ -238,9 +249,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  if (weeklyChartInstance) {
-    weeklyChartInstance.destroy();
-  }
+  clearCanvasChart(ctx);
 
   const dark = isDarkMode();
   const sorted = [...standings].sort((a, b) => b.gwPoints - a.gwPoints);
@@ -248,7 +257,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
   const data = sorted.map(s => s.gwPoints);
   const bgColors = sorted.map(s => s.team.color);
 
-  weeklyChartInstance = new Chart(ctx, {
+  activeChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
@@ -309,9 +318,7 @@ export function renderDominanceChart(canvasId, dominanceData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  if (dominanceChartInstance) {
-    dominanceChartInstance.destroy();
-  }
+  clearCanvasChart(ctx);
 
   const dark = isDarkMode();
   const activeTeams = dominanceData.filter(d => d.weeksAtNumberOne > 0);
@@ -321,7 +328,7 @@ export function renderDominanceChart(canvasId, dominanceData) {
   const data = displayTeams.map(d => d.weeksAtNumberOne || 1);
   const bgColors = displayTeams.map(d => d.team.color);
 
-  dominanceChartInstance = new Chart(ctx, {
+  activeChartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels,
