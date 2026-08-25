@@ -135,13 +135,7 @@ export function renderRankChart(canvasId, progressionData) {
       },
       plugins: {
         legend: {
-          display: focusedTeamId === 'all',
-          position: 'bottom',
-          labels: {
-            boxWidth: 10,
-            padding: 14,
-            font: { size: 11, weight: '700' }
-          }
+          display: false
         },
         tooltip: {
           callbacks: {
@@ -247,12 +241,7 @@ export function renderPointsChart(canvasId, progressionData) {
       },
       plugins: {
         legend: {
-          display: focusedTeamId === 'all',
-          position: 'bottom',
-          labels: {
-            boxWidth: 8,
-            font: { size: 11, weight: '600' }
-          }
+          display: false
         },
         tooltip: {
           callbacks: {

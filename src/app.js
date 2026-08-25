@@ -102,16 +102,16 @@ function updateFilterPillsUI(activeId) {
     const isSelected = btnId === activeId;
 
     if (btnId === 'all') {
-      btn.className = `team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+      btn.className = `team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition border cursor-pointer ${
         isSelected 
-          ? 'bg-white/20 text-white border border-white/30 shadow-sm' 
-          : 'bg-white/[0.04] text-slate-400 hover:text-white'
+          ? 'bg-white/20 text-white border-white/30 shadow-sm' 
+          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
       }`;
     } else {
-      btn.className = `team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
+      btn.className = `team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition border cursor-pointer ${
         isSelected 
-          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' 
-          : 'bg-white/[0.04] text-slate-400 hover:text-white'
+          ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-500/20' 
+          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
       }`;
     }
   });
@@ -124,10 +124,10 @@ function renderTeamFilterPills() {
   const currentFocus = pinnedTeamId || getFocusedTeam() || 'all';
 
   let pillsHtml = `
-    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition border cursor-pointer ${
       currentFocus === 'all' 
-        ? 'bg-white/20 text-white border border-white/30 shadow-sm' 
-        : 'bg-white/[0.04] text-slate-400 hover:text-white'
+        ? 'bg-white/20 text-white border-white/30 shadow-sm' 
+        : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
     }">
       Tüm Takımlar
     </button>
@@ -136,10 +136,10 @@ function renderTeamFilterPills() {
   leagueData.teams.forEach(t => {
     const isSelected = currentFocus === t.id;
     pillsHtml += `
-      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
+      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition border cursor-pointer ${
         isSelected 
-          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' 
-          : 'bg-white/[0.04] text-slate-400 hover:text-white'
+          ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-500/20' 
+          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
       }">
         <span>${t.avatar}</span>
         <span class="truncate max-w-[85px]">${t.name}</span>
