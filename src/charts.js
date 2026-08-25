@@ -9,17 +9,21 @@ let dominanceChartInstance = null;
 function setChartDefaults() {
   if (typeof Chart === 'undefined') return;
   Chart.defaults.color = '#94a3b8';
-  Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
-  Chart.defaults.plugins.tooltip.titleColor = '#f8fafc';
+  Chart.defaults.font.family = "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif";
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(18, 11, 36, 0.95)';
+  Chart.defaults.plugins.tooltip.titleColor = '#ffffff';
+  Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 13 };
   Chart.defaults.plugins.tooltip.bodyColor = '#cbd5e1';
-  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
+  Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.12)';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 12;
-  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+  Chart.defaults.plugins.tooltip.cornerRadius = 10;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
-  Chart.defaults.plugins.legend.labels.padding = 16;
+  Chart.defaults.plugins.legend.labels.boxWidth = 8;
+  Chart.defaults.plugins.legend.labels.padding = 12;
+  Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '500' };
 }
 
 /**
@@ -35,20 +39,20 @@ export function renderRankChart(canvasId, progressionData) {
   }
 
   const { gwList, teams } = progressionData;
-  const labels = gwList.map(gw => `GW ${gw}`);
+  const labels = gwList.map(gw => `Hafta ${gw}`);
 
   const datasets = teams.map(item => ({
-    label: `${item.team.name} (${item.team.manager})`,
+    label: `${item.team.name}`,
     data: item.ranks,
     borderColor: item.team.color,
     backgroundColor: item.team.color,
-    borderWidth: 3,
-    pointRadius: 6,
+    borderWidth: 2.5,
+    pointRadius: gwList.length === 1 ? 7 : 5,
     pointHoverRadius: 9,
     pointBackgroundColor: item.team.color,
-    pointBorderColor: '#0f172a',
+    pointBorderColor: '#120b24',
     pointBorderWidth: 2,
-    tension: 0.25,
+    tension: 0.3,
     fill: false
   }));
 
@@ -72,12 +76,12 @@ export function renderRankChart(canvasId, progressionData) {
             callback: (val) => `${val}. Sıra`
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         },
         x: {
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         }
       },
@@ -85,8 +89,8 @@ export function renderRankChart(canvasId, progressionData) {
         legend: {
           position: 'bottom',
           labels: {
-            boxWidth: 10,
-            font: { size: 12 }
+            boxWidth: 8,
+            font: { size: 11 }
           }
         },
         tooltip: {
@@ -114,7 +118,7 @@ export function renderPointsChart(canvasId, progressionData) {
   }
 
   const { gwList, teams } = progressionData;
-  const labels = gwList.map(gw => `GW ${gw}`);
+  const labels = gwList.map(gw => `Hafta ${gw}`);
 
   const datasets = teams.map(item => ({
     label: `${item.team.name}`,
@@ -124,7 +128,7 @@ export function renderPointsChart(canvasId, progressionData) {
     borderWidth: 2.5,
     pointRadius: 5,
     pointHoverRadius: 8,
-    tension: 0.2,
+    tension: 0.25,
     fill: false
   }));
 
@@ -142,15 +146,15 @@ export function renderPointsChart(canvasId, progressionData) {
         y: {
           beginAtZero: false,
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           },
           ticks: {
-            callback: (val) => `${val} Puan`
+            callback: (val) => `${val} P`
           }
         },
         x: {
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           }
         }
       },
@@ -158,8 +162,8 @@ export function renderPointsChart(canvasId, progressionData) {
         legend: {
           position: 'bottom',
           labels: {
-            boxWidth: 10,
-            font: { size: 12 }
+            boxWidth: 8,
+            font: { size: 11 }
           }
         }
       }
@@ -195,9 +199,9 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
           label: 'Haftalık Puan',
           data: data,
           backgroundColor: bgColors,
-          borderRadius: 8,
+          borderRadius: 6,
           borderWidth: 0,
-          barThickness: 28
+          barThickness: 24
         }
       ]
     },
@@ -210,7 +214,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
         },
         tooltip: {
           callbacks: {
-            afterLabel: (ctx) => `Menajer: ${sorted[ctx.dataIndex].team.manager}\nLig Ort: ${leagueAvg} Puan`
+            afterLabel: (ctx) => `Menajer: ${sorted[ctx.dataIndex].team.manager}\nLig Ortalaması: ${leagueAvg} Puan`
           }
         }
       },
@@ -218,7 +222,7 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
         y: {
           beginAtZero: true,
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)'
+            color: 'rgba(255, 255, 255, 0.05)'
           },
           ticks: {
             callback: (val) => `${val} P`
@@ -229,7 +233,8 @@ export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
             display: false
           },
           ticks: {
-            maxRotation: 45,
+            font: { size: 11 },
+            maxRotation: 35,
             minRotation: 20
           }
         }
@@ -250,12 +255,11 @@ export function renderDominanceChart(canvasId, dominanceData) {
     dominanceChartInstance.destroy();
   }
 
-  // Filter teams who spent at least 1 week in top 3 or #1
-  const activeTeams = dominanceData.filter(d => d.weeksAtNumberOne > 0 || d.weeksInTop3 > 0);
+  const activeTeams = dominanceData.filter(d => d.weeksAtNumberOne > 0);
   const displayTeams = activeTeams.length > 0 ? activeTeams : dominanceData.slice(0, 5);
 
   const labels = displayTeams.map(d => `${d.team.name} (${d.weeksAtNumberOne} Hafta Lider)`);
-  const data = displayTeams.map(d => d.weeksAtNumberOne || 0.1); // slight for visibility
+  const data = displayTeams.map(d => d.weeksAtNumberOne || 1);
   const bgColors = displayTeams.map(d => d.team.color);
 
   dominanceChartInstance = new Chart(ctx, {
@@ -266,9 +270,9 @@ export function renderDominanceChart(canvasId, dominanceData) {
         {
           data: data,
           backgroundColor: bgColors,
-          borderColor: '#0f172a',
+          borderColor: '#120b24',
           borderWidth: 3,
-          hoverOffset: 8
+          hoverOffset: 6
         }
       ]
     },
@@ -279,12 +283,12 @@ export function renderDominanceChart(canvasId, dominanceData) {
         legend: {
           position: 'right',
           labels: {
-            boxWidth: 12,
-            font: { size: 12 }
+            boxWidth: 10,
+            font: { size: 11 }
           }
         }
       },
-      cutout: '65%'
+      cutout: '70%'
     }
   });
 }
