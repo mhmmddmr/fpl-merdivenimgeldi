@@ -378,3 +378,164 @@ export function getHeadToHead(leagueData, team1Id, team2Id) {
     matchups
   };
 }
+
+/**
+ * 🎖️ 1. RPG Level & Title Calculator
+ */
+export function getManagerLevel(totalPoints) {
+  if (totalPoints >= 950) {
+    return {
+      level: 5,
+      title: "FPL Efsanesi / Zirve Şampiyonu",
+      badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10",
+      icon: "👑",
+      min: 950,
+      max: 1200,
+      progressPct: Math.min(100, Math.round(((totalPoints - 950) / 250) * 100))
+    };
+  } else if (totalPoints >= 800) {
+    return {
+      level: 4,
+      title: "Merdiven Üstadı",
+      badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/10",
+      icon: "🧙‍♂️",
+      min: 800,
+      max: 950,
+      progressPct: Math.round(((totalPoints - 800) / 150) * 100)
+    };
+  } else if (totalPoints >= 600) {
+    return {
+      level: 3,
+      title: "Pep'in Çırağı",
+      badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10",
+      icon: "⚡",
+      min: 600,
+      max: 800,
+      progressPct: Math.round(((totalPoints - 600) / 200) * 100)
+    };
+  } else if (totalPoints >= 300) {
+    return {
+      level: 2,
+      title: "Halı Saha Taktisyeni",
+      badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+      icon: "📋",
+      min: 300,
+      max: 600,
+      progressPct: Math.round(((totalPoints - 300) / 300) * 100)
+    };
+  } else {
+    return {
+      level: 1,
+      title: "Çaylak Menajer",
+      badgeColor: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+      icon: "🌱",
+      min: 0,
+      max: 300,
+      progressPct: Math.round((totalPoints / 300) * 100)
+    };
+  }
+}
+
+/**
+ * 🏅 2. Dynamic Badges & Trophies Calculator
+ */
+export function getTeamBadges(leagueData, teamId, targetGw = null) {
+  const progData = getProgressionData(leagueData);
+  const teamProg = progData.teams.find(tp => tp.team.id === teamId);
+  if (!teamProg) return [];
+
+  const gws = [...leagueData.gameweeks].sort((a, b) => a.gw - b.gw);
+  const currentGwIdx = targetGw ? gws.findIndex(g => g.gw === targetGw) : gws.length - 1;
+  const validLength = currentGwIdx >= 0 ? currentGwIdx + 1 : teamProg.ranks.length;
+
+  const ranks = teamProg.ranks.slice(0, validLength);
+  const scores = teamProg.gwScores.slice(0, validLength);
+
+  // 1. 👑 Merdivenler Kralı: Üst üste 3 hafta 1. sırada kalan
+  let maxConsecutiveRank1 = 0;
+  let currentStreak = 0;
+  ranks.forEach(r => {
+    if (r === 1) {
+      currentStreak++;
+      if (currentStreak > maxConsecutiveRank1) maxConsecutiveRank1 = currentStreak;
+    } else {
+      currentStreak = 0;
+    }
+  });
+  const hasMerdivenlerKrali = maxConsecutiveRank1 >= 3;
+
+  // 2. 🚀 Roket Tırmanış: Tek haftada 3+ basamak tırmanan
+  let hasRocketClimb = false;
+  for (let i = 1; i < ranks.length; i++) {
+    if (ranks[i - 1] - ranks[i] >= 3) {
+      hasRocketClimb = true;
+      break;
+    }
+  }
+
+  // 3. 💯 Yüzler Kulübü: Tek haftada 100+ puan barajını aşan
+  const hasCenturyClub = scores.some(s => s >= 100);
+
+  // 4. 🎯 İstikrar Abidesi: 5 hafta boyunca hiç 40 puanın altına düşmeyen
+  let hasConsistency = false;
+  let consistencyStreak = 0;
+  scores.forEach(s => {
+    if (s >= 40) {
+      consistencyStreak++;
+      if (consistencyStreak >= 5) hasConsistency = true;
+    } else {
+      consistencyStreak = 0;
+    }
+  });
+
+  // 5. 🥄 Futbol Cahili: Seçili haftada en düşük puanı alan VEYA son sırada (9.) olan
+  const latestGwScores = gws[validLength - 1]?.scores || {};
+  const currentMinScore = Math.min(...Object.values(latestGwScores));
+  const isLowestInGw = latestGwScores[teamId] === currentMinScore;
+  const isLastRank = ranks[ranks.length - 1] === 9;
+  const hasFutbolCahili = isLowestInGw || isLastRank;
+
+  return [
+    {
+      id: "merdivenler_krali",
+      name: "Merdivenler Kralı",
+      icon: "👑",
+      desc: "Üst üste 3 hafta 1. sırada kaldı",
+      unlocked: hasMerdivenlerKrali,
+      badgeClass: "bg-amber-500/15 border-amber-500/30 text-amber-300"
+    },
+    {
+      id: "roket_tirmanis",
+      name: "Roket Tırmanış",
+      icon: "🚀",
+      desc: "Tek haftada 3+ basamak birden zıpladı",
+      unlocked: hasRocketClimb,
+      badgeClass: "bg-cyan-500/15 border-cyan-500/30 text-cyan-300"
+    },
+    {
+      id: "yuzler_kulubu",
+      name: "Yüzler Kulübü",
+      icon: "💯",
+      desc: "Tek haftada 100+ puan barajını aştı",
+      unlocked: hasCenturyClub,
+      badgeClass: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+    },
+    {
+      id: "istikrar_abidesi",
+      name: "İstikrar Abidesi",
+      icon: "🎯",
+      desc: "5 hafta boyunca hiç 40 puan altına düşmedi",
+      unlocked: hasConsistency,
+      badgeClass: "bg-purple-500/15 border-purple-500/30 text-purple-300"
+    },
+    {
+      id: "futbol_cahili",
+      name: "Futbol Cahili",
+      icon: "🥄",
+      desc: "Haftanın en düşük puanını aldı / Son sırada",
+      unlocked: hasFutbolCahili,
+      badgeClass: "bg-rose-500/15 border-rose-500/30 text-rose-300"
+    }
+  ];
+}
+

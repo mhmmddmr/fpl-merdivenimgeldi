@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.4.0';
+} from './data.js?v=3.5.0';
 
 import {
   calculateStandings,
@@ -13,8 +13,10 @@ import {
   getProgressionData,
   getLeaderboardDominance,
   getLeagueRecords,
-  getHeadToHead
-} from './stats.js?v=3.4.0';
+  getHeadToHead,
+  getManagerLevel,
+  getTeamBadges
+} from './stats.js?v=3.5.0';
 
 import {
   renderRankChart,
@@ -518,6 +520,11 @@ function renderStandingsTable() {
       ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-bold text-xs border border-emerald-500/20">Lider</span>` 
       : `<span class="text-slate-400 text-xs font-semibold tabular-nums">-${item.gapToLeader} P</span>`;
 
+    const lvl = getManagerLevel(item.totalPoints);
+    const badges = getTeamBadges(leagueData, item.team.id, selectedGameweek);
+    const unlockedBadges = badges.filter(b => b.unlocked);
+    const badgeIcons = unlockedBadges.map(b => `<span title="${b.name}: ${b.desc}" class="cursor-help inline-block hover:scale-125 transition-transform">${b.icon}</span>`).join(' ');
+
     return `
       <tr class="table-row-item border-b border-white/[0.04] cursor-pointer" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
         <!-- Rank -->
@@ -539,10 +546,14 @@ function renderStandingsTable() {
               ${item.team.avatar}
             </div>
             <div class="min-w-0">
-              <div class="font-bold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate">
-                ${item.team.name}${crownIcon}
+              <div class="flex items-center gap-1.5 font-bold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate">
+                <span class="truncate">${item.team.name}${crownIcon}</span>
+                <span class="px-1.5 py-0.2 text-[10px] font-black rounded-md border ${lvl.badgeColor} shrink-0">
+                  ${lvl.icon} Lv ${lvl.level}
+                </span>
+                <span class="text-xs shrink-0 flex items-center gap-0.5">${badgeIcons}</span>
               </div>
-              <div class="text-xs text-slate-400 truncate">${item.team.manager}</div>
+              <div class="text-xs text-slate-400 truncate">${item.team.manager} • <span class="text-slate-500 font-medium">${lvl.title}</span></div>
             </div>
           </div>
         </td>
@@ -934,7 +945,7 @@ function updateH2HView() {
 }
 
 /**
- * MODAL 3: Menajer Karnesi / Detay Kartı
+ * MODAL 3: Menajer Karnesi / Detay Kartı (RPG Level + 5 Badges Vitrini)
  */
 window.openManagerModal = function(teamId) {
   const modal = document.getElementById('modal-manager');
@@ -957,11 +968,15 @@ window.openManagerModal = function(teamId) {
   const weeksAtFirst = teamProg.ranks.filter(r => r === 1).length;
   const podiumWeeks = teamProg.ranks.filter(r => r <= 3).length;
 
+  const lvl = getManagerLevel(currentStanding.totalPoints);
+  const badges = getTeamBadges(leagueData, teamId, selectedGameweek);
+  const unlockedCount = badges.filter(b => b.unlocked).length;
+
   const container = document.getElementById('manager-modal-content');
   if (container) {
     container.innerHTML = `
       <!-- Manager Header -->
-      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-5">
+      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4">
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white ring-2 ring-white/20" style="background: ${team.gradient}">
           ${team.avatar}
         </div>
@@ -981,8 +996,67 @@ window.openManagerModal = function(teamId) {
         </div>
       </div>
 
+      <!-- RPG Level & Title Banner -->
+      <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 mb-4 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-3xl p-1.5 rounded-xl bg-white/5 border border-white/10">${lvl.icon}</span>
+            <div>
+              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Menajer Rütbesi (RPG Seviye ${lvl.level})</div>
+              <div class="text-base font-black text-white">${lvl.title}</div>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-xl text-xs font-black border ${lvl.badgeColor}">
+            Seviye ${lvl.level} / 5
+          </span>
+        </div>
+        <!-- XP Progress Bar -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-bold text-slate-400">
+            <span>${currentStanding.totalPoints} Puan</span>
+            <span>${lvl.level === 5 ? 'MAX RÜTBE' : `${lvl.max} Puan (Sonraki Seviye)`}</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden border border-white/5">
+            <div class="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 transition-all duration-500" style="width: ${lvl.progressPct}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges Showcase (5 Rozet Vitrini) -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2.5">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-medal text-amber-400"></i> Kazanılan Başarımlar & Rozetler
+          </h4>
+          <span class="text-xs font-bold text-amber-400">${unlockedCount} / ${badges.length} Açıldı</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          ${badges.map(b => `
+            <div class="p-2.5 rounded-xl border transition flex items-start gap-2.5 ${
+              b.unlocked 
+                ? `${b.badgeClass} shadow-md` 
+                : 'bg-white/[0.02] border-white/5 text-slate-500 opacity-60'
+            }">
+              <div class="text-2xl p-1 rounded-lg ${b.unlocked ? 'bg-white/10' : 'bg-white/[0.03] grayscale'}">
+                ${b.icon}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between">
+                  <div class="font-black text-xs ${b.unlocked ? 'text-white' : 'text-slate-400'}">${b.name}</div>
+                  ${b.unlocked 
+                    ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">AÇILDI ✨</span>`
+                    : `<span class="text-[9px] text-slate-500"><i class="fa-solid fa-lock text-[8px]"></i> Kilitli</span>`
+                  }
+                </div>
+                <div class="text-[10px] ${b.unlocked ? 'text-slate-300' : 'text-slate-500'} mt-0.5 leading-snug">${b.desc}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
       <!-- Quick 4-Grid Metrics -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
         <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
           <div class="text-[11px] text-emerald-400 font-semibold">En Yüksek Skor</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${maxScore} P</div>
@@ -1002,12 +1076,12 @@ window.openManagerModal = function(teamId) {
       </div>
 
       <!-- Week by Week History -->
-      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2">
         <i class="fa-solid fa-chart-line text-emerald-400"></i> Haftalık Performans Geçmişi
       </h4>
-      <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+      <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
         ${progData.gwList.map((gw, idx) => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm hover:bg-white/[0.06] transition">
+          <div class="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs hover:bg-white/[0.06] transition">
             <span class="font-bold text-slate-400 tabular-nums">Gameweek ${gw}</span>
             <span class="text-slate-300 font-medium">${teamProg.ranks[idx]}. Sıra</span>
             <span class="font-extrabold text-emerald-400 font-display tabular-nums">${teamProg.gwScores[idx]} Puan</span>
