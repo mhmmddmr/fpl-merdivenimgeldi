@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.5.0';
+} from './data.js?v=3.5.1';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getHeadToHead,
   getManagerLevel,
   getTeamBadges
-} from './stats.js?v=3.5.0';
+} from './stats.js?v=3.5.1';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.4.0';
+} from './charts.js?v=3.5.1';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.4.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.5.1';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -1056,7 +1056,7 @@ window.openManagerModal = function(teamId) {
       </div>
 
       <!-- Quick 4-Grid Metrics -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
           <div class="text-[11px] text-emerald-400 font-semibold">En Yüksek Skor</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${maxScore} P</div>
@@ -1073,21 +1073,6 @@ window.openManagerModal = function(teamId) {
           <div class="text-[11px] text-cyan-400 font-semibold">İlk 3 (Podyum)</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${podiumWeeks} Hafta</div>
         </div>
-      </div>
-
-      <!-- Week by Week History -->
-      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2">
-        <i class="fa-solid fa-chart-line text-emerald-400"></i> Haftalık Performans Geçmişi
-      </h4>
-      <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-        ${progData.gwList.map((gw, idx) => `
-          <div class="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs hover:bg-white/[0.06] transition">
-            <span class="font-bold text-slate-400 tabular-nums">Gameweek ${gw}</span>
-            <span class="text-slate-300 font-medium">${teamProg.ranks[idx]}. Sıra</span>
-            <span class="font-extrabold text-emerald-400 font-display tabular-nums">${teamProg.gwScores[idx]} Puan</span>
-            <span class="text-xs text-slate-400 tabular-nums">Kümülatif: ${teamProg.cumulativePoints[idx]} P</span>
-          </div>
-        `).join('')}
       </div>
     `;
   }
