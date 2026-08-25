@@ -30,7 +30,7 @@ let leagueData = loadLeagueData();
 let selectedGameweek = null;
 let currentActiveChartTab = 'matrix'; // Default to Matrix View
 
-// Safe Bootstrap Mechanism for modern ES Modules
+// Safe Bootstrap Mechanism
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootstrapApp);
 } else {
@@ -692,7 +692,7 @@ function updateH2HView() {
 }
 
 /**
- * MODAL 3: Manager Profile Deep Dive Modal
+ * MODAL 3: Menajer Karnesi / Detay Kartı
  */
 window.openManagerModal = function(teamId) {
   const modal = document.getElementById('modal-manager');
@@ -771,7 +771,7 @@ window.openManagerModal = function(teamId) {
 };
 
 /**
- * MODAL 4: League Records & Hall of Fame Modal
+ * MODAL 4: Lig Rekorları & Hall of Fame Modal
  */
 function openRecordsModal() {
   const modal = document.getElementById('modal-records');
@@ -862,7 +862,7 @@ function openRecordsModal() {
 }
 
 /**
- * MODAL 5: Data Management & FPL API & Yedekleme -->
+ * MODAL 5: Data Management & FPL API & Yedekleme
  */
 function openDataManagementModal() {
   const modal = document.getElementById('modal-data');
