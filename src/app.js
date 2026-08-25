@@ -445,39 +445,34 @@ function renderStandingsTable() {
  */
 function renderActiveChart() {
   const progData = getProgressionData(leagueData);
-  const standings = calculateStandings(leagueData, selectedGameweek);
-  const dominanceData = getLeaderboardDominance(leagueData);
-  const highlights = getStatHighlights(leagueData, selectedGameweek);
 
-  const canvasContainer = document.getElementById('chart-canvas-wrapper');
   const matrixContainer = document.getElementById('chart-matrix-wrapper');
+  const rankWrapper = document.getElementById('chart-rank-wrapper');
+  const pointsWrapper = document.getElementById('chart-points-wrapper');
   const filterPillsContainer = document.getElementById('team-filter-section');
 
+  // Hide all chart containers first
+  if (matrixContainer) matrixContainer.classList.add('hidden');
+  if (rankWrapper) rankWrapper.classList.add('hidden');
+  if (pointsWrapper) pointsWrapper.classList.add('hidden');
+  if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
+
   if (currentActiveChartTab === 'matrix') {
-    if (canvasContainer) canvasContainer.classList.add('hidden');
-    if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
     if (matrixContainer) {
       matrixContainer.classList.remove('hidden');
       renderLadderMatrix('chart-matrix-wrapper', progData);
     }
-  } else {
-    if (matrixContainer) matrixContainer.classList.add('hidden');
-    if (canvasContainer) canvasContainer.classList.remove('hidden');
-
-    if (currentActiveChartTab === 'rank' || currentActiveChartTab === 'points') {
-      if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
-    } else {
-      if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
+  } else if (currentActiveChartTab === 'rank') {
+    if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
+    if (rankWrapper) {
+      rankWrapper.classList.remove('hidden');
+      renderRankChart('chart-canvas-rank', progData);
     }
-
-    if (currentActiveChartTab === 'rank') {
-      renderRankChart('chart-canvas', progData);
-    } else if (currentActiveChartTab === 'points') {
-      renderPointsChart('chart-canvas', progData);
-    } else if (currentActiveChartTab === 'weekly') {
-      renderWeeklyScoreChart('chart-canvas', standings, highlights?.gwAverage || 0);
-    } else if (currentActiveChartTab === 'dominance') {
-      renderDominanceChart('chart-canvas', dominanceData);
+  } else if (currentActiveChartTab === 'points') {
+    if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
+    if (pointsWrapper) {
+      pointsWrapper.classList.remove('hidden');
+      renderPointsChart('chart-canvas-points', progData);
     }
   }
 }

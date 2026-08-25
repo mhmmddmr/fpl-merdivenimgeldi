@@ -1,6 +1,7 @@
 // Chart.js Visualizations & Ladder Matrix for "Merdivenim Geldi"
 
-let activeChartInstance = null;
+let rankChartInstance = null;
+let pointsChartInstance = null;
 let focusedTeamId = 'all'; // 'all' or specific teamId
 
 export function setFocusedTeam(teamId) {
@@ -38,17 +39,6 @@ function setChartDefaults() {
   Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
 }
 
-function clearCanvasChart(ctx) {
-  if (activeChartInstance) {
-    activeChartInstance.destroy();
-    activeChartInstance = null;
-  }
-  const existingChart = Chart.getChart(ctx);
-  if (existingChart) {
-    existingChart.destroy();
-  }
-}
-
 /**
  * 1. Sıralama Değişimi (Bump Chart / Rank Progression with Focus & Spotlight)
  */
@@ -57,7 +47,12 @@ export function renderRankChart(canvasId, progressionData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  clearCanvasChart(ctx);
+  if (rankChartInstance) {
+    rankChartInstance.destroy();
+    rankChartInstance = null;
+  }
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
 
   const dark = isDarkMode();
   const { gwList, teams } = progressionData;
@@ -100,7 +95,7 @@ export function renderRankChart(canvasId, progressionData) {
     };
   });
 
-  activeChartInstance = new Chart(ctx, {
+  rankChartInstance = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -158,7 +153,12 @@ export function renderPointsChart(canvasId, progressionData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  clearCanvasChart(ctx);
+  if (pointsChartInstance) {
+    pointsChartInstance.destroy();
+    pointsChartInstance = null;
+  }
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
 
   const dark = isDarkMode();
   const { gwList, teams } = progressionData;
@@ -194,7 +194,7 @@ export function renderPointsChart(canvasId, progressionData) {
     };
   });
 
-  activeChartInstance = new Chart(ctx, {
+  pointsChartInstance = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -242,125 +242,7 @@ export function renderPointsChart(canvasId, progressionData) {
 }
 
 /**
- * 3. Haftalık Puan Karşılaştırması (Gameweek Bar Chart vs Average)
- */
-export function renderWeeklyScoreChart(canvasId, standings, leagueAvg) {
-  setChartDefaults();
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
-
-  clearCanvasChart(ctx);
-
-  const dark = isDarkMode();
-  const sorted = [...standings].sort((a, b) => b.gwPoints - a.gwPoints);
-  const labels = sorted.map(s => s.team.name);
-  const data = sorted.map(s => s.gwPoints);
-  const bgColors = sorted.map(s => s.team.color);
-
-  activeChartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Haftalık Puan',
-          data: data,
-          backgroundColor: bgColors,
-          borderRadius: 6,
-          borderWidth: 0,
-          barThickness: 22
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          callbacks: {
-            afterLabel: (ctx) => `Menajer: ${sorted[ctx.dataIndex].team.manager}\nLig Ortalaması: ${leagueAvg} Puan`
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'
-          },
-          ticks: {
-            callback: (val) => `${val} P`
-          }
-        },
-        x: {
-          grid: {
-            display: false
-          },
-          ticks: {
-            font: { size: 11 },
-            maxRotation: 35,
-            minRotation: 20
-          }
-        }
-      }
-    }
-  });
-}
-
-/**
- * 4. Zirve Hakimiyeti (Weeks at #1 Donut Chart)
- */
-export function renderDominanceChart(canvasId, dominanceData) {
-  setChartDefaults();
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
-
-  clearCanvasChart(ctx);
-
-  const dark = isDarkMode();
-  const activeTeams = dominanceData.filter(d => d.weeksAtNumberOne > 0);
-  const displayTeams = activeTeams.length > 0 ? activeTeams : dominanceData.slice(0, 5);
-
-  const labels = displayTeams.map(d => `${d.team.name} (${d.weeksAtNumberOne} Hafta Lider)`);
-  const data = displayTeams.map(d => d.weeksAtNumberOne || 1);
-  const bgColors = displayTeams.map(d => d.team.color);
-
-  activeChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [
-        {
-          data: data,
-          backgroundColor: bgColors,
-          borderColor: dark ? '#120b24' : '#ffffff',
-          borderWidth: 3,
-          hoverOffset: 6
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            boxWidth: 10,
-            font: { size: 11 }
-          }
-        }
-      },
-      cutout: '70%'
-    }
-  });
-}
-
-/**
- * 5. Merdiven Matrisi (Ultra-Clean Heatmap Table View)
+ * 3. Merdiven Matrisi (Ultra-Clean Heatmap Table View)
  */
 export function renderLadderMatrix(containerId, progressionData) {
   const container = document.getElementById(containerId);
