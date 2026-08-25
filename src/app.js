@@ -797,78 +797,88 @@ function updateH2HView() {
   const h2h = getHeadToHead(leagueData, t1Id, t2Id);
   if (!h2h) return;
 
-  const totalBoth = (h2h.t1Total + h2h.t2Total) || 1;
-  const t1TotalPct = Math.round((h2h.t1Total / totalBoth) * 100);
-  const t2TotalPct = 100 - t1TotalPct;
-
   container.innerHTML = `
-    <!-- Top H2H Scoreboard -->
-    <div class="grid grid-cols-3 items-center gap-4 p-5 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-center mb-5">
-      <div>
-        <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md mb-2" style="background: ${h2h.t1.gradient}">
-          ${h2h.t1.avatar}
-        </div>
-        <div class="font-black text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
-        <div class="text-xs text-slate-400 truncate">${h2h.t1.manager}</div>
-        <div class="mt-2 text-2xl font-black text-emerald-400 font-display tabular-nums">${h2h.t1Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-300 font-medium">${h2h.t1Total} Toplam Puan</div>
-      </div>
-
-      <div class="flex flex-col items-center justify-center">
-        <span class="text-xs font-black uppercase tracking-widest text-slate-400 bg-white/[0.06] px-3 py-1 rounded-full">VS</span>
-        <div class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 mt-2 font-mono">
-          ${h2h.draws} Beraberlik
-        </div>
-        <div class="text-xs font-bold ${h2h.diff >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-2">
-          Fark: ${h2h.diff > 0 ? '+' : ''}${h2h.diff} P
-        </div>
-      </div>
-
-      <div>
-        <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md mb-2" style="background: ${h2h.t2.gradient}">
-          ${h2h.t2.avatar}
-        </div>
-        <div class="font-black text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
-        <div class="text-xs text-slate-400 truncate">${h2h.t2.manager}</div>
-        <div class="mt-2 text-2xl font-black text-purple-400 font-display tabular-nums">${h2h.t2Wins} <span class="text-xs font-normal text-slate-400">Galibiyet</span></div>
-        <div class="text-xs text-slate-300 font-medium">${h2h.t2Total} Toplam Puan</div>
-      </div>
+    <!-- Clear Explanation Note -->
+    <div class="text-xs text-slate-400 mb-3.5 bg-white/[0.03] p-2.5 rounded-xl border border-white/5 flex items-center gap-2">
+      <i class="fa-solid fa-circle-info text-cyan-400 shrink-0"></i>
+      <span>Bu ekran, iki menajerin haftalık skor karşılaştırmasını gösterir. O hafta kim daha yüksek puan aldıysa o haftayı kazanmış sayılır.</span>
     </div>
 
-    <!-- Comparative Progress Bar ("Tale of the Tape") -->
-    <div class="mb-5 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
-      <div class="flex justify-between text-xs font-bold text-slate-400">
-        <span class="text-emerald-400">${h2h.t1.name} (%${t1TotalPct})</span>
-        <span>Toplam Puan Güç Dengesi</span>
-        <span class="text-purple-400">(%${t2TotalPct}) ${h2h.t2.name}</span>
+    <!-- Match Scoreboard -->
+    <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/5 mb-4">
+      <div class="flex items-center justify-between gap-2">
+        <!-- Team 1 -->
+        <div class="flex items-center gap-3 w-5/12 min-w-0">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10" style="background: ${h2h.t1.gradient}">
+            ${h2h.t1.avatar}
+          </div>
+          <div class="min-w-0">
+            <div class="font-extrabold text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
+            <div class="text-xs text-slate-400 truncate">${h2h.t1.manager}</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold tabular-nums">${h2h.t1Total} Toplam Puan</div>
+          </div>
+        </div>
+
+        <!-- Center Score (Kazanılan Hafta) -->
+        <div class="flex flex-col items-center justify-center px-3 shrink-0">
+          <div class="flex items-baseline gap-2 font-display">
+            <span class="text-3xl sm:text-4xl font-black ${h2h.t1Wins > h2h.t2Wins ? 'text-emerald-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-400')} tabular-nums">${h2h.t1Wins}</span>
+            <span class="text-slate-500 font-bold text-lg">-</span>
+            <span class="text-3xl sm:text-4xl font-black ${h2h.t2Wins > h2h.t1Wins ? 'text-purple-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-400')} tabular-nums">${h2h.t2Wins}</span>
+          </div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">Kazanılan Hafta</span>
+          <span class="text-[11px] text-slate-500 mt-0.5">(${h2h.draws} Beraberlik)</span>
+        </div>
+
+        <!-- Team 2 -->
+        <div class="flex items-center justify-end gap-3 w-5/12 min-w-0 text-right">
+          <div class="min-w-0">
+            <div class="font-extrabold text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
+            <div class="text-xs text-slate-400 truncate">${h2h.t2.manager}</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold tabular-nums">${h2h.t2Total} Toplam Puan</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10" style="background: ${h2h.t2.gradient}">
+            ${h2h.t2.avatar}
+          </div>
+        </div>
       </div>
-      <div class="w-full h-3 rounded-full bg-slate-900 overflow-hidden flex">
-        <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500" style="width: ${t1TotalPct}%"></div>
-        <div class="h-full bg-gradient-to-r from-fuchsia-500 to-purple-500 transition-all duration-500" style="width: ${t2TotalPct}%"></div>
+
+      <!-- Verdict Banner -->
+      <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-center text-center">
+        ${h2h.t1Wins > h2h.t2Wins 
+          ? `<span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs">🏆 <b>${h2h.t1.name}</b>, rakibine karşı <b>${h2h.t1Wins - h2h.t2Wins} hafta</b> daha fazla kazandı!</span>`
+          : (h2h.t2Wins > h2h.t1Wins
+            ? `<span class="px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-400 font-bold text-xs">🏆 <b>${h2h.t2.name}</b>, rakibine karşı <b>${h2h.t2Wins - h2h.t1Wins} hafta</b> daha fazla kazandı!</span>`
+            : `<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-bold text-xs">⚖️ Her iki menajer de eşit sayıda (${h2h.t1Wins} hafta) üstünlük sağladı!</span>`
+          )
+        }
       </div>
     </div>
 
     <!-- Week by Week Matchups -->
-    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-      <i class="fa-solid fa-list-ol text-emerald-400"></i> Hafta Hafta Kapışma Karnesi
+    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2">
+      <i class="fa-solid fa-list-ol text-cyan-400"></i> Hafta Hafta Karşılaşma Skorları
     </h4>
-    <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+    <div class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
       ${h2h.matchups.map(m => {
-        let t1Class = m.winner === 't1' ? 'text-emerald-400 font-extrabold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let t2Class = m.winner === 't2' ? 'text-purple-400 font-extrabold' : (m.winner === 'draw' ? 'text-slate-300' : 'text-slate-500');
-        let badge = m.winner === 't1' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${h2h.t1.name}</span>` :
-                    (m.winner === 't2' ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">${h2h.t2.name}</span>` :
-                    `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Berabere</span>`);
+        const isT1 = m.winner === 't1';
+        const isT2 = m.winner === 't2';
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm hover:bg-white/[0.06] transition">
-            <span class="font-bold text-slate-400 w-16 tabular-nums">GW ${m.gw}</span>
-            <div class="flex items-center gap-4 font-display tabular-nums">
-              <span class="${t1Class}">${m.s1} P</span>
-              <span class="text-slate-400">-</span>
-              <span class="${t2Class}">${m.s2} P</span>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-xs transition">
+            <span class="font-bold text-slate-400 w-14 tabular-nums">GW ${m.gw}</span>
+            <div class="flex items-center gap-3 font-display tabular-nums">
+              <span class="font-extrabold ${isT1 ? 'text-emerald-400 text-sm' : 'text-slate-400'}">${m.s1} P</span>
+              <span class="text-slate-600 text-xs">-</span>
+              <span class="font-extrabold ${isT2 ? 'text-purple-400 text-sm' : 'text-slate-400'}">${m.s2} P</span>
             </div>
-            <div>${badge}</div>
+            <div class="w-32 text-right">
+              ${isT1 ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[11px] font-bold border border-emerald-500/20 truncate inline-block max-w-full">Kazandı: ${h2h.t1.name}</span>` :
+                (isT2 ? `<span class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-bold border border-purple-500/20 truncate inline-block max-w-full">Kazandı: ${h2h.t2.name}</span>` :
+                `<span class="px-2 py-0.5 rounded-md bg-white/5 text-slate-400 text-[11px]">Berabere</span>`
+                )
+              }
+            </div>
           </div>
         `;
       }).join('')}
