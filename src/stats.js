@@ -539,3 +539,163 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
   ];
 }
 
+/**
+ * 🏆 3. League-Wide Badges & Trophy Cabinet Overview
+ */
+export function getLeagueBadgesOverview(leagueData, targetGw = null) {
+  const gws = [...leagueData.gameweeks].sort((a, b) => a.gw - b.gw);
+  if (gws.length === 0) return [];
+
+  const currentGwIdx = targetGw ? gws.findIndex(g => g.gw === targetGw) : gws.length - 1;
+  const validGws = gws.slice(0, currentGwIdx >= 0 ? currentGwIdx + 1 : gws.length);
+
+  const progData = getProgressionData(leagueData);
+
+  // 1. 👑 Merdivenler Kralı (Üst üste 3 hafta 1. sırada kalanlar)
+  const merdivenKraliHolders = [];
+  leagueData.teams.forEach(team => {
+    const tp = progData.teams.find(t => t.team.id === team.id);
+    if (!tp) return;
+    const ranks = tp.ranks.slice(0, validGws.length);
+    let count = 0;
+    let streak = 0;
+    ranks.forEach(r => {
+      if (r === 1) {
+        streak++;
+        if (streak >= 3) count++;
+      } else {
+        streak = 0;
+      }
+    });
+    if (count > 0) {
+      merdivenKraliHolders.push({ team, count, detail: `${count} kez 3+ hafta liderlik` });
+    }
+  });
+
+  // 2. 🚀 Roket Tırmanış (Tek haftada 3+ basamak zıplayanlar)
+  const roketHolders = [];
+  leagueData.teams.forEach(team => {
+    const tp = progData.teams.find(t => t.team.id === team.id);
+    if (!tp) return;
+    const ranks = tp.ranks.slice(0, validGws.length);
+    let count = 0;
+    for (let i = 1; i < ranks.length; i++) {
+      if (ranks[i - 1] - ranks[i] >= 3) {
+        count++;
+      }
+    }
+    if (count > 0) {
+      roketHolders.push({ team, count, detail: `${count} kez 3+ sıra zıpladı` });
+    }
+  });
+
+  // 3. 💯 Yüzler Kulübü (Tek haftada 100+ puan barajını aşanlar)
+  const centuryHolders = [];
+  leagueData.teams.forEach(team => {
+    const tp = progData.teams.find(t => t.team.id === team.id);
+    if (!tp) return;
+    const scores = tp.gwScores.slice(0, validGws.length);
+    const hauls = scores.filter(s => s >= 100);
+    if (hauls.length > 0) {
+      centuryHolders.push({ team, count: hauls.length, detail: `${hauls.length} kez (En çok: ${Math.max(...hauls)} P)` });
+    }
+  });
+
+  // 4. 🎯 İstikrar Abidesi (5 hafta boyunca hiç 40 puan altına düşmeyenler)
+  const istikrarHolders = [];
+  leagueData.teams.forEach(team => {
+    const tp = progData.teams.find(t => t.team.id === team.id);
+    if (!tp) return;
+    const scores = tp.gwScores.slice(0, validGws.length);
+    let currentStreak = 0;
+    let maxStreak = 0;
+    scores.forEach(s => {
+      if (s >= 40) {
+        currentStreak++;
+        if (currentStreak > maxStreak) maxStreak = currentStreak;
+      } else {
+        currentStreak = 0;
+      }
+    });
+    if (maxStreak >= 5) {
+      istikrarHolders.push({ team, count: Math.floor(maxStreak / 5), detail: `${maxStreak} hafta kesintisiz 40+ P` });
+    }
+  });
+
+  // 5. 🥄 Futbol Cahili (Haftanın en düşük puanını alanlar)
+  const cahilHolders = [];
+  const lowestCounts = {};
+  leagueData.teams.forEach(t => lowestCounts[t.id] = 0);
+
+  validGws.forEach(gwItem => {
+    const scoresObj = gwItem.scores;
+    const minVal = Math.min(...Object.values(scoresObj));
+    leagueData.teams.forEach(t => {
+      if (scoresObj[t.id] === minVal) {
+        lowestCounts[t.id]++;
+      }
+    });
+  });
+
+  leagueData.teams.forEach(team => {
+    const c = lowestCounts[team.id];
+    if (c > 0) {
+      cahilHolders.push({ team, count: c, detail: `${c} hafta en düşük skor` });
+    }
+  });
+
+  return [
+    {
+      id: "merdivenler_krali",
+      title: "Merdivenler Kralı",
+      icon: "👑",
+      desc: "Üst üste 3 hafta 1. sırada kalanlar",
+      badgeColor: "from-amber-500/20 to-yellow-500/5 border-amber-500/30 text-amber-300",
+      pillClass: "bg-amber-400/20 text-amber-300 border-amber-400/30",
+      glowClass: "card-glow-gold",
+      holders: merdivenKraliHolders.sort((a, b) => b.count - a.count)
+    },
+    {
+      id: "roket_tirmanis",
+      title: "Roket Tırmanış",
+      icon: "🚀",
+      desc: "Tek haftada 3+ sıra zıplayanlar",
+      badgeColor: "from-cyan-500/20 to-blue-500/5 border-cyan-500/30 text-cyan-300",
+      pillClass: "bg-cyan-400/20 text-cyan-300 border-cyan-400/30",
+      glowClass: "card-glow-cyan",
+      holders: roketHolders.sort((a, b) => b.count - a.count)
+    },
+    {
+      id: "yuzler_kulubu",
+      title: "Yüzler Kulübü",
+      icon: "💯",
+      desc: "Tek haftada 100+ puan barajını aşanlar",
+      badgeColor: "from-emerald-500/20 to-teal-500/5 border-emerald-500/30 text-emerald-300",
+      pillClass: "bg-emerald-400/20 text-emerald-300 border-emerald-400/30",
+      glowClass: "card-glow-emerald",
+      holders: centuryHolders.sort((a, b) => b.count - a.count)
+    },
+    {
+      id: "istikrar_abidesi",
+      title: "İstikrar Abidesi",
+      icon: "🎯",
+      desc: "5 hafta üst üste 40+ puan alanlar",
+      badgeColor: "from-purple-500/20 to-indigo-500/5 border-purple-500/30 text-purple-300",
+      pillClass: "bg-purple-400/20 text-purple-300 border-purple-400/30",
+      glowClass: "card-glow-purple",
+      holders: istikrarHolders.sort((a, b) => b.count - a.count)
+    },
+    {
+      id: "futbol_cahili",
+      title: "Futbol Cahili",
+      icon: "🥄",
+      desc: "Haftanın en düşük skorunu alanlar",
+      badgeColor: "from-rose-500/20 to-red-500/5 border-rose-500/30 text-rose-300",
+      pillClass: "bg-rose-400/20 text-rose-300 border-rose-400/30",
+      glowClass: "",
+      holders: cahilHolders.sort((a, b) => b.count - a.count)
+    }
+  ];
+}
+
+

@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.5.1';
+} from './data.js?v=3.6.0';
 
 import {
   calculateStandings,
@@ -15,8 +15,9 @@ import {
   getLeagueRecords,
   getHeadToHead,
   getManagerLevel,
-  getTeamBadges
-} from './stats.js?v=3.5.1';
+  getTeamBadges,
+  getLeagueBadgesOverview
+} from './stats.js?v=3.6.0';
 
 import {
   renderRankChart,
@@ -25,9 +26,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.5.1';
+} from './charts.js?v=3.6.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.5.1';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.6.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -72,6 +73,7 @@ function initApp() {
 export function renderAll() {
   renderHeaderControls();
   renderHighlightCards();
+  renderLeagueBadgesSection();
   renderStandingsTable();
   renderTeamFilterPills();
   renderActiveChart();
@@ -440,6 +442,80 @@ function renderHighlightCards() {
       </div>
     `;
   }
+}
+
+/**
+ * 3.5. Render League-Wide Badges Showcase (5 Cards with Badge Holders & Counts)
+ */
+function renderLeagueBadgesSection() {
+  const container = document.getElementById('league-badges-grid');
+  if (!container) return;
+
+  const badgesOverview = getLeagueBadgesOverview(leagueData, selectedGameweek);
+  if (!badgesOverview || badgesOverview.length === 0) return;
+
+  container.innerHTML = badgesOverview.map(badge => {
+    let holdersHtml = '';
+    if (badge.holders.length > 0) {
+      holdersHtml = `
+        <div class="space-y-1.5 mt-2.5">
+          ${badge.holders.map(h => `
+            <div 
+              class="flex items-center justify-between p-1.5 px-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 cursor-pointer transition-all duration-200 group/holder"
+              onclick="window.openManagerModal('${h.team.id}')"
+              title="${h.team.name} (${h.team.manager}) - ${h.detail}"
+            >
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-sm shrink-0 group-hover/holder:scale-110 transition-transform">${h.team.avatar}</span>
+                <span class="text-xs font-bold text-slate-200 group-hover/holder:text-white truncate">${h.team.name}</span>
+              </div>
+              <span class="px-1.5 py-0.2 rounded text-[10px] font-black font-display tabular-nums shrink-0 border ${badge.pillClass}">
+                x${h.count}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      holdersHtml = `
+        <div class="py-4 px-2 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-slate-500 text-[11px] mt-2.5">
+          <i class="fa-solid fa-lock text-xs mb-1 block opacity-50"></i>
+          <span>Henüz kazanan yok</span>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="fpl-card p-3.5 fpl-card-interactive flex flex-col justify-between ${badge.glowClass}">
+        <div>
+          <!-- Badge Header -->
+          <div class="flex items-center justify-between gap-1 mb-1">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-lg p-1 rounded-lg bg-white/5 border border-white/10 shrink-0">${badge.icon}</span>
+              <h4 class="font-extrabold text-white text-xs truncate">${badge.title}</h4>
+            </div>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400 shrink-0 tabular-nums">
+              ${badge.holders.length} Takım
+            </span>
+          </div>
+
+          <!-- Description -->
+          <p class="text-[10px] text-slate-400 leading-tight">${badge.desc}</p>
+
+          <!-- List of Holders -->
+          ${holdersHtml}
+        </div>
+
+        <!-- Card Footer -->
+        <div class="pt-2 mt-2.5 border-t border-white/5 flex items-center justify-between text-[9px] text-slate-500 font-medium">
+          <span>Başarım Durumu</span>
+          <span class="font-bold ${badge.holders.length > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+            ${badge.holders.length > 0 ? 'Aktif' : 'Kilitli'}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 /**
