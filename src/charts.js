@@ -38,6 +38,7 @@ function setChartDefaults() {
  * 1. Sıralama Değişimi (Bump Chart / Rank Progression with Focus & Spotlight)
  */
 export function renderRankChart(canvasId, progressionData) {
+  if (typeof Chart === 'undefined') return;
   setChartDefaults();
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
@@ -146,6 +147,7 @@ export function renderRankChart(canvasId, progressionData) {
  * 2. Kümülatif Puan Yarışı (Cumulative Points Progression)
  */
 export function renderPointsChart(canvasId, progressionData) {
+  if (typeof Chart === 'undefined') return;
   setChartDefaults();
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;

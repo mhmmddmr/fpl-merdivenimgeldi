@@ -28,7 +28,7 @@ import { fetchFplLeagueStandings } from './fplApi.js';
 // Application State
 let leagueData = loadLeagueData();
 let selectedGameweek = null;
-let currentActiveChartTab = 'matrix'; // Default to Matrix View
+let currentActiveChartTab = 'rank'; // Default to Sıralama Yarışı (Bump Chart)
 
 // Safe Bootstrap Mechanism
 if (document.readyState === 'loading') {
@@ -455,22 +455,33 @@ function renderActiveChart() {
   if (pointsWrapper) pointsWrapper.classList.add('hidden');
   if (filterPillsContainer) filterPillsContainer.classList.add('hidden');
 
-  if (currentActiveChartTab === 'matrix') {
-    if (matrixContainer) {
-      matrixContainer.classList.remove('hidden');
-      renderLadderMatrix('chart-matrix-wrapper', progData, standings);
-    }
-  } else if (currentActiveChartTab === 'rank') {
+  const infoFooterText = document.getElementById('chart-info-footer-text');
+
+  if (currentActiveChartTab === 'rank') {
     if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
     if (rankWrapper) {
       rankWrapper.classList.remove('hidden');
       renderRankChart('chart-canvas-rank', progData);
+    }
+    if (infoFooterText) {
+      infoFooterText.innerText = 'Takımların haftalık sıralama değişimleri (Bump Chart). Tek bir takımı öne çıkarmak için yukarıdaki filtre butonlarını kullanabilirsiniz.';
     }
   } else if (currentActiveChartTab === 'points') {
     if (filterPillsContainer) filterPillsContainer.classList.remove('hidden');
     if (pointsWrapper) {
       pointsWrapper.classList.remove('hidden');
       renderPointsChart('chart-canvas-points', progData);
+    }
+    if (infoFooterText) {
+      infoFooterText.innerText = 'Takımların haftalık kümülatif toplam puan yarış çizgisi. Zirve farklarını ve puan kopmalarını takip edebilirsiniz.';
+    }
+  } else if (currentActiveChartTab === 'matrix') {
+    if (matrixContainer) {
+      matrixContainer.classList.remove('hidden');
+      renderLadderMatrix('chart-matrix-wrapper', progData, standings);
+    }
+    if (infoFooterText) {
+      infoFooterText.innerText = 'Tabloda her haftanın 1., 2. ve 3. basamakları altın, gümüş ve bronz kutucuklarla gösterilmektedir.';
     }
   }
 }
