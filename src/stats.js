@@ -525,7 +525,7 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
     },
     {
       id: "istikrar_abidesi",
-      name: "İstikrar Abidesi",
+      name: "Gurme",
       icon: "🎯",
       image: "./assets/badges/istikrar_abidesi.svg",
       desc: "5 hafta boyunca hiç 40 puan altına düşmedi",
@@ -606,7 +606,7 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
     }
   });
 
-  // 4. 🎯 İstikrar Abidesi (5 hafta boyunca hiç 40 puan altına düşmeyenler)
+  // 4. 🎯 Gurme (5 hafta boyunca hiç 40 puan altına düşmeyenler)
   const istikrarHolders = [];
   leagueData.teams.forEach(team => {
     const tp = progData.teams.find(t => t.team.id === team.id);
@@ -685,7 +685,7 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
     },
     {
       id: "istikrar_abidesi",
-      title: "İstikrar Abidesi",
+      title: "Gurme",
       icon: "🎯",
       image: "./assets/badges/istikrar_abidesi.svg",
       desc: "5 hafta üst üste 40+ puan alanlar",
