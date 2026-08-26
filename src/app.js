@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=4.7.0';
+} from './data.js?v=4.8.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=4.7.0';
+} from './stats.js?v=4.8.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=4.7.0';
+} from './charts.js?v=4.8.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=4.7.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=4.8.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -323,98 +323,70 @@ function renderHighlightCards() {
     `;
   }
 
-  // 3. Ladder Climber (Merdiveni Tırmanan / Zirve Takipçisi)
-  const climberCard = document.getElementById('card-climber');
-  if (climberCard) {
-    climberCard.className = "fpl-card p-5 fpl-card-interactive card-glow-cyan";
-    const standings = calculateStandings(leagueData, selectedGameweek);
+  // 3. Haftanın Cahili 0.4 (Seçili haftada en düşük puanı alan menajer)
+  const lowestCard = document.getElementById('card-climber');
+  if (lowestCard) {
+    lowestCard.className = "fpl-card p-5 fpl-card-interactive border-rose-500/20 hover:border-rose-500/40";
+    const lowestList = highlights.gwLowest || [];
+    let bodyHtml = '';
 
-    if (highlights.topClimber && highlights.topClimber.climb > 0) {
-      climberCard.innerHTML = `
-        <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
-            <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> Haftanın Çıkışı
-          </span>
-          <div class="flex items-center">
-            <span class="text-xs font-semibold text-cyan-400">+${highlights.topClimber.climb} Sıra</span>
-            ${makeTooltipHtml('Bir önceki haftaya göre lig tablosunda en fazla basamak tırmanan (sıra kazanan) takım.')}
-          </div>
-        </div>
+    if (lowestList.length === 1) {
+      const loser = lowestList[0];
+      bodyHtml = `
         <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${highlights.topClimber.team.gradient}">
-            ${highlights.topClimber.team.avatar}
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-rose-500/40" style="background: ${loser.team.gradient}">
+            ${loser.team.avatar}
           </div>
           <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${highlights.topClimber.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${highlights.topClimber.team.manager}</div>
+            <div class="text-base font-extrabold text-white truncate">${loser.team.name}</div>
+            <div class="text-xs text-slate-400 truncate">${loser.team.manager}</div>
           </div>
-        </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-          <span class="text-xs text-slate-400 font-medium">Sıralama Değişimi</span>
-          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">▲ +${highlights.topClimber.climb}</span>
         </div>
       `;
-    } else if (selectedGameweek === 1) {
-      // GW 1 Opening Haul Leader
-      const gw1Leader = highlights.gwWinners[0] || standings[0];
-      climberCard.innerHTML = `
-        <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
-            <i class="fa-solid fa-flag-checkered text-[10px]"></i> En İyi Açılış
-          </span>
-          <div class="flex items-center">
-            <span class="text-xs font-semibold text-slate-400">1. Hafta</span>
-            ${makeTooltipHtml('Sezonun 1. haftasında en yüksek başlangıç puanı toplayan takım.')}
+    } else if (lowestList.length > 1) {
+      bodyHtml = `
+        <div class="my-3">
+          <div class="flex items-center -space-x-2 mb-1.5 overflow-hidden">
+            ${lowestList.map(l => `
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md ring-2 ring-slate-900 shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
+                ${l.team.avatar}
+              </div>
+            `).join('')}
           </div>
-        </div>
-        <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${gw1Leader.team.gradient}">
-            ${gw1Leader.team.avatar}
+          <div class="text-xs font-bold text-slate-300 truncate">
+            ${lowestList.map(l => l.team.name).join(', ')}
           </div>
-          <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${gw1Leader.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${gw1Leader.team.manager}</div>
-          </div>
-        </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-          <span class="text-xs text-slate-400 font-medium">Açılış Skoru</span>
-          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">${gw1Leader.gwPoints} <span class="text-xs text-slate-400 font-normal">P</span></span>
         </div>
       `;
     } else {
-      // Follower / Challenger (Zirve Takipçisi)
-      const challenger = standings.length > 1 ? standings[1] : standings[0];
-      climberCard.innerHTML = `
-        <div class="flex items-center justify-between">
-          <span class="fpl-tag text-cyan-300 bg-cyan-400/15 border border-cyan-400/30">
-            <i class="fa-solid fa-crosshairs text-[10px]"></i> Zirve Takipçisi
-          </span>
-          <div class="flex items-center">
-            <span class="text-xs font-semibold text-slate-400">2. Basamak</span>
-            ${makeTooltipHtml('Lideri en yakından takip eden 2. sıradaki şampiyonluk adayı.')}
-          </div>
-        </div>
-        <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-cyan-400/30" style="background: ${challenger.team.gradient}">
-            ${challenger.team.avatar}
-          </div>
-          <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${challenger.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${challenger.team.manager}</div>
-          </div>
-        </div>
-        <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-          <span class="text-xs text-slate-400 font-medium">Liderle Fark</span>
-          <span class="text-3xl font-black text-cyan-400 font-display tabular-nums">-${challenger.gapToLeader} <span class="text-xs text-slate-400 font-normal">P</span></span>
-        </div>
+      bodyHtml = `
+        <div class="my-3 text-xs text-slate-400">Veri bulunamadı</div>
       `;
     }
+
+    lowestCard.innerHTML = `
+      <div class="flex items-center justify-between">
+        <span class="fpl-tag text-rose-300 bg-rose-500/15 border border-rose-500/30">
+          <i class="fa-solid fa-spoon text-[10px]"></i> Haftanın Cahili 0.4
+        </span>
+        <div class="flex items-center">
+          <span class="text-xs font-semibold text-rose-400">GW ${selectedGameweek}</span>
+          ${makeTooltipHtml('Seçili haftada 9 menajer arasında en düşük haftalık skoru alan takım.')}
+        </div>
+      </div>
+      ${bodyHtml}
+      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
+        <span class="text-xs text-slate-400 font-medium">Haftalık Skor</span>
+        <span class="text-3xl font-black text-rose-400 font-display tabular-nums">${highlights.minGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+      </div>
+    `;
   }
 
-  // 4. Wooden Spoon / Average Card (Lig İstatistikleri)
+  // 4. Lig İstatistikleri (Ortalamalar ve Farklar)
   const averageCard = document.getElementById('card-average');
   if (averageCard) {
     averageCard.className = "fpl-card p-5 fpl-card-interactive card-glow-emerald";
+    const scoreDiff = (highlights.maxGwScore - highlights.minGwScore) || 0;
     averageCard.innerHTML = `
       <div class="flex items-center justify-between">
         <span class="fpl-tag text-emerald-300 bg-emerald-400/15 border border-emerald-400/30">
@@ -422,7 +394,7 @@ function renderHighlightCards() {
         </span>
         <div class="flex items-center">
           <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
-          ${makeTooltipHtml('Seçili haftanın lig ortalaması, o haftadaki en düşük skor ve genel sezon ortalaması.')}
+          ${makeTooltipHtml('Seçili haftanın lig ortalaması, zirve-dip puan farkı ve genel sezon ortalaması.')}
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2 my-3">
@@ -431,8 +403,8 @@ function renderHighlightCards() {
           <div class="text-xl font-black text-emerald-400 font-display tabular-nums">${highlights.gwAverage} P</div>
         </div>
         <div class="p-2 rounded-xl bg-white/[0.04] border border-white/5">
-          <div class="text-[11px] text-slate-400 font-medium">En Düşük Skor</div>
-          <div class="text-xl font-black text-rose-400 font-display tabular-nums">${highlights.minGwScore} P</div>
+          <div class="text-[11px] text-slate-400 font-medium">Zirve-Dip Farkı</div>
+          <div class="text-xl font-black text-amber-400 font-display tabular-nums">+${scoreDiff} P</div>
         </div>
       </div>
       <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
