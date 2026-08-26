@@ -1,56 +1,91 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <linearGradient id="cfc-crimson" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFA07A"/>
-      <stop offset="40%" stop-color="#FF4757"/>
-      <stop offset="100%" stop-color="#C01025"/>
+    <!-- Soft Elegant Studio Lighting Background -->
+    <radialGradient id="fc-soft-bg" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#4d252b"/>
+      <stop offset="50%" stop-color="#2d1217"/>
+      <stop offset="100%" stop-color="#140608"/>
+    </radialGradient>
+
+    <!-- Super Shiny Polished Bronze / Rose-Gold Gradient -->
+    <linearGradient id="fc-bronze-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE4D6"/>
+      <stop offset="25%" stop-color="#FFA270"/>
+      <stop offset="60%" stop-color="#E25C2B"/>
+      <stop offset="85%" stop-color="#B03810"/>
+      <stop offset="100%" stop-color="#5E1805"/>
     </linearGradient>
-    <linearGradient id="cfc-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFDE59"/>
-      <stop offset="100%" stop-color="#FF914D"/>
+
+    <!-- Rich Polished Carved Wood Gradient -->
+    <linearGradient id="fc-wood-vibrant" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE8C2"/>
+      <stop offset="30%" stop-color="#E09F5A"/>
+      <stop offset="70%" stop-color="#9C5A1E"/>
+      <stop offset="100%" stop-color="#542B05"/>
     </linearGradient>
-    <linearGradient id="cfc-dark" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#280A10"/>
-      <stop offset="50%" stop-color="#140407"/>
-      <stop offset="100%" stop-color="#050102"/>
-    </linearGradient>
-    <filter id="cfc-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#FF4757" flood-opacity="0.65"/>
-      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.8"/>
+
+    <radialGradient id="fc-ruby-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF4757" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#FF4757" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="fc-3d-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FFA270" flood-opacity="0.4"/>
     </filter>
   </defs>
 
-  <g filter="url(#cfc-glow)">
-    <!-- Heavy Gothic Cyber Shield -->
-    <polygon points="100,12 174,44 162,148 100,188 38,148 26,44" fill="url(#cfc-dark)" stroke="url(#cfc-crimson)" stroke-width="2.5"/>
+  <!-- Soft Ambient Backdrop -->
+  <rect width="200" height="200" rx="36" fill="url(#fc-soft-bg)"/>
+  
+  <!-- Ambient Ember Glow -->
+  <circle cx="100" cy="95" r="70" fill="url(#fc-ruby-glow)" opacity="0.35"/>
+
+  <g filter="url(#fc-3d-shadow)">
+    <!-- 3D Gothic Shield Bronze Frame -->
+    <polygon points="100,16 172,48 162,152 100,186 38,152 28,48" fill="url(#fc-bronze-shine)"/>
     
-    <!-- Inner Hazard Zone -->
-    <polygon points="100,22 164,50 154,142 100,178 46,142 36,50" fill="#0A0204" stroke="rgba(255,71,87,0.15)" stroke-width="1.5"/>
+    <!-- Dark Titanium Inner Bevel -->
+    <polygon points="100,22 165,52 156,146 100,180 44,146 35,52" fill="#240D13"/>
+    
+    <!-- Deep Crimson Crystal Field -->
+    <polygon points="100,28 158,56 150,140 100,174 50,140 42,56" fill="#3B1119"/>
 
-    <!-- Hazard Laser Dashed Line -->
-    <path d="M100 34 L148 58 L140 128 L100 158 L60 128 L52 58 Z" fill="none" stroke="url(#cfc-amber)" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6"/>
+    <!-- Specular Shield Reflection -->
+    <polygon points="100,28 158,56 100,95 42,56" fill="#FFFFFF" opacity="0.2"/>
 
-    <!-- Crossed Laser Stylized Wooden Spoons -->
-    <!-- Spoon 1 (/) -->
+    <!-- Inner Hazard Dashed Border -->
+    <path d="M100 38 L146 62 L140 130 L100 160 L60 130 L54 62 Z" fill="none" stroke="url(#fc-bronze-shine)" stroke-width="2" stroke-dasharray="8 6" opacity="0.8"/>
+
+    <!-- 3D Crossed Carved Antique Wooden Spoons -->
+    <!-- Spoon 1 (Diagonal /) -->
     <g transform="rotate(-30 100 100)">
-      <line x1="100" y1="45" x2="100" y2="148" stroke="url(#cfc-amber)" stroke-width="3.5" stroke-linecap="round"/>
-      <ellipse cx="100" cy="45" rx="14" ry="18" fill="#1C060B" stroke="url(#cfc-amber)" stroke-width="2.5"/>
-      <circle cx="100" cy="45" r="4" fill="#FFA502"/>
+      <!-- Spoon Handle -->
+      <rect x="95" y="42" width="10" height="100" rx="5" fill="url(#fc-wood-vibrant)"/>
+      <rect x="96" y="42" width="4" height="100" rx="2" fill="#FFFFFF" opacity="0.5"/>
+      <!-- Spoon Bowl -->
+      <ellipse cx="100" cy="42" rx="17" ry="22" fill="url(#fc-wood-vibrant)" stroke="#3D1D04" stroke-width="1.5"/>
+      <ellipse cx="100" cy="42" rx="11" ry="15" fill="#4A2203"/>
+      <ellipse cx="98" cy="38" rx="7" ry="9" fill="#FFFFFF" opacity="0.3"/>
     </g>
 
-    <!-- Spoon 2 (\) -->
+    <!-- Spoon 2 (Diagonal \) -->
     <g transform="rotate(30 100 100)">
-      <line x1="100" y1="45" x2="100" y2="148" stroke="url(#cfc-amber)" stroke-width="3.5" stroke-linecap="round"/>
-      <ellipse cx="100" cy="45" rx="14" ry="18" fill="#1C060B" stroke="url(#cfc-amber)" stroke-width="2.5"/>
-      <circle cx="100" cy="45" r="4" fill="#FFA502"/>
+      <!-- Spoon Handle -->
+      <rect x="95" y="42" width="10" height="100" rx="5" fill="url(#fc-wood-vibrant)"/>
+      <rect x="96" y="42" width="4" height="100" rx="2" fill="#FFFFFF" opacity="0.5"/>
+      <!-- Spoon Bowl -->
+      <ellipse cx="100" cy="42" rx="17" ry="22" fill="url(#fc-wood-vibrant)" stroke="#3D1D04" stroke-width="1.5"/>
+      <ellipse cx="100" cy="42" rx="11" ry="15" fill="#4A2203"/>
+      <ellipse cx="98" cy="38" rx="7" ry="9" fill="#FFFFFF" opacity="0.3"/>
     </g>
 
-    <!-- Center Warning Beacon Crest -->
-    <circle cx="100" cy="100" r="14" fill="#3D0812" stroke="url(#cfc-crimson)" stroke-width="2.5"/>
-    <polygon points="100,90 108,105 92,105" fill="url(#cfc-crimson)"/>
-    <circle cx="100" cy="101" r="2.5" fill="#FFFFFF"/>
+    <!-- Center Glowing Ruby / Jester Beacon -->
+    <circle cx="100" cy="100" r="16" fill="url(#fc-bronze-shine)" stroke="#FFFFFF" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="11" fill="#FF4757"/>
+    <circle cx="98" cy="98" r="4" fill="#FFFFFF" opacity="0.8"/>
 
-    <!-- Bottom Emblem Skull Accent -->
-    <polygon points="100,160 105,168 95,168" fill="url(#cfc-crimson)"/>
+    <!-- Bottom Bronze Fleur/Skull Accent -->
+    <polygon points="100,162 106,170 94,170" fill="url(#fc-bronze-shine)"/>
   </g>
 </svg>
