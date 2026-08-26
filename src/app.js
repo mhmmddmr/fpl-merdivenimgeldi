@@ -5,19 +5,18 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=4.1.0';
+} from './data.js?v=4.2.0';
 
 import {
   calculateStandings,
   getStatHighlights,
   getProgressionData,
   getLeaderboardDominance,
-  getLeagueRecords,
   getHeadToHead,
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=4.1.0';
+} from './stats.js?v=4.2.0';
 
 import {
   renderRankChart,
@@ -26,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=4.1.0';
+} from './charts.js?v=4.2.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=4.1.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=4.2.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -784,7 +783,6 @@ function setupEventListeners() {
   // Modal Triggers
   document.getElementById('btn-add-gameweek')?.addEventListener('click', openAddGameweekModal);
   document.getElementById('btn-h2h')?.addEventListener('click', openHeadToHeadModal);
-  document.getElementById('btn-records')?.addEventListener('click', openRecordsModal);
   document.getElementById('btn-data-management')?.addEventListener('click', openDataManagementModal);
 
   document.getElementById('logo-box')?.addEventListener('click', triggerCelebration);
@@ -1167,97 +1165,6 @@ window.openManagerModal = function(teamId) {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 };
-
-/**
- * MODAL 4: Lig Rekorları & Hall of Fame Modal
- */
-function openRecordsModal() {
-  const modal = document.getElementById('modal-records');
-  if (!modal) return;
-
-  const records = getLeagueRecords(leagueData);
-  const dominance = getLeaderboardDominance(leagueData);
-  const container = document.getElementById('records-content');
-
-  if (container && records) {
-    const highTeams = records.highestScoreRecord.teams.map(t => t.name).join(', ');
-    const lowTeams = records.lowestScoreRecord.teams.map(t => t.name).join(', ');
-
-    container.innerHTML = `
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <!-- Merdiven Kralı -->
-        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-          <div class="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-            <i class="fa-solid fa-crown text-base"></i> Merdiven Kralı
-          </div>
-          <div class="text-base font-extrabold text-white mt-2">${records.merdivenKrali.team.name}</div>
-          <div class="text-xs text-slate-400">${records.merdivenKrali.team.manager}</div>
-          <div class="mt-2 text-xl font-black text-amber-400 font-display">
-            ${records.merdivenKrali.weeksAtNumberOne} Hafta <span class="text-xs text-slate-400 font-normal">Zirvede Kaldı</span>
-          </div>
-        </div>
-
-        <!-- En Yüksek Tek Hafta Skoru -->
-        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-          <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-            <i class="fa-solid fa-fire text-base"></i> Hafta Rekoru
-          </div>
-          <div class="text-base font-extrabold text-white mt-2 truncate" title="${highTeams}">${highTeams}</div>
-          <div class="text-xs text-slate-400">Gameweek ${records.highestScoreRecord.gw}</div>
-          <div class="mt-2 text-xl font-black text-emerald-400 font-display">
-            ${records.highestScoreRecord.score} Puan <span class="text-xs text-slate-400 font-normal">Tek Haftada</span>
-          </div>
-        </div>
-
-        <!-- En İstikrarlı Menajer -->
-        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
-          <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
-            <i class="fa-solid fa-bullseye text-base"></i> İstikrar Abidesi
-          </div>
-          <div class="text-base font-extrabold text-white mt-2">${records.mostConsistent.team.name}</div>
-          <div class="text-xs text-slate-400">${records.mostConsistent.team.manager}</div>
-          <div class="mt-2 text-xl font-black text-cyan-400 font-display">
-            ${records.mostConsistent.avg} P <span class="text-xs text-slate-400 font-normal">(Sapma: ±${records.mostConsistent.stdDev})</span>
-          </div>
-        </div>
-
-        <!-- En Soğuk Duş -->
-        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20">
-          <div class="flex items-center gap-2 text-rose-400 text-xs font-bold uppercase tracking-wider">
-            <i class="fa-solid fa-snowflake text-base"></i> En Soğuk Duş
-          </div>
-          <div class="text-base font-extrabold text-white mt-2 truncate" title="${lowTeams}">${lowTeams}</div>
-          <div class="text-xs text-slate-400">Gameweek ${records.lowestScoreRecord.gw}</div>
-          <div class="mt-2 text-xl font-black text-rose-400 font-display">
-            ${records.lowestScoreRecord.score} Puan <span class="text-xs text-slate-400 font-normal">En Düşük Skor</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Zirvede Kalma Tablosu -->
-      <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-trophy text-amber-400"></i> Liderlik Koltuğu Süreleri
-      </h4>
-      <div class="space-y-2 max-h-48 overflow-y-auto">
-        ${dominance.map(d => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] text-xs sm:text-sm">
-            <div class="flex items-center gap-2">
-              <span>${d.team.avatar}</span>
-              <span class="font-bold text-white">${d.team.name}</span>
-            </div>
-            <div class="flex items-center gap-3 font-display">
-              <span class="text-amber-400 font-bold">${d.weeksAtNumberOne} Hafta Lider</span>
-              <span class="text-slate-400 text-xs">${d.weeksInTop3} Hafta İlk 3</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
 
 /**
  * MODAL 5: Data Management & FPL API & Yedekleme

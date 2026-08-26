@@ -43,7 +43,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <!-- Premium Design System CSS -->
-  <link rel="stylesheet" href="./styles.css?v=4.1.0" />
+  <link rel="stylesheet" href="./styles.css?v=4.2.0" />
 </head>
 
 <body class="selection:bg-emerald-500 selection:text-slate-950 bg-[#0a0618] text-slate-100 min-h-screen">
@@ -78,10 +78,6 @@
 
         <button id="btn-h2h" class="btn-secondary text-xs sm:text-sm flex items-center gap-1.5">
           <i class="fa-solid fa-people-arrows text-cyan-400"></i> 1v1 Kapışma
-        </button>
-
-        <button id="btn-records" class="btn-secondary text-xs sm:text-sm flex items-center gap-1.5">
-          <i class="fa-solid fa-trophy text-amber-400"></i> Rekorlar
         </button>
 
         <button id="btn-data-management" class="btn-secondary text-xs sm:text-sm" title="Yedekleme & Ayarlar">
@@ -343,21 +339,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: Lig Rekorları & Hall of Fame -->
-  <div id="modal-records" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="fpl-card max-w-2xl w-full p-6 shadow-2xl modal-enter bg-[#120b24]">
-      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-        <h3 class="text-base font-extrabold text-white flex items-center gap-2 font-display">
-          <i class="fa-solid fa-trophy text-amber-400"></i> Lig Rekorları & Şeref Kürsüsü
-        </h3>
-        <button onclick="closeModal('modal-records')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 flex items-center justify-center transition">&times;</button>
-      </div>
 
-      <div id="records-content">
-        <!-- Dynamic Records Content -->
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL 5: Veri Yönetimi & FPL API & Yedekleme -->
   <div id="modal-data" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
@@ -416,6 +398,6 @@
   <div id="toast" class="fixed bottom-6 right-6 z-50 opacity-0 pointer-events-none transition-all duration-300"></div>
 
   <!-- Application Entry Script -->
-  <script type="module" src="./src/app.js?v=4.1.0"></script>
+  <script type="module" src="./src/app.js?v=4.2.0"></script>
 </body>
 </html>
