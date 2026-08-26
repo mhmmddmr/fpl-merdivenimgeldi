@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=3.8.0';
+} from './data.js?v=3.9.0';
 
 import {
   calculateStandings,
@@ -17,7 +17,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=3.8.0';
+} from './stats.js?v=3.9.0';
 
 import {
   renderRankChart,
@@ -26,9 +26,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=3.8.0';
+} from './charts.js?v=3.9.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=3.8.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=3.9.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -488,15 +488,17 @@ function renderLeagueBadgesSection() {
     return `
       <div class="fpl-card p-4 fpl-card-interactive flex flex-col justify-between ${badge.glowClass}">
         <div>
-          <!-- Visual 3D Badge Image -->
+          <!-- Visual Vector Crest / Badge Image -->
           <div class="relative group/badge mb-2.5 text-center">
-            <img 
-              src="${badge.image}" 
-              alt="${badge.title}" 
-              class="w-20 h-20 object-cover rounded-2xl shadow-xl ring-2 ring-white/15 mx-auto transition-transform duration-300 group-hover/badge:scale-105" 
-              loading="lazy"
-            />
-            <span class="absolute -bottom-1.5 right-1/2 translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-slate-900/90 border border-white/20 text-slate-300 backdrop-blur-sm whitespace-nowrap shadow-md">
+            <div class="w-20 h-20 mx-auto flex items-center justify-center transition-transform duration-300 group-hover/badge:scale-110">
+              <img 
+                src="${badge.image}" 
+                alt="${badge.title}" 
+                class="w-full h-full object-contain filter drop-shadow-lg" 
+                loading="lazy"
+              />
+            </div>
+            <span class="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-900/90 border border-white/20 text-slate-300 backdrop-blur-sm shadow-md">
               ${badge.holders.length} Takım Kazandı
             </span>
           </div>
@@ -1118,11 +1120,13 @@ window.openManagerModal = function(teamId) {
                 ? `${b.badgeClass} shadow-md` 
                 : 'bg-white/[0.02] border-white/5 text-slate-500 opacity-60'
             }">
-              <img 
-                src="${b.image}" 
-                alt="${b.name}" 
-                class="w-12 h-12 rounded-xl object-cover ring-2 ${b.unlocked ? 'ring-white/20 shadow-md' : 'ring-white/5 grayscale brightness-50'} shrink-0"
-              />
+              <div class="w-12 h-12 shrink-0 flex items-center justify-center ${b.unlocked ? 'filter drop-shadow' : 'opacity-30 grayscale'}">
+                <img 
+                  src="${b.image}" 
+                  alt="${b.name}" 
+                  class="w-full h-full object-contain"
+                />
+              </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
                   <div class="font-black text-xs ${b.unlocked ? 'text-white' : 'text-slate-400'}">${b.name}</div>

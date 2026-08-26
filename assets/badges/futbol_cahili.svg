@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cfc-crimson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFA07A"/>
+      <stop offset="40%" stop-color="#FF4757"/>
+      <stop offset="100%" stop-color="#C01025"/>
+    </linearGradient>
+    <linearGradient id="cfc-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFDE59"/>
+      <stop offset="100%" stop-color="#FF914D"/>
+    </linearGradient>
+    <linearGradient id="cfc-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#280A10"/>
+      <stop offset="50%" stop-color="#140407"/>
+      <stop offset="100%" stop-color="#050102"/>
+    </linearGradient>
+    <filter id="cfc-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#FF4757" flood-opacity="0.65"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#cfc-glow)">
+    <!-- Heavy Gothic Cyber Shield -->
+    <polygon points="100,12 174,44 162,148 100,188 38,148 26,44" fill="url(#cfc-dark)" stroke="url(#cfc-crimson)" stroke-width="2.5"/>
+    
+    <!-- Inner Hazard Zone -->
+    <polygon points="100,22 164,50 154,142 100,178 46,142 36,50" fill="#0A0204" stroke="rgba(255,71,87,0.15)" stroke-width="1.5"/>
+
+    <!-- Hazard Laser Dashed Line -->
+    <path d="M100 34 L148 58 L140 128 L100 158 L60 128 L52 58 Z" fill="none" stroke="url(#cfc-amber)" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6"/>
+
+    <!-- Crossed Laser Stylized Wooden Spoons -->
+    <!-- Spoon 1 (/) -->
+    <g transform="rotate(-30 100 100)">
+      <line x1="100" y1="45" x2="100" y2="148" stroke="url(#cfc-amber)" stroke-width="3.5" stroke-linecap="round"/>
+      <ellipse cx="100" cy="45" rx="14" ry="18" fill="#1C060B" stroke="url(#cfc-amber)" stroke-width="2.5"/>
+      <circle cx="100" cy="45" r="4" fill="#FFA502"/>
+    </g>
+
+    <!-- Spoon 2 (\) -->
+    <g transform="rotate(30 100 100)">
+      <line x1="100" y1="45" x2="100" y2="148" stroke="url(#cfc-amber)" stroke-width="3.5" stroke-linecap="round"/>
+      <ellipse cx="100" cy="45" rx="14" ry="18" fill="#1C060B" stroke="url(#cfc-amber)" stroke-width="2.5"/>
+      <circle cx="100" cy="45" r="4" fill="#FFA502"/>
+    </g>
+
+    <!-- Center Warning Beacon Crest -->
+    <circle cx="100" cy="100" r="14" fill="#3D0812" stroke="url(#cfc-crimson)" stroke-width="2.5"/>
+    <polygon points="100,90 108,105 92,105" fill="url(#cfc-crimson)"/>
+    <circle cx="100" cy="101" r="2.5" fill="#FFFFFF"/>
+
+    <!-- Bottom Emblem Skull Accent -->
+    <polygon points="100,160 105,168 95,168" fill="url(#cfc-crimson)"/>
+  </g>
+</svg>
