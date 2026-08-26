@@ -536,7 +536,7 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
     },
     {
       id: "futbol_cahili",
-      name: "Futbol Cahili (<0.4)",
+      name: "Futbol Cahili 0.4",
       icon: "🥄",
       image: "./assets/badges/futbol_cahili.svg",
       desc: "Haftanın en düşük puanını aldı / Son sırada",
@@ -628,7 +628,7 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
     }
   });
 
-  // 5. 🥄 Futbol Cahili (<0.4) (Haftanın en düşük puanını alanlar)
+  // 5. 🥄 Futbol Cahili 0.4 (Haftanın en düşük puanını alanlar)
   const cahilHolders = [];
   const lowestCounts = {};
   leagueData.teams.forEach(t => lowestCounts[t.id] = 0);
@@ -697,7 +697,7 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
     },
     {
       id: "futbol_cahili",
-      title: "Futbol Cahili (<0.4)",
+      title: "Futbol Cahili 0.4",
       icon: "🥄",
       image: "./assets/badges/futbol_cahili.svg",
       desc: "Haftanın en düşük skorunu alanlar",
