@@ -464,19 +464,21 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
   });
   const hasMerdivenlerKrali = maxConsecutiveRank1 >= 3;
 
-  // 2. 🚀 Roket Tırmanış: Tek haftada 3+ basamak tırmanan
-  let hasRocketClimb = false;
-  for (let i = 1; i < ranks.length; i++) {
-    if (ranks[i - 1] - ranks[i] >= 3) {
-      hasRocketClimb = true;
-      break;
+  // 2. 🏹 Hat-Trick: Sezonda 3+ kez haftanın en yüksek puanını alan
+  let gwWinCount = 0;
+  for (let i = 0; i < validLength; i++) {
+    const gwScoresObj = gws[i]?.scores || {};
+    const maxVal = Math.max(...Object.values(gwScoresObj));
+    if (gwScoresObj[teamId] === maxVal) {
+      gwWinCount++;
     }
   }
+  const hasHatTrick = gwWinCount >= 3;
 
   // 3. 💯 Yüzler Kulübü: Tek haftada 100+ puan barajını aşan
   const hasCenturyClub = scores.some(s => s >= 100);
 
-  // 4. 🎯 İstikrar Abidesi: 5 hafta boyunca hiç 40 puanın altına düşmeyen
+  // 4. 🎯 Gurme: 5 hafta boyunca hiç 40 puanın altına düşmeyen
   let hasConsistency = false;
   let consistencyStreak = 0;
   scores.forEach(s => {
@@ -506,12 +508,12 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
       badgeClass: "bg-amber-500/15 border-amber-500/30 text-amber-300"
     },
     {
-      id: "roket_tirmanis",
-      name: "Roket Tırmanış",
-      icon: "🚀",
-      image: "./assets/badges/roket_tirmanis.svg",
-      desc: "Tek haftada 3+ basamak birden zıpladı",
-      unlocked: hasRocketClimb,
+      id: "hat_trick",
+      name: "Hat-Trick",
+      icon: "🏹",
+      image: "./assets/badges/hat_trick.svg",
+      desc: "Sezonda 3+ kez haftanın en yüksek puanını aldı",
+      unlocked: hasHatTrick,
       badgeClass: "bg-cyan-500/15 border-cyan-500/30 text-cyan-300"
     },
     {
@@ -577,20 +579,19 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
     }
   });
 
-  // 2. 🚀 Roket Tırmanış (Tek haftada 3+ basamak zıplayanlar)
-  const roketHolders = [];
+  // 2. 🏹 Hat-Trick (Sezonda 3+ kez haftanın en yüksek puanını alanlar)
+  const hatTrickHolders = [];
   leagueData.teams.forEach(team => {
-    const tp = progData.teams.find(t => t.team.id === team.id);
-    if (!tp) return;
-    const ranks = tp.ranks.slice(0, validGws.length);
-    let count = 0;
-    for (let i = 1; i < ranks.length; i++) {
-      if (ranks[i - 1] - ranks[i] >= 3) {
-        count++;
+    let winCount = 0;
+    validGws.forEach(gwItem => {
+      const scoresObj = gwItem.scores;
+      const maxVal = Math.max(...Object.values(scoresObj));
+      if (scoresObj[team.id] === maxVal) {
+        winCount++;
       }
-    }
-    if (count > 0) {
-      roketHolders.push({ team, count, detail: `${count} kez 3+ sıra zıpladı` });
+    });
+    if (winCount >= 3) {
+      hatTrickHolders.push({ team, count: winCount, detail: `${winCount} hafta galibiyeti` });
     }
   });
 
@@ -662,15 +663,15 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
       holders: merdivenKraliHolders.sort((a, b) => b.count - a.count)
     },
     {
-      id: "roket_tirmanis",
-      title: "Roket Tırmanış",
-      icon: "🚀",
-      image: "./assets/badges/roket_tirmanis.svg",
-      desc: "Tek haftada 3+ sıra zıplayanlar",
+      id: "hat_trick",
+      title: "Hat-Trick",
+      icon: "🏹",
+      image: "./assets/badges/hat_trick.svg",
+      desc: "Sezonda 3+ kez haftanın en yüksek puanını alanlar",
       badgeColor: "from-cyan-500/20 to-blue-500/5 border-cyan-500/30 text-cyan-300",
       pillClass: "bg-cyan-400/20 text-cyan-300 border-cyan-400/30",
       glowClass: "card-glow-cyan",
-      holders: roketHolders.sort((a, b) => b.count - a.count)
+      holders: hatTrickHolders.sort((a, b) => b.count - a.count)
     },
     {
       id: "yuzler_kulubu",
