@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=4.8.0';
+} from './data.js?v=4.9.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=4.8.0';
+} from './stats.js?v=4.9.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=4.8.0';
+} from './charts.js?v=4.9.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=4.8.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=4.9.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -367,7 +367,7 @@ function renderHighlightCards() {
     lowestCard.innerHTML = `
       <div class="flex items-center justify-between">
         <span class="fpl-tag text-rose-300 bg-rose-500/15 border border-rose-500/30">
-          <i class="fa-solid fa-spoon text-[10px]"></i> Haftanın Cahili 0.4
+          <i class="fa-solid fa-spoon text-[10px]"></i> Haftanın Cahili
         </span>
         <div class="flex items-center">
           <span class="text-xs font-semibold text-rose-400">GW ${selectedGameweek}</span>
