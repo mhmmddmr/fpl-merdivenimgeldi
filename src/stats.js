@@ -512,7 +512,7 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
       name: "Hat-Trick",
       icon: "🏹",
       image: "./assets/badges/hat_trick.svg",
-      desc: "Sezonda 3+ kez haftanın en yüksek puanını aldı",
+      desc: "3+ hafta ligin en yüksek puanını aldı",
       unlocked: hasHatTrick,
       badgeClass: "bg-cyan-500/15 border-cyan-500/30 text-cyan-300"
     },
@@ -530,7 +530,7 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
       name: "Gurme",
       icon: "🎯",
       image: "./assets/badges/istikrar_abidesi.svg",
-      desc: "5 hafta boyunca hiç 40 puan altına düşmedi",
+      desc: "5 hafta üst üste 40+ puan topladı",
       unlocked: hasConsistency,
       badgeClass: "bg-purple-500/15 border-purple-500/30 text-purple-300"
     },
@@ -539,7 +539,7 @@ export function getTeamBadges(leagueData, teamId, targetGw = null) {
       name: "Futbol Cahili",
       icon: "🥄",
       image: "./assets/badges/futbol_cahili.svg",
-      desc: "Haftanın en düşük puanını aldı / Son sırada",
+      desc: "Haftanın en düşük skorunu aldı",
       unlocked: hasFutbolCahili,
       badgeClass: "bg-rose-500/15 border-rose-500/30 text-rose-300"
     }
@@ -667,7 +667,7 @@ export function getLeagueBadgesOverview(leagueData, targetGw = null) {
       title: "Hat-Trick",
       icon: "🏹",
       image: "./assets/badges/hat_trick.svg",
-      desc: "Sezonda 3+ kez haftanın en yüksek puanını alanlar",
+      desc: "3+ hafta ligin en yüksek puanını alanlar",
       badgeColor: "from-cyan-500/20 to-blue-500/5 border-cyan-500/30 text-cyan-300",
       pillClass: "bg-cyan-400/20 text-cyan-300 border-cyan-400/30",
       glowClass: "card-glow-cyan",

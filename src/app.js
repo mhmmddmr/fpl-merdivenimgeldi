@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.2.0';
+} from './data.js?v=5.3.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.2.0';
+} from './stats.js?v=5.3.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.2.0';
+} from './charts.js?v=5.3.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.2.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.3.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -218,8 +218,8 @@ function renderHighlightCards() {
     let bodyHtml = '';
     if (isMultiple) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-2.5 relative z-10">
-          <div class="flex -space-x-3 overflow-hidden py-1">
+        <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
+          <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${highlights.leaders.map(l => `
               <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
                 ${l.team.avatar}
@@ -227,7 +227,7 @@ function renderHighlightCards() {
             `).join('')}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-amber-300 transition-colors">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-amber-300 transition-colors font-display">
               ${highlights.leaders.map(l => l.team.name).join(' & ')}
             </h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${highlights.leaders.length} Takım Zirveyi Paylaşıyor</p>
@@ -236,12 +236,12 @@ function renderHighlightCards() {
       `;
     } else if (primaryLeader) {
       bodyHtml = `
-        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+        <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
           <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-amber-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${primaryLeader.team.gradient}">
             ${primaryLeader.team.avatar}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-amber-300 transition-colors">${primaryLeader.team.name}</h3>
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-amber-300 transition-colors font-display">${primaryLeader.team.name}</h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${primaryLeader.team.manager}</p>
           </div>
         </div>
@@ -256,12 +256,12 @@ function renderHighlightCards() {
       <div class="fpl-hero-glow bg-amber-500/15"></div>
       
       <!-- Card Header -->
-      <div class="flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300 font-display">Güncel Lider</span>
+      <div class="h-6 flex items-center justify-between relative z-10 min-w-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="w-2 h-2 rounded-full shrink-0 bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300 font-display truncate">Güncel Lider</span>
         </div>
-        <span class="px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[10px] font-bold font-display" title="Seçili hafta itibarıyla toplam puan tablosunda 1. sırada yer alan takım">
+        <span class="px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Seçili hafta itibarıyla toplam puan tablosunda 1. sırada yer alan takım">
           ${isMultiple ? `${highlights.leaders.length} Takım` : '1. Basamak'}
         </span>
       </div>
@@ -270,9 +270,9 @@ function renderHighlightCards() {
       ${bodyHtml}
 
       <!-- Metric Footer -->
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Toplam Liderlik Puanı</span>
-        <div class="flex items-baseline gap-1 font-display">
+      <div class="h-9 pt-2.5 border-t border-white/5 flex items-center justify-between relative z-10 min-w-0">
+        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Toplam Liderlik Puanı</span>
+        <div class="flex items-baseline gap-1 font-display shrink-0">
           <span class="text-2xl sm:text-3xl font-black text-amber-400 tabular-nums">${topScore}</span>
           <span class="text-xs font-bold text-amber-400/70">P</span>
         </div>
@@ -290,8 +290,8 @@ function renderHighlightCards() {
     let bodyHtml = '';
     if (isMultiple) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-2.5 relative z-10">
-          <div class="flex -space-x-3 overflow-hidden py-1">
+        <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
+          <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${highlights.gwWinners.map(w => `
               <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${w.team.gradient}" title="${w.team.name}">
                 ${w.team.avatar}
@@ -299,7 +299,7 @@ function renderHighlightCards() {
             `).join('')}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-purple-300 transition-colors">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-purple-300 transition-colors font-display">
               ${highlights.gwWinners.map(w => w.team.name).join(' & ')}
             </h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${highlights.gwWinners.length} Takım Haftayı Paylaştı</p>
@@ -308,12 +308,12 @@ function renderHighlightCards() {
       `;
     } else if (winner) {
       bodyHtml = `
-        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+        <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
           <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-purple-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${winner.team.gradient}">
             ${winner.team.avatar}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-purple-300 transition-colors">${winner.team.name}</h3>
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-purple-300 transition-colors font-display">${winner.team.name}</h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${winner.team.manager}</p>
           </div>
         </div>
@@ -328,12 +328,12 @@ function renderHighlightCards() {
       <div class="fpl-hero-glow bg-purple-500/15"></div>
       
       <!-- Card Header -->
-      <div class="flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 font-display">Haftanın Fatihi</span>
+      <div class="h-6 flex items-center justify-between relative z-10 min-w-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="w-2 h-2 rounded-full shrink-0 bg-purple-400 shadow-[0_0_8px_#c084fc]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 font-display truncate">Haftanın Fatihi</span>
         </div>
-        <span class="px-2 py-0.5 rounded-md bg-purple-400/10 border border-purple-400/20 text-purple-300 text-[10px] font-bold font-display" title="Seçili haftada en yüksek puanı alan takım">
+        <span class="px-2 py-0.5 rounded-md bg-purple-400/10 border border-purple-400/20 text-purple-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Seçili haftada en yüksek puanı alan takım">
           GW ${selectedGameweek}
         </span>
       </div>
@@ -342,9 +342,9 @@ function renderHighlightCards() {
       ${bodyHtml}
 
       <!-- Metric Footer -->
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftanın En Yüksek Puanı</span>
-        <div class="flex items-baseline gap-1 font-display">
+      <div class="h-9 pt-2.5 border-t border-white/5 flex items-center justify-between relative z-10 min-w-0">
+        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Haftanın En Yüksek Puanı</span>
+        <div class="flex items-baseline gap-1 font-display shrink-0">
           <span class="text-2xl sm:text-3xl font-black text-purple-400 tabular-nums">${highlights.maxGwScore}</span>
           <span class="text-xs font-bold text-purple-400/70">P</span>
         </div>
@@ -362,8 +362,8 @@ function renderHighlightCards() {
     let bodyHtml = '';
     if (lowestList.length > 1) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-2.5 relative z-10">
-          <div class="flex -space-x-3 overflow-hidden py-1">
+        <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
+          <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${lowestList.map(l => `
               <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
                 ${l.team.avatar}
@@ -371,7 +371,7 @@ function renderHighlightCards() {
             `).join('')}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-rose-300 transition-colors">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-rose-300 transition-colors font-display">
               ${lowestList.map(l => l.team.name).join(' & ')}
             </h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${lowestList.length} Takım Dipte Eşit</p>
@@ -380,19 +380,19 @@ function renderHighlightCards() {
       `;
     } else if (loser) {
       bodyHtml = `
-        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+        <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
           <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-rose-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${loser.team.gradient}">
             ${loser.team.avatar}
           </div>
           <div class="min-w-0 flex-1">
-            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-rose-300 transition-colors">${loser.team.name}</h3>
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-rose-300 transition-colors font-display">${loser.team.name}</h3>
             <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${loser.team.manager}</p>
           </div>
         </div>
       `;
     } else {
       bodyHtml = `
-        <div class="my-2.5 text-xs text-slate-400">Veri bulunamadı</div>
+        <div class="h-14 flex items-center my-2.5 text-xs text-slate-400">Veri bulunamadı</div>
       `;
     }
 
@@ -404,12 +404,12 @@ function renderHighlightCards() {
       <div class="fpl-hero-glow bg-rose-500/15"></div>
       
       <!-- Card Header -->
-      <div class="flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_#fb7185]"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-rose-300 font-display">Haftanın Cahili</span>
+      <div class="h-6 flex items-center justify-between relative z-10 min-w-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="w-2 h-2 rounded-full shrink-0 bg-rose-400 shadow-[0_0_8px_#fb7185]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-rose-300 font-display truncate">Haftanın Cahili</span>
         </div>
-        <span class="px-2 py-0.5 rounded-md bg-rose-400/10 border border-rose-400/20 text-rose-300 text-[10px] font-bold font-display" title="Seçili haftada en düşük puanı alan takım">
+        <span class="px-2 py-0.5 rounded-md bg-rose-400/10 border border-rose-400/20 text-rose-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Seçili haftada en düşük puanı alan takım">
           GW ${selectedGameweek}
         </span>
       </div>
@@ -418,9 +418,9 @@ function renderHighlightCards() {
       ${bodyHtml}
 
       <!-- Metric Footer -->
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftanın En Düşük Puanı</span>
-        <div class="flex items-baseline gap-1 font-display">
+      <div class="h-9 pt-2.5 border-t border-white/5 flex items-center justify-between relative z-10 min-w-0">
+        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Haftanın En Düşük Puanı</span>
+        <div class="flex items-baseline gap-1 font-display shrink-0">
           <span class="text-2xl sm:text-3xl font-black text-rose-400 tabular-nums">${highlights.minGwScore}</span>
           <span class="text-xs font-bold text-rose-400/70">P</span>
         </div>
@@ -442,31 +442,31 @@ function renderHighlightCards() {
       <div class="fpl-hero-glow bg-emerald-500/15"></div>
       
       <!-- Card Header -->
-      <div class="flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300 font-display">Lig Ortalaması</span>
+      <div class="h-6 flex items-center justify-between relative z-10 min-w-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="w-2 h-2 rounded-full shrink-0 bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300 font-display truncate">Lig Ortalaması</span>
         </div>
-        <span class="px-2 py-0.5 rounded-md bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[10px] font-bold font-display" title="Lig genel ortalamaları ve farklar">
+        <span class="px-2 py-0.5 rounded-md bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Lig genel ortalamaları ve farklar">
           GW ${selectedGameweek}
         </span>
       </div>
 
       <!-- Hero Subject (Matches other cards 100%!) -->
-      <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+      <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
         <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-emerald-400/30 bg-gradient-to-br from-emerald-500/20 to-teal-700/30 text-emerald-300 transition-transform group-hover:scale-105 duration-200">
           <i class="fa-solid fa-chart-simple text-lg"></i>
         </div>
         <div class="min-w-0 flex-1">
-          <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-emerald-300 transition-colors">9 Takım Dengesi</h3>
+          <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-emerald-300 transition-colors font-display">9 Takım Dengesi</h3>
           <p class="text-xs text-slate-400 font-medium truncate mt-0.5">Zirve-Dip: <span class="text-slate-200 font-bold tabular-nums">+${scoreDiff} P</span> • Genel: <span class="text-slate-200 font-bold tabular-nums">${highlights.overallAverage} P</span></p>
         </div>
       </div>
 
       <!-- Metric Footer -->
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Lig Ortalaması</span>
-        <div class="flex items-baseline gap-1 font-display">
+      <div class="h-9 pt-2.5 border-t border-white/5 flex items-center justify-between relative z-10 min-w-0">
+        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Haftalık Lig Ortalaması</span>
+        <div class="flex items-baseline gap-1 font-display shrink-0">
           <span class="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">${highlights.gwAverage}</span>
           <span class="text-xs font-bold text-emerald-400/70">P</span>
         </div>
@@ -536,7 +536,7 @@ function renderLeagueBadgesSection() {
     let holdersHtml = '';
     if (badge.holders.length > 0) {
       holdersHtml = `
-        <div class="space-y-1.5 mt-3 relative z-10">
+        <div class="space-y-1.5 min-h-[76px] max-h-48 overflow-y-auto pr-0.5 relative z-10">
           ${badge.holders.map(h => `
             <div 
               class="flex items-center justify-between p-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 cursor-pointer transition-all duration-200 group/holder"
@@ -556,7 +556,7 @@ function renderLeagueBadgesSection() {
       `;
     } else {
       holdersHtml = `
-        <div class="py-4 px-2 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-slate-500 text-[11px] mt-3 relative z-10">
+        <div class="h-[76px] flex flex-col items-center justify-center rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-slate-500 text-[11px] relative z-10">
           <i class="fa-solid fa-lock text-xs mb-1 block opacity-50"></i>
           <span class="font-medium">Henüz kazanan yok</span>
         </div>
@@ -568,19 +568,21 @@ function renderLeagueBadgesSection() {
         <div class="fpl-hero-glow ${theme.glowColor}"></div>
         
         <div>
-          <!-- Card Header Tier -->
-          <div class="flex items-center justify-between relative z-10 mb-3">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full ${theme.dotClass}"></span>
-              <span class="text-[11px] font-extrabold uppercase tracking-wider ${theme.titleColor} font-display">${badge.title}</span>
+          <!-- Card Header Tier (Locked height & single line) -->
+          <div class="h-7 flex items-center justify-between gap-1.5 relative z-10 mb-2.5 min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0 flex-1">
+              <span class="w-2 h-2 rounded-full shrink-0 ${theme.dotClass}"></span>
+              <span class="text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-wide ${theme.titleColor} font-display truncate" title="${badge.title}">
+                ${badge.title}
+              </span>
             </div>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-display border ${theme.chipClass}">
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-display border whitespace-nowrap shrink-0 ${theme.chipClass}">
               ${badge.holders.length > 0 ? `${badge.holders.length} Takım` : 'Kilitli'}
             </span>
           </div>
 
-          <!-- Visual Crest Hero -->
-          <div class="relative group/badge my-3 text-center z-10">
+          <!-- Visual Crest Hero (Fixed 80px Canvas) -->
+          <div class="relative group/badge my-2 text-center z-10 h-20 flex items-center justify-center">
             <div class="w-20 h-20 mx-auto flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
               <img 
                 src="${badge.image}" 
@@ -591,9 +593,9 @@ function renderLeagueBadgesSection() {
             </div>
           </div>
 
-          <!-- Description -->
-          <div class="text-center mb-2 relative z-10">
-            <p class="text-[11px] text-slate-400 leading-snug font-medium">${badge.desc}</p>
+          <!-- Description (Fixed 36px Height Box) -->
+          <div class="h-9 flex items-center justify-center text-center mb-2 px-0.5 relative z-10">
+            <p class="text-[11px] text-slate-400 leading-snug font-medium line-clamp-2">${badge.desc}</p>
           </div>
 
           <!-- List of Holders -->
@@ -601,7 +603,7 @@ function renderLeagueBadgesSection() {
         </div>
 
         <!-- Card Footer -->
-        <div class="pt-2.5 mt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-medium relative z-10">
+        <div class="h-8 pt-2.5 mt-2.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-medium relative z-10">
           <span class="uppercase tracking-wider font-bold">Durum</span>
           <span class="font-bold font-display ${badge.holders.length > 0 ? 'text-emerald-400' : 'text-slate-500'}">
             ${badge.holders.length > 0 ? '🏆 Açık' : '🔒 Kilitli'}
@@ -1206,7 +1208,7 @@ window.openManagerModal = function(teamId) {
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           ${badges.map(b => `
-            <div class="p-3 rounded-2xl border transition-all flex items-center gap-3 ${
+            <div class="p-3 rounded-2xl border transition-all flex items-center gap-3 min-h-[72px] ${
               b.unlocked 
                 ? `${b.badgeClass} shadow-md bg-white/[0.04]` 
                 : 'bg-white/[0.02] border-white/5 text-slate-500 opacity-60'
