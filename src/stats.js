@@ -143,7 +143,13 @@ export function getStatHighlights(leagueData, targetGw = null) {
   const minGwScore = Math.min(...standings.map(s => s.gwPoints));
   const gwLowest = standings.filter(s => s.gwPoints === minGwScore);
 
-  // 4. Ladder Climbers (Biggest rank rise)
+  // 4. Ensedeki Takipçi (2. Sıradaki Takım / Zirve Tehdidi)
+  const trailingTeams = standings.filter(s => s.totalPoints < topScore);
+  const chaserScore = trailingTeams.length > 0 ? trailingTeams[0].totalPoints : topScore;
+  const chasers = trailingTeams.length > 0 ? standings.filter(s => s.totalPoints === chaserScore) : [];
+  const chaserGap = topScore - chaserScore;
+
+  // 5. Ladder Climbers (Biggest rank rise)
   let maxClimb = -Infinity;
   let topClimber = null;
   standings.forEach(s => {
@@ -153,7 +159,7 @@ export function getStatHighlights(leagueData, targetGw = null) {
     }
   });
 
-  // 5. Ladder Droppers (Biggest rank drop)
+  // 6. Ladder Droppers (Biggest rank drop)
   let maxDrop = Infinity;
   let topDropper = null;
   standings.forEach(s => {
@@ -163,7 +169,7 @@ export function getStatHighlights(leagueData, targetGw = null) {
     }
   });
 
-  // 6. Averages
+  // 7. Averages
   const totalGwSum = standings.reduce((acc, curr) => acc + curr.gwPoints, 0);
   const gwAverage = (totalGwSum / standings.length).toFixed(1);
 
@@ -177,6 +183,9 @@ export function getStatHighlights(leagueData, targetGw = null) {
     maxGwScore,
     gwLowest,
     minGwScore,
+    chasers,
+    chaserScore,
+    chaserGap,
     topClimber: maxClimb > 0 ? { team: topClimber.team, climb: maxClimb } : null,
     topDropper: maxDrop < 0 ? { team: topDropper.team, drop: Math.abs(maxDrop) } : null,
     gwAverage,

@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.6.0';
+} from './data.js?v=5.7.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.6.0';
+} from './stats.js?v=5.7.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.6.0';
+} from './charts.js?v=5.7.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.6.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.7.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -439,47 +439,78 @@ function renderHighlightCards() {
     `;
   }
 
-  // 4. Lig Ortalaması & Sezon Dengesi
-  const averageCard = document.getElementById('card-average');
-  if (averageCard) {
-    averageCard.className = "fpl-hero-card fpl-hero-emerald group";
-    const scoreDiff = (highlights.maxGwScore - highlights.minGwScore) || 0;
+  // 4. Ensedeki Takipçi (Zirve Tehdidi / 2. Sıradaki Takım)
+  const chaserCard = document.getElementById('card-average');
+  if (chaserCard) {
+    chaserCard.className = "fpl-hero-card fpl-hero-cyan group";
+    const chasersList = highlights.chasers || [];
+    const isMultiple = chasersList.length > 1;
+    const primaryChaser = chasersList[0];
 
-    averageCard.onclick = () => {
-      document.getElementById('standings-tbody')?.scrollIntoView({ behavior: 'smooth' });
+    let bodyHtml = '';
+    if (isMultiple) {
+      bodyHtml = `
+        <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
+          <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
+            ${chasersList.map(c => `
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0 overflow-hidden" style="background: ${c.team.gradient}" title="${c.team.name}">
+                ${renderTeamAvatar(c.team)}
+              </div>
+            `).join('')}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-cyan-300 transition-colors font-display">
+              ${chasersList.map(c => c.team.name).join(' & ')}
+            </h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${chasersList.length} Takım 2. Sırayı Paylaşıyor</p>
+          </div>
+        </div>
+      `;
+    } else if (primaryChaser) {
+      bodyHtml = `
+        <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-cyan-400/30 transition-transform group-hover:scale-105 duration-200 overflow-hidden" style="background: ${primaryChaser.team.gradient}">
+            ${renderTeamAvatar(primaryChaser.team)}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-cyan-300 transition-colors font-display">${primaryChaser.team.name}</h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${primaryChaser.team.manager} • <span class="text-slate-300 font-bold tabular-nums">${primaryChaser.totalPoints} P</span></p>
+          </div>
+        </div>
+      `;
+    } else {
+      bodyHtml = `
+        <div class="h-14 flex items-center my-2.5 text-xs text-slate-400 font-medium">Zirve ortakları mevcut</div>
+      `;
+    }
+
+    chaserCard.onclick = () => {
+      if (primaryChaser?.team?.id) window.openManagerModal(primaryChaser.team.id);
     };
 
-    averageCard.innerHTML = `
-      <div class="fpl-hero-glow bg-emerald-500/15"></div>
+    chaserCard.innerHTML = `
+      <div class="fpl-hero-glow bg-cyan-500/15"></div>
       
       <!-- Card Header -->
       <div class="h-6 flex items-center justify-between relative z-10 min-w-0">
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <span class="w-2 h-2 rounded-full shrink-0 bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300 font-display truncate">Lig Ortalaması</span>
+          <span class="w-2 h-2 rounded-full shrink-0 bg-cyan-400 shadow-[0_0_8px_#00f0ff]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-cyan-300 font-display truncate">Ensedeki Takipçi</span>
         </div>
-        <span class="px-2 py-0.5 rounded-md bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Lig genel ortalamaları ve farklar">
-          GW ${selectedGameweek}
+        <span class="px-2 py-0.5 rounded-md bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 text-[10px] font-bold font-display whitespace-nowrap shrink-0" title="Zirvenin hemen arkasındaki 2. sıradaki takipçi takım">
+          ${isMultiple ? `${chasersList.length} Takım` : '2. Basamak'}
         </span>
       </div>
 
-      <!-- Hero Subject (Matches other cards 100%!) -->
-      <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
-        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-emerald-400/30 bg-gradient-to-br from-emerald-500/20 to-teal-700/30 text-emerald-300 transition-transform group-hover:scale-105 duration-200">
-          <i class="fa-solid fa-chart-simple text-lg"></i>
-        </div>
-        <div class="min-w-0 flex-1">
-          <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-emerald-300 transition-colors font-display">9 Takım Dengesi</h3>
-          <p class="text-xs text-slate-400 font-medium truncate mt-0.5">Zirve-Dip: <span class="text-slate-200 font-bold tabular-nums">+${scoreDiff} P</span> • Genel: <span class="text-slate-200 font-bold tabular-nums">${highlights.overallAverage} P</span></p>
-        </div>
-      </div>
+      <!-- Hero Subject -->
+      ${bodyHtml}
 
       <!-- Metric Footer -->
       <div class="h-9 pt-2.5 border-t border-white/5 flex items-center justify-between relative z-10 min-w-0">
-        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Haftalık Lig Ortalaması</span>
+        <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate mr-1">Lidere Puan Farkı</span>
         <div class="flex items-baseline gap-1 font-display shrink-0">
-          <span class="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">${highlights.gwAverage}</span>
-          <span class="text-xs font-bold text-emerald-400/70">P</span>
+          <span class="text-2xl sm:text-3xl font-black text-cyan-400 tabular-nums">-${highlights.chaserGap}</span>
+          <span class="text-xs font-bold text-cyan-400/70">P</span>
         </div>
       </div>
     `;
