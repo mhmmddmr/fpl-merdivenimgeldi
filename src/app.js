@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=4.9.0';
+} from './data.js?v=5.0.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=4.9.0';
+} from './stats.js?v=5.0.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=4.9.0';
+} from './charts.js?v=5.0.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=4.9.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.0.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -200,21 +200,8 @@ function renderTeamFilterPills() {
   });
 }
 
-function makeTooltipHtml(text) {
-  return `
-    <div class="relative group/tip inline-flex items-center ml-1 cursor-help">
-      <span class="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white flex items-center justify-center text-[10px] transition-colors">
-        <i class="fa-solid fa-circle-info"></i>
-      </span>
-      <div class="absolute right-0 top-6 hidden group-hover/tip:block z-40 w-56 p-2.5 rounded-xl bg-[#1e1438] border border-white/15 shadow-2xl text-[11px] font-normal leading-relaxed text-slate-200 pointer-events-none backdrop-blur-md">
-        ${text}
-      </div>
-    </div>
-  `;
-}
-
 /**
- * 3. Render 4 Top Highlight Cards (with Ambient Glows & Tabular 3XL Scale)
+ * 3. Render 4 Top Highlight Cards (Executive HUD / World-Class Agency Quality)
  */
 function renderHighlightCards() {
   const highlights = getStatHighlights(leagueData, selectedGameweek);
@@ -223,51 +210,72 @@ function renderHighlightCards() {
   // 1. Current Leader(s)
   const leaderCard = document.getElementById('card-leader');
   if (leaderCard) {
-    leaderCard.className = "fpl-card p-5 fpl-card-interactive card-glow-gold";
+    leaderCard.className = "fpl-hero-card fpl-hero-gold group";
     const isMultiple = highlights.leaders.length > 1;
     const topScore = highlights.leaders[0]?.totalPoints || 0;
+    const primaryLeader = highlights.leaders[0];
 
     let bodyHtml = '';
     if (isMultiple) {
       bodyHtml = `
-        <div class="space-y-1.5 my-2.5">
-          ${highlights.leaders.map(l => `
-            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-white/[0.04] text-xs">
-              <span class="font-bold text-white">${l.team.name}</span>
-              <span class="text-slate-400 text-[11px]">${l.team.manager}</span>
-            </div>
-          `).join('')}
+        <div class="flex items-center gap-3 my-2.5 relative z-10">
+          <div class="flex -space-x-3 overflow-hidden py-1">
+            ${highlights.leaders.map(l => `
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
+                ${l.team.avatar}
+              </div>
+            `).join('')}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-amber-300 transition-colors">
+              ${highlights.leaders.map(l => l.team.name).join(' & ')}
+            </h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${highlights.leaders.length} Takım Zirveyi Paylaşıyor</p>
+          </div>
         </div>
       `;
-    } else {
-      const leader = highlights.leaders[0];
+    } else if (primaryLeader) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-amber-400/30" style="background: ${leader.team.gradient}">
-            ${leader.team.avatar}
+        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-amber-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${primaryLeader.team.gradient}">
+            ${primaryLeader.team.avatar}
           </div>
-          <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${leader.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${leader.team.manager}</div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-amber-300 transition-colors">${primaryLeader.team.name}</h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${primaryLeader.team.manager}</p>
           </div>
         </div>
       `;
     }
 
+    leaderCard.onclick = () => {
+      if (primaryLeader?.team?.id) window.openManagerModal(primaryLeader.team.id);
+    };
+
     leaderCard.innerHTML = `
-      <div class="flex items-center justify-between">
-        <span class="fpl-tag text-amber-300 bg-amber-400/15 border border-amber-400/30">
-          <i class="fa-solid fa-crown text-[10px]"></i> Güncel Lider${isMultiple ? 'ler' : ''}
-        </span>
-        <div class="flex items-center">
-          <span class="text-xs font-semibold text-slate-400">${isMultiple ? `${highlights.leaders.length} Takım Zirvede` : '1. Basamak'}</span>
-          ${makeTooltipHtml('Seçili hafta itibarıyla toplam puan tablosunda 1. sırada yer alan şampiyonluk adayı.')}
+      <div class="fpl-hero-glow bg-amber-500/15"></div>
+      
+      <!-- Card Header -->
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300 font-display">Güncel Lider</span>
         </div>
+        <span class="px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[10px] font-bold font-display" title="Seçili hafta itibarıyla toplam puan tablosunda 1. sırada yer alan takım">
+          ${isMultiple ? `${highlights.leaders.length} Takım` : '1. Basamak'}
+        </span>
       </div>
+
+      <!-- Hero Subject -->
       ${bodyHtml}
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400 font-medium">Toplam Puan</span>
-        <span class="text-3xl font-black text-emerald-400 font-display tabular-nums">${topScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+
+      <!-- Metric Footer -->
+      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Toplam Puan</span>
+        <div class="flex items-baseline gap-1 font-display">
+          <span class="text-2xl sm:text-3xl font-black text-amber-400 tabular-nums">${topScore}</span>
+          <span class="text-xs font-bold text-amber-400/70">P</span>
+        </div>
       </div>
     `;
   }
@@ -275,141 +283,193 @@ function renderHighlightCards() {
   // 2. Gameweek Winner (Haftanın Fatihi)
   const gwWinnerCard = document.getElementById('card-gw-winner');
   if (gwWinnerCard) {
-    gwWinnerCard.className = "fpl-card p-5 fpl-card-interactive card-glow-purple";
+    gwWinnerCard.className = "fpl-hero-card fpl-hero-purple group";
     const isMultiple = highlights.gwWinners.length > 1;
-    let bodyHtml = '';
+    const winner = highlights.gwWinners[0];
 
+    let bodyHtml = '';
     if (isMultiple) {
       bodyHtml = `
-        <div class="space-y-1.5 my-2.5">
-          ${highlights.gwWinners.map(w => `
-            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-white/[0.04] text-xs">
-              <span class="font-bold text-white">${w.team.name}</span>
-              <span class="text-slate-400 text-[11px]">${w.team.manager}</span>
-            </div>
-          `).join('')}
+        <div class="flex items-center gap-3 my-2.5 relative z-10">
+          <div class="flex -space-x-3 overflow-hidden py-1">
+            ${highlights.gwWinners.map(w => `
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${w.team.gradient}" title="${w.team.name}">
+                ${w.team.avatar}
+              </div>
+            `).join('')}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-purple-300 transition-colors">
+              ${highlights.gwWinners.map(w => w.team.name).join(' & ')}
+            </h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${highlights.gwWinners.length} Takım Haftayı Paylaştı</p>
+          </div>
         </div>
       `;
-    } else {
-      const winner = highlights.gwWinners[0];
+    } else if (winner) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-purple-400/30" style="background: ${winner.team.gradient}">
+        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-purple-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${winner.team.gradient}">
             ${winner.team.avatar}
           </div>
-          <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${winner.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${winner.team.manager}</div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-purple-300 transition-colors">${winner.team.name}</h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${winner.team.manager}</p>
           </div>
         </div>
       `;
     }
 
+    gwWinnerCard.onclick = () => {
+      if (winner?.team?.id) window.openManagerModal(winner.team.id);
+    };
+
     gwWinnerCard.innerHTML = `
-      <div class="flex items-center justify-between">
-        <span class="fpl-tag text-purple-300 bg-purple-400/15 border border-purple-400/30">
-          <i class="fa-solid fa-bolt text-[10px]"></i> Haftanın Fatihi
-        </span>
-        <div class="flex items-center">
-          <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
-          ${makeTooltipHtml('Seçili haftada 9 menajer arasında en yüksek haftalık skoru toplayan takım.')}
+      <div class="fpl-hero-glow bg-purple-500/15"></div>
+      
+      <!-- Card Header -->
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 font-display">Haftanın Fatihi</span>
         </div>
+        <span class="px-2 py-0.5 rounded-md bg-purple-400/10 border border-purple-400/20 text-purple-300 text-[10px] font-bold font-display" title="Seçili haftada en yüksek puanı alan takım">
+          GW ${selectedGameweek}
+        </span>
       </div>
+
+      <!-- Hero Subject -->
       ${bodyHtml}
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400 font-medium">Haftalık Skor</span>
-        <span class="text-3xl font-black text-purple-400 font-display tabular-nums">${highlights.maxGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+
+      <!-- Metric Footer -->
+      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Skor</span>
+        <div class="flex items-baseline gap-1 font-display">
+          <span class="text-2xl sm:text-3xl font-black text-purple-400 tabular-nums">${highlights.maxGwScore}</span>
+          <span class="text-xs font-bold text-purple-400/70">P</span>
+        </div>
       </div>
     `;
   }
 
-  // 3. Haftanın Cahili 0.4 (Seçili haftada en düşük puanı alan menajer)
+  // 3. Haftanın Cahili (Seçili haftada en düşük puanı alan menajer)
   const lowestCard = document.getElementById('card-climber');
   if (lowestCard) {
-    lowestCard.className = "fpl-card p-5 fpl-card-interactive border-rose-500/20 hover:border-rose-500/40";
+    lowestCard.className = "fpl-hero-card fpl-hero-rose group";
     const lowestList = highlights.gwLowest || [];
-    let bodyHtml = '';
+    const loser = lowestList[0];
 
-    if (lowestList.length === 1) {
-      const loser = lowestList[0];
+    let bodyHtml = '';
+    if (lowestList.length > 1) {
       bodyHtml = `
-        <div class="flex items-center gap-3 my-3">
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-rose-500/40" style="background: ${loser.team.gradient}">
-            ${loser.team.avatar}
-          </div>
-          <div class="min-w-0">
-            <div class="text-base font-extrabold text-white truncate">${loser.team.name}</div>
-            <div class="text-xs text-slate-400 truncate">${loser.team.manager}</div>
-          </div>
-        </div>
-      `;
-    } else if (lowestList.length > 1) {
-      bodyHtml = `
-        <div class="my-3">
-          <div class="flex items-center -space-x-2 mb-1.5 overflow-hidden">
+        <div class="flex items-center gap-3 my-2.5 relative z-10">
+          <div class="flex -space-x-3 overflow-hidden py-1">
             ${lowestList.map(l => `
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md ring-2 ring-slate-900 shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
                 ${l.team.avatar}
               </div>
             `).join('')}
           </div>
-          <div class="text-xs font-bold text-slate-300 truncate">
-            ${lowestList.map(l => l.team.name).join(', ')}
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base font-black text-white tracking-tight truncate leading-snug group-hover:text-rose-300 transition-colors">
+              ${lowestList.map(l => l.team.name).join(' & ')}
+            </h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${lowestList.length} Takım Dipte Eşit</p>
+          </div>
+        </div>
+      `;
+    } else if (loser) {
+      bodyHtml = `
+        <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-rose-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${loser.team.gradient}">
+            ${loser.team.avatar}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-rose-300 transition-colors">${loser.team.name}</h3>
+            <p class="text-xs text-slate-400 font-medium truncate mt-0.5">${loser.team.manager}</p>
           </div>
         </div>
       `;
     } else {
       bodyHtml = `
-        <div class="my-3 text-xs text-slate-400">Veri bulunamadı</div>
+        <div class="my-2.5 text-xs text-slate-400">Veri bulunamadı</div>
       `;
     }
 
+    lowestCard.onclick = () => {
+      if (loser?.team?.id) window.openManagerModal(loser.team.id);
+    };
+
     lowestCard.innerHTML = `
-      <div class="flex items-center justify-between">
-        <span class="fpl-tag text-rose-300 bg-rose-500/15 border border-rose-500/30">
-          <i class="fa-solid fa-spoon text-[10px]"></i> Haftanın Cahili
-        </span>
-        <div class="flex items-center">
-          <span class="text-xs font-semibold text-rose-400">GW ${selectedGameweek}</span>
-          ${makeTooltipHtml('Seçili haftada 9 menajer arasında en düşük haftalık skoru alan takım.')}
+      <div class="fpl-hero-glow bg-rose-500/15"></div>
+      
+      <!-- Card Header -->
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_#fb7185]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-rose-300 font-display">Haftanın Cahili</span>
         </div>
+        <span class="px-2 py-0.5 rounded-md bg-rose-400/10 border border-rose-400/20 text-rose-300 text-[10px] font-bold font-display" title="Seçili haftada en düşük puanı alan takım">
+          GW ${selectedGameweek}
+        </span>
       </div>
+
+      <!-- Hero Subject -->
       ${bodyHtml}
-      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between">
-        <span class="text-xs text-slate-400 font-medium">Haftalık Skor</span>
-        <span class="text-3xl font-black text-rose-400 font-display tabular-nums">${highlights.minGwScore} <span class="text-xs text-slate-400 font-normal">P</span></span>
+
+      <!-- Metric Footer -->
+      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Skor</span>
+        <div class="flex items-baseline gap-1 font-display">
+          <span class="text-2xl sm:text-3xl font-black text-rose-400 tabular-nums">${highlights.minGwScore}</span>
+          <span class="text-xs font-bold text-rose-400/70">P</span>
+        </div>
       </div>
     `;
   }
 
-  // 4. Lig İstatistikleri (Ortalamalar ve Farklar)
+  // 4. Lig Ortalaması & Sezon Dengesi
   const averageCard = document.getElementById('card-average');
   if (averageCard) {
-    averageCard.className = "fpl-card p-5 fpl-card-interactive card-glow-emerald";
+    averageCard.className = "fpl-hero-card fpl-hero-emerald group";
     const scoreDiff = (highlights.maxGwScore - highlights.minGwScore) || 0;
+
+    averageCard.onclick = () => {
+      document.getElementById('standings-tbody')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     averageCard.innerHTML = `
-      <div class="flex items-center justify-between">
-        <span class="fpl-tag text-emerald-300 bg-emerald-400/15 border border-emerald-400/30">
-          <i class="fa-solid fa-chart-simple text-[10px]"></i> Lig İstatistikleri
+      <div class="fpl-hero-glow bg-emerald-500/15"></div>
+      
+      <!-- Card Header -->
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300 font-display">Lig Ortalaması</span>
+        </div>
+        <span class="px-2 py-0.5 rounded-md bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-[10px] font-bold font-display" title="Lig genel ortalamaları ve farklar">
+          GW ${selectedGameweek}
         </span>
-        <div class="flex items-center">
-          <span class="text-xs font-semibold text-slate-400">GW ${selectedGameweek}</span>
-          ${makeTooltipHtml('Seçili haftanın lig ortalaması, zirve-dip puan farkı ve genel sezon ortalaması.')}
+      </div>
+
+      <!-- Hero Subject (Matches other cards 100%!) -->
+      <div class="flex items-center gap-3.5 my-2.5 relative z-10">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-md shrink-0 ring-2 ring-emerald-400/30 bg-gradient-to-br from-emerald-500/20 to-teal-700/30 text-emerald-300 transition-transform group-hover:scale-105 duration-200">
+          <i class="fa-solid fa-chart-simple text-lg"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-emerald-300 transition-colors">9 Takım Dengesi</h3>
+          <p class="text-xs text-slate-400 font-medium truncate mt-0.5">Zirve-Dip: <span class="text-slate-200 font-bold tabular-nums">+${scoreDiff} P</span> • Genel: <span class="text-slate-200 font-bold tabular-nums">${highlights.overallAverage} P</span></p>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-2 my-3">
-        <div class="p-2 rounded-xl bg-white/[0.04] border border-white/5">
-          <div class="text-[11px] text-slate-400 font-medium">Hafta Ortalaması</div>
-          <div class="text-xl font-black text-emerald-400 font-display tabular-nums">${highlights.gwAverage} P</div>
+
+      <!-- Metric Footer -->
+      <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hafta Ortalaması</span>
+        <div class="flex items-baseline gap-1 font-display">
+          <span class="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">${highlights.gwAverage}</span>
+          <span class="text-xs font-bold text-emerald-400/70">P</span>
         </div>
-        <div class="p-2 rounded-xl bg-white/[0.04] border border-white/5">
-          <div class="text-[11px] text-slate-400 font-medium">Zirve-Dip Farkı</div>
-          <div class="text-xl font-black text-amber-400 font-display tabular-nums">+${scoreDiff} P</div>
-        </div>
-      </div>
-      <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-        <span>Genel Lig Ortalaması</span>
-        <span class="font-bold text-white tabular-nums">${highlights.overallAverage} P</span>
       </div>
     `;
   }
