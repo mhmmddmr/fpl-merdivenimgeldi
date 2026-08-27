@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.0.0';
+} from './data.js?v=5.1.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.0.0';
+} from './stats.js?v=5.1.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.0.0';
+} from './charts.js?v=5.1.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.0.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.1.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -271,7 +271,7 @@ function renderHighlightCards() {
 
       <!-- Metric Footer -->
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Toplam Puan</span>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Toplam Liderlik Puanı</span>
         <div class="flex items-baseline gap-1 font-display">
           <span class="text-2xl sm:text-3xl font-black text-amber-400 tabular-nums">${topScore}</span>
           <span class="text-xs font-bold text-amber-400/70">P</span>
@@ -343,7 +343,7 @@ function renderHighlightCards() {
 
       <!-- Metric Footer -->
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Skor</span>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftanın En Yüksek Puanı</span>
         <div class="flex items-baseline gap-1 font-display">
           <span class="text-2xl sm:text-3xl font-black text-purple-400 tabular-nums">${highlights.maxGwScore}</span>
           <span class="text-xs font-bold text-purple-400/70">P</span>
@@ -419,7 +419,7 @@ function renderHighlightCards() {
 
       <!-- Metric Footer -->
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Skor</span>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftanın En Düşük Puanı</span>
         <div class="flex items-baseline gap-1 font-display">
           <span class="text-2xl sm:text-3xl font-black text-rose-400 tabular-nums">${highlights.minGwScore}</span>
           <span class="text-xs font-bold text-rose-400/70">P</span>
@@ -465,7 +465,7 @@ function renderHighlightCards() {
 
       <!-- Metric Footer -->
       <div class="pt-2.5 border-t border-white/5 flex items-baseline justify-between relative z-10">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hafta Ortalaması</span>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Haftalık Lig Ortalaması</span>
         <div class="flex items-baseline gap-1 font-display">
           <span class="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">${highlights.gwAverage}</span>
           <span class="text-xs font-bold text-emerald-400/70">P</span>
