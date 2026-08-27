@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.3.0';
+} from './data.js?v=5.4.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.3.0';
+} from './stats.js?v=5.4.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.3.0';
+} from './charts.js?v=5.4.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.3.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.4.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -659,10 +659,8 @@ function renderStandingsTable() {
 
   tableBody.innerHTML = standings.map((item) => {
     let rankBadgeClass = "rank-badge-default";
-    let crownIcon = '';
     if (item.rank === 1) {
       rankBadgeClass = "rank-badge-1";
-      crownIcon = ' 👑';
     } else if (item.rank === 2) {
       rankBadgeClass = "rank-badge-2";
     } else if (item.rank === 3) {
@@ -692,11 +690,6 @@ function renderStandingsTable() {
       ? `<span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 font-extrabold text-xs border border-emerald-500/25 font-display">Lider</span>` 
       : `<span class="text-slate-400 text-xs font-bold font-display tabular-nums">-${item.gapToLeader} P</span>`;
 
-    const lvl = getManagerLevel(item.totalPoints);
-    const badges = getTeamBadges(leagueData, item.team.id, selectedGameweek);
-    const unlockedBadges = badges.filter(b => b.unlocked);
-    const badgeIcons = unlockedBadges.map(b => `<span title="${b.name}: ${b.desc}" class="cursor-help inline-block hover:scale-125 transition-transform">${b.icon}</span>`).join(' ');
-
     return `
       <tr class="table-row-item border-b border-white/[0.04] cursor-pointer group" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
         <!-- Rank -->
@@ -718,14 +711,10 @@ function renderStandingsTable() {
               ${item.team.avatar}
             </div>
             <div class="min-w-0">
-              <div class="flex items-center gap-1.5 font-black text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate font-display">
-                <span class="truncate">${item.team.name}${crownIcon}</span>
-                <span class="px-2 py-0.5 text-[10px] font-black rounded-lg border ${lvl.badgeColor} shrink-0 font-display">
-                  ${lvl.icon} Lv ${lvl.level}
-                </span>
-                <span class="text-xs shrink-0 flex items-center gap-0.5">${badgeIcons}</span>
+              <div class="font-black text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate font-display">
+                ${item.team.name}
               </div>
-              <div class="text-xs text-slate-400 truncate mt-0.5 font-medium">${item.team.manager} • <span class="text-slate-500 font-semibold">${lvl.title}</span></div>
+              <div class="text-xs text-slate-400 truncate mt-0.5 font-medium">${item.team.manager}</div>
             </div>
           </div>
         </td>
