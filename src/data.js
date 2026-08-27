@@ -10,7 +10,7 @@ export const INITIAL_TEAMS = [
     "accent": "text-[#00FF66]",
     "gradient": "linear-gradient(135deg, #059669, #00FF66)",
     "avatar": "👑",
-    "avatarUrl": null
+    "avatarUrl": "./assets/avatars/fe.jpg"
   },
   {
     "id": "reis",
@@ -20,7 +20,7 @@ export const INITIAL_TEAMS = [
     "accent": "text-[#D500F9]",
     "gradient": "linear-gradient(135deg, #7c3aed, #D500F9)",
     "avatar": "⚽",
-    "avatarUrl": null
+    "avatarUrl": "./assets/avatars/reis.jpg"
   },
   {
     "id": "zirve",
@@ -70,7 +70,7 @@ export const INITIAL_TEAMS = [
     "accent": "text-[#FFE500]",
     "gradient": "linear-gradient(135deg, #ca8a04, #FFE500)",
     "avatar": "⭐",
-    "avatarUrl": null
+    "avatarUrl": "./assets/avatars/aliyntem.jpg"
   },
   {
     "id": "d3mon",
@@ -80,7 +80,7 @@ export const INITIAL_TEAMS = [
     "accent": "text-[#2979FF]",
     "gradient": "linear-gradient(135deg, #1d4ed8, #2979FF)",
     "avatar": "😈",
-    "avatarUrl": null
+    "avatarUrl": "./assets/avatars/d3mon.jpg"
   },
   {
     "id": "recobaba",
@@ -307,8 +307,8 @@ export const INITIAL_GAMEWEEKS = [
   }
 ];
 
-export const DATASET_VERSION = "2026_gw15_season_v6";
-export const STORAGE_KEY = "fpl_ladder_v2026_gw15_season_v6";
+export const DATASET_VERSION = "2026_gw15_season_v7";
+export const STORAGE_KEY = "fpl_ladder_v2026_gw15_season_v7";
 
 export function loadLeagueData() {
   try {
