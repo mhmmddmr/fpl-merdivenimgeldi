@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.1.0';
+} from './data.js?v=5.2.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.1.0';
+} from './stats.js?v=5.2.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.1.0';
+} from './charts.js?v=5.2.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.1.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.2.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -113,16 +113,16 @@ function updateFilterPillsUI(activeId) {
     const isSelected = btnId === activeId;
 
     if (btnId === 'all') {
-      btn.className = `team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition border cursor-pointer ${
+      btn.className = `team-filter-chip px-3 py-1.5 rounded-xl text-xs font-extrabold font-display transition-all border cursor-pointer ${
         isSelected 
-          ? 'bg-white/20 text-white border-white/30 shadow-sm' 
-          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
+          ? 'bg-white/20 text-white border-white/30 shadow-md scale-105' 
+          : 'bg-white/[0.04] text-slate-400 border-white/5 hover:text-white hover:bg-white/[0.08]'
       }`;
     } else {
-      btn.className = `team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition border cursor-pointer ${
+      btn.className = `team-filter-chip px-3 py-1.5 rounded-xl text-xs font-bold font-display flex items-center gap-1.5 transition-all border cursor-pointer ${
         isSelected 
-          ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-500/20' 
-          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
+          ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400 shadow-md shadow-emerald-500/25 scale-105' 
+          : 'bg-white/[0.04] text-slate-300 border-white/5 hover:text-white hover:bg-white/[0.08] hover:border-white/15'
       }`;
     }
   });
@@ -135,10 +135,10 @@ function renderTeamFilterPills() {
   const currentFocus = pinnedTeamId || getFocusedTeam() || 'all';
 
   let pillsHtml = `
-    <button data-filter="all" class="team-filter-chip px-2.5 py-1 rounded-lg text-xs font-bold transition border cursor-pointer ${
+    <button data-filter="all" class="team-filter-chip px-3 py-1.5 rounded-xl text-xs font-extrabold font-display transition-all border cursor-pointer ${
       currentFocus === 'all' 
-        ? 'bg-white/20 text-white border-white/30 shadow-sm' 
-        : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
+        ? 'bg-white/20 text-white border-white/30 shadow-md scale-105' 
+        : 'bg-white/[0.04] text-slate-400 border-white/5 hover:text-white hover:bg-white/[0.08]'
     }">
       Tüm Takımlar
     </button>
@@ -147,13 +147,13 @@ function renderTeamFilterPills() {
   leagueData.teams.forEach(t => {
     const isSelected = currentFocus === t.id;
     pillsHtml += `
-      <button data-filter="${t.id}" class="team-filter-chip px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition border cursor-pointer ${
+      <button data-filter="${t.id}" class="team-filter-chip px-3 py-1.5 rounded-xl text-xs font-bold font-display flex items-center gap-1.5 transition-all border cursor-pointer ${
         isSelected 
-          ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-500/20' 
-          : 'bg-white/[0.04] text-slate-400 border-transparent hover:text-white hover:bg-white/[0.08]'
+          ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400 shadow-md shadow-emerald-500/25 scale-105' 
+          : 'bg-white/[0.04] text-slate-300 border-white/5 hover:text-white hover:bg-white/[0.08] hover:border-white/15'
       }">
-        <span>${t.avatar}</span>
-        <span class="truncate max-w-[85px]">${t.name}</span>
+        <span class="text-sm">${t.avatar}</span>
+        <span class="truncate max-w-[95px]">${t.name}</span>
       </button>
     `;
   });
@@ -485,22 +485,69 @@ function renderLeagueBadgesSection() {
   const badgesOverview = getLeagueBadgesOverview(leagueData, selectedGameweek);
   if (!badgesOverview || badgesOverview.length === 0) return;
 
+  // Theme map for 5 badges
+  const badgeThemeMap = {
+    merdivenler_krali: {
+      heroClass: "fpl-hero-gold",
+      glowColor: "bg-amber-500/15",
+      dotClass: "bg-amber-400 shadow-[0_0_8px_#fbbf24]",
+      titleColor: "text-amber-300",
+      chipClass: "bg-amber-400/10 border-amber-400/20 text-amber-300"
+    },
+    hat_trick: {
+      heroClass: "fpl-hero-cyan",
+      glowColor: "bg-cyan-500/15",
+      dotClass: "bg-cyan-400 shadow-[0_0_8px_#04f5ff]",
+      titleColor: "text-cyan-300",
+      chipClass: "bg-cyan-400/10 border-cyan-400/20 text-cyan-300"
+    },
+    yuzler_kulubu: {
+      heroClass: "fpl-hero-emerald",
+      glowColor: "bg-emerald-500/15",
+      dotClass: "bg-emerald-400 shadow-[0_0_8px_#34d399]",
+      titleColor: "text-emerald-300",
+      chipClass: "bg-emerald-400/10 border-emerald-400/20 text-emerald-300"
+    },
+    istikrar_abidesi: {
+      heroClass: "fpl-hero-purple",
+      glowColor: "bg-purple-500/15",
+      dotClass: "bg-purple-400 shadow-[0_0_8px_#c084fc]",
+      titleColor: "text-purple-300",
+      chipClass: "bg-purple-400/10 border-purple-400/20 text-purple-300"
+    },
+    futbol_cahili: {
+      heroClass: "fpl-hero-rose",
+      glowColor: "bg-rose-500/15",
+      dotClass: "bg-rose-400 shadow-[0_0_8px_#fb7185]",
+      titleColor: "text-rose-300",
+      chipClass: "bg-rose-400/10 border-rose-400/20 text-rose-300"
+    }
+  };
+
   container.innerHTML = badgesOverview.map(badge => {
+    const theme = badgeThemeMap[badge.id] || {
+      heroClass: "fpl-hero-purple",
+      glowColor: "bg-purple-500/15",
+      dotClass: "bg-purple-400 shadow-[0_0_8px_#c084fc]",
+      titleColor: "text-purple-300",
+      chipClass: "bg-purple-400/10 border-purple-400/20 text-purple-300"
+    };
+
     let holdersHtml = '';
     if (badge.holders.length > 0) {
       holdersHtml = `
-        <div class="space-y-1.5 mt-2.5">
+        <div class="space-y-1.5 mt-3 relative z-10">
           ${badge.holders.map(h => `
             <div 
-              class="flex items-center justify-between p-1.5 px-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 cursor-pointer transition-all duration-200 group/holder"
+              class="flex items-center justify-between p-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 cursor-pointer transition-all duration-200 group/holder"
               onclick="window.openManagerModal('${h.team.id}')"
               title="${h.team.name} (${h.team.manager}) - ${h.detail}"
             >
-              <div class="flex items-center gap-1.5 min-w-0">
+              <div class="flex items-center gap-2 min-w-0">
                 <span class="text-sm shrink-0 group-hover/holder:scale-110 transition-transform">${h.team.avatar}</span>
-                <span class="text-xs font-bold text-slate-200 group-hover/holder:text-white truncate">${h.team.name}</span>
+                <span class="text-xs font-bold text-slate-200 group-hover/holder:text-white truncate font-display">${h.team.name}</span>
               </div>
-              <span class="px-1.5 py-0.2 rounded text-[10px] font-black font-display tabular-nums shrink-0 border ${badge.pillClass}">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-black font-display tabular-nums shrink-0 border ${badge.pillClass}">
                 x${h.count}
               </span>
             </div>
@@ -509,19 +556,32 @@ function renderLeagueBadgesSection() {
       `;
     } else {
       holdersHtml = `
-        <div class="py-4 px-2 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-slate-500 text-[11px] mt-2.5">
+        <div class="py-4 px-2 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-slate-500 text-[11px] mt-3 relative z-10">
           <i class="fa-solid fa-lock text-xs mb-1 block opacity-50"></i>
-          <span>Henüz kazanan yok</span>
+          <span class="font-medium">Henüz kazanan yok</span>
         </div>
       `;
     }
 
     return `
-      <div class="fpl-card p-4 fpl-card-interactive flex flex-col justify-between ${badge.glowClass}">
+      <div class="fpl-badge-card ${theme.heroClass} group">
+        <div class="fpl-hero-glow ${theme.glowColor}"></div>
+        
         <div>
-          <!-- Visual Vector Crest / Badge Image -->
-          <div class="relative group/badge mb-2.5 text-center">
-            <div class="w-20 h-20 mx-auto flex items-center justify-center transition-transform duration-300 group-hover/badge:scale-110">
+          <!-- Card Header Tier -->
+          <div class="flex items-center justify-between relative z-10 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full ${theme.dotClass}"></span>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider ${theme.titleColor} font-display">${badge.title}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-display border ${theme.chipClass}">
+              ${badge.holders.length > 0 ? `${badge.holders.length} Takım` : 'Kilitli'}
+            </span>
+          </div>
+
+          <!-- Visual Crest Hero -->
+          <div class="relative group/badge my-3 text-center z-10">
+            <div class="w-20 h-20 mx-auto flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
               <img 
                 src="${badge.image}" 
                 alt="${badge.title}" 
@@ -531,10 +591,9 @@ function renderLeagueBadgesSection() {
             </div>
           </div>
 
-          <!-- Badge Title & Desc -->
-          <div class="text-center mt-2.5 mb-2">
-            <h4 class="font-extrabold text-white text-sm tracking-tight">${badge.title}</h4>
-            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">${badge.desc}</p>
+          <!-- Description -->
+          <div class="text-center mb-2 relative z-10">
+            <p class="text-[11px] text-slate-400 leading-snug font-medium">${badge.desc}</p>
           </div>
 
           <!-- List of Holders -->
@@ -542,9 +601,9 @@ function renderLeagueBadgesSection() {
         </div>
 
         <!-- Card Footer -->
-        <div class="pt-2 mt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-          <span>Rozet Durumu</span>
-          <span class="font-bold ${badge.holders.length > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+        <div class="pt-2.5 mt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-medium relative z-10">
+          <span class="uppercase tracking-wider font-bold">Durum</span>
+          <span class="font-bold font-display ${badge.holders.length > 0 ? 'text-emerald-400' : 'text-slate-500'}">
             ${badge.holders.length > 0 ? '🏆 Açık' : '🔒 Kilitli'}
           </span>
         </div>
@@ -612,24 +671,24 @@ function renderStandingsTable() {
 
     let changeHtml = `<span class="text-slate-500 text-xs font-semibold">▬</span>`;
     if (item.rankChange > 0) {
-      changeHtml = `<span class="text-emerald-400 text-xs font-bold flex items-center justify-center">▲ ${item.rankChange}</span>`;
+      changeHtml = `<span class="text-emerald-400 text-xs font-black flex items-center justify-center font-display">▲ ${item.rankChange}</span>`;
     } else if (item.rankChange < 0) {
-      changeHtml = `<span class="text-rose-400 text-xs font-bold flex items-center justify-center">▼ ${Math.abs(item.rankChange)}</span>`;
+      changeHtml = `<span class="text-rose-400 text-xs font-black flex items-center justify-center font-display">▼ ${Math.abs(item.rankChange)}</span>`;
     }
 
     const formHtml = item.form.map(score => {
       let bg = "bg-white/[0.05] text-slate-300 border border-white/10";
       if (score >= 75) {
-        bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold";
+        bg = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/35 font-black";
       } else if (score < 55) {
-        bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
+        bg = "bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold";
       }
       return `<span class="form-pill ${bg}">${score}</span>`;
     }).join(' ');
 
     const gapText = item.gapToLeader === 0 
-      ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-bold text-xs border border-emerald-500/20">Lider</span>` 
-      : `<span class="text-slate-400 text-xs font-semibold tabular-nums">-${item.gapToLeader} P</span>`;
+      ? `<span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 font-extrabold text-xs border border-emerald-500/25 font-display">Lider</span>` 
+      : `<span class="text-slate-400 text-xs font-bold font-display tabular-nums">-${item.gapToLeader} P</span>`;
 
     const lvl = getManagerLevel(item.totalPoints);
     const badges = getTeamBadges(leagueData, item.team.id, selectedGameweek);
@@ -637,7 +696,7 @@ function renderStandingsTable() {
     const badgeIcons = unlockedBadges.map(b => `<span title="${b.name}: ${b.desc}" class="cursor-help inline-block hover:scale-125 transition-transform">${b.icon}</span>`).join(' ');
 
     return `
-      <tr class="table-row-item border-b border-white/[0.04] cursor-pointer" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
+      <tr class="table-row-item border-b border-white/[0.04] cursor-pointer group" data-team-id="${item.team.id}" onclick="window.openManagerModal('${item.team.id}')">
         <!-- Rank -->
         <td class="py-3.5 px-3 sm:px-4 text-center whitespace-nowrap">
           <span class="rank-badge ${rankBadgeClass}">
@@ -652,35 +711,36 @@ function renderStandingsTable() {
 
         <!-- Team & Manager -->
         <td class="py-3.5 px-3 sm:px-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm shrink-0 text-white ring-1 ring-white/10" style="background: ${item.team.gradient}">
+          <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg font-bold shadow-md shrink-0 text-white ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${item.team.gradient}">
               ${item.team.avatar}
             </div>
             <div class="min-w-0">
-              <div class="flex items-center gap-1.5 font-bold text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate">
+              <div class="flex items-center gap-1.5 font-black text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate font-display">
                 <span class="truncate">${item.team.name}${crownIcon}</span>
-                <span class="px-1.5 py-0.2 text-[10px] font-black rounded-md border ${lvl.badgeColor} shrink-0">
+                <span class="px-2 py-0.5 text-[10px] font-black rounded-lg border ${lvl.badgeColor} shrink-0 font-display">
                   ${lvl.icon} Lv ${lvl.level}
                 </span>
                 <span class="text-xs shrink-0 flex items-center gap-0.5">${badgeIcons}</span>
               </div>
-              <div class="text-xs text-slate-400 truncate">${item.team.manager} • <span class="text-slate-500 font-medium">${lvl.title}</span></div>
+              <div class="text-xs text-slate-400 truncate mt-0.5 font-medium">${item.team.manager} • <span class="text-slate-500 font-semibold">${lvl.title}</span></div>
             </div>
           </div>
         </td>
 
         <!-- GW Score -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="inline-block px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/5 text-slate-200 font-bold text-sm tabular-nums">
-            ${item.gwPoints}
+          <span class="inline-block px-3 py-1 rounded-xl bg-white/[0.04] border border-white/5 text-slate-100 font-black text-xs sm:text-sm font-display tabular-nums">
+            ${item.gwPoints} <span class="text-[10px] text-slate-400 font-bold">P</span>
           </span>
         </td>
 
         <!-- Total Points -->
         <td class="py-3.5 px-3 text-center whitespace-nowrap">
-          <span class="text-base sm:text-lg font-black text-emerald-400 font-display tabular-nums">
-            ${item.totalPoints}
-          </span>
+          <div class="flex items-baseline justify-center gap-1 font-display">
+            <span class="text-base sm:text-xl font-black ${item.rank === 1 ? 'text-amber-400' : 'text-emerald-400'} tabular-nums">${item.totalPoints}</span>
+            <span class="text-[10px] font-bold ${item.rank === 1 ? 'text-amber-400/70' : 'text-emerald-400/70'}">P</span>
+          </div>
         </td>
 
         <!-- Gap to Leader -->
@@ -697,7 +757,7 @@ function renderStandingsTable() {
 
         <!-- Action -->
         <td class="py-3.5 px-3 sm:px-4 text-right whitespace-nowrap">
-          <button class="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-slate-400 hover:text-white transition flex items-center justify-center ml-auto" title="Menajer Detayı">
+          <button class="w-8 h-8 rounded-xl bg-white/[0.04] group-hover:bg-emerald-500/20 group-hover:text-emerald-300 text-slate-400 transition flex items-center justify-center ml-auto border border-transparent group-hover:border-emerald-500/30" title="Menajer Karnesi">
             <i class="fa-solid fa-chevron-right text-xs"></i>
           </button>
         </td>
@@ -847,12 +907,14 @@ function openAddGameweekModal() {
 
   if (formContainer) {
     formContainer.innerHTML = leagueData.teams.map(team => `
-      <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+      <div class="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.06] border border-white/5 transition-all">
         <div class="flex items-center gap-3">
-          <span class="text-xl">${team.avatar}</span>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm shrink-0 ring-1 ring-white/10" style="background: ${team.gradient}">
+            ${team.avatar}
+          </div>
           <div>
-            <div class="font-bold text-sm text-white">${team.name}</div>
-            <div class="text-xs text-slate-400">${team.manager}</div>
+            <div class="font-black text-sm text-white font-display">${team.name}</div>
+            <div class="text-xs text-slate-400 font-medium">${team.manager}</div>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -863,9 +925,9 @@ function openAddGameweekModal() {
             placeholder="0" 
             min="0" 
             max="200"
-            class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border-slate-700 text-white border text-center font-bold focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            class="w-20 px-3 py-1.5 rounded-xl bg-slate-900 border-slate-700/80 text-white border text-center font-black font-display text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none"
           />
-          <span class="text-xs text-slate-500">Puan</span>
+          <span class="text-xs text-emerald-400 font-bold font-display">P</span>
         </div>
       </div>
     `).join('');
@@ -954,9 +1016,9 @@ function updateH2HView() {
 
   if (t1Id === t2Id) {
     container.innerHTML = `
-      <div class="p-8 text-center text-slate-400">
+      <div class="p-8 text-center text-slate-400 bg-white/[0.02] rounded-2xl border border-dashed border-white/10">
         <i class="fa-solid fa-people-arrows text-3xl mb-2 text-slate-500"></i>
-        <p>Lütfen karşılaştırmak için 2 farklı menajer seçin.</p>
+        <p class="font-medium">Lütfen karşılaştırmak için 2 farklı menajer seçin.</p>
       </div>
     `;
     return;
@@ -967,45 +1029,47 @@ function updateH2HView() {
 
   container.innerHTML = `
     <!-- Clear Explanation Note -->
-    <div class="text-xs text-slate-400 mb-3.5 bg-white/[0.03] p-2.5 rounded-xl border border-white/5 flex items-center gap-2">
-      <i class="fa-solid fa-circle-info text-cyan-400 shrink-0"></i>
-      <span>Bu ekran, iki menajerin haftalık skor karşılaştırmasını gösterir. O hafta kim daha yüksek puan aldıysa o haftayı kazanmış sayılır.</span>
+    <div class="text-xs text-slate-400 mb-4 bg-white/[0.03] p-3 rounded-xl border border-white/5 flex items-center gap-2.5 font-medium">
+      <i class="fa-solid fa-circle-info text-cyan-400 shrink-0 text-sm"></i>
+      <span>İki menajerin haftalık skor karşılaştırması. O hafta kim daha yüksek puan aldıysa o haftayı kazanmış sayılır.</span>
     </div>
 
-    <!-- Match Scoreboard -->
-    <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/5 mb-4">
-      <div class="flex items-center justify-between gap-2">
+    <!-- Match Scoreboard (Esports HUD Style) -->
+    <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/10 mb-4 relative overflow-hidden">
+      <div class="absolute top-0 left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent pointer-events-none"></div>
+
+      <div class="flex items-center justify-between gap-3">
         <!-- Team 1 -->
         <div class="flex items-center gap-3 w-5/12 min-w-0">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10" style="background: ${h2h.t1.gradient}">
+          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${h2h.t1.gradient}">
             ${h2h.t1.avatar}
           </div>
           <div class="min-w-0">
-            <div class="font-extrabold text-white text-sm sm:text-base truncate">${h2h.t1.name}</div>
-            <div class="text-xs text-slate-400 truncate">${h2h.t1.manager}</div>
-            <div class="text-xs text-slate-400 mt-1 font-semibold tabular-nums">${h2h.t1Total} Toplam Puan</div>
+            <div class="font-black text-white text-sm sm:text-base truncate font-display">${h2h.t1.name}</div>
+            <div class="text-xs text-slate-400 truncate font-medium">${h2h.t1.manager}</div>
+            <div class="text-[11px] text-cyan-300/90 mt-0.5 font-bold font-display tabular-nums">${h2h.t1Total} Toplam Puan</div>
           </div>
         </div>
 
         <!-- Center Score (Kazanılan Hafta) -->
-        <div class="flex flex-col items-center justify-center px-3 shrink-0">
+        <div class="flex flex-col items-center justify-center px-2 shrink-0">
           <div class="flex items-baseline gap-2 font-display">
-            <span class="text-3xl sm:text-4xl font-black ${h2h.t1Wins > h2h.t2Wins ? 'text-emerald-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-400')} tabular-nums">${h2h.t1Wins}</span>
-            <span class="text-slate-500 font-bold text-lg">-</span>
-            <span class="text-3xl sm:text-4xl font-black ${h2h.t2Wins > h2h.t1Wins ? 'text-purple-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-400')} tabular-nums">${h2h.t2Wins}</span>
+            <span class="text-3xl sm:text-4xl font-black ${h2h.t1Wins > h2h.t2Wins ? 'text-emerald-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-500')} tabular-nums">${h2h.t1Wins}</span>
+            <span class="text-slate-600 font-bold text-lg">-</span>
+            <span class="text-3xl sm:text-4xl font-black ${h2h.t2Wins > h2h.t1Wins ? 'text-purple-400' : (h2h.t1Wins === h2h.t2Wins ? 'text-white' : 'text-slate-500')} tabular-nums">${h2h.t2Wins}</span>
           </div>
-          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">Kazanılan Hafta</span>
-          <span class="text-[11px] text-slate-500 mt-0.5">(${h2h.draws} Beraberlik)</span>
+          <span class="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider font-display mt-0.5">Kazanılan Hafta</span>
+          <span class="text-[10px] text-slate-500 font-bold mt-0.5">(${h2h.draws} Beraberlik)</span>
         </div>
 
         <!-- Team 2 -->
         <div class="flex items-center justify-end gap-3 w-5/12 min-w-0 text-right">
           <div class="min-w-0">
-            <div class="font-extrabold text-white text-sm sm:text-base truncate">${h2h.t2.name}</div>
-            <div class="text-xs text-slate-400 truncate">${h2h.t2.manager}</div>
-            <div class="text-xs text-slate-400 mt-1 font-semibold tabular-nums">${h2h.t2Total} Toplam Puan</div>
+            <div class="font-black text-white text-sm sm:text-base truncate font-display">${h2h.t2.name}</div>
+            <div class="text-xs text-slate-400 truncate font-medium">${h2h.t2.manager}</div>
+            <div class="text-[11px] text-purple-300/90 mt-0.5 font-bold font-display tabular-nums">${h2h.t2Total} Toplam Puan</div>
           </div>
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10" style="background: ${h2h.t2.gradient}">
+          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${h2h.t2.gradient}">
             ${h2h.t2.avatar}
           </div>
         </div>
@@ -1014,36 +1078,36 @@ function updateH2HView() {
       <!-- Verdict Banner -->
       <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-center text-center">
         ${h2h.t1Wins > h2h.t2Wins 
-          ? `<span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs">🏆 <b>${h2h.t1.name}</b>, rakibine karşı <b>${h2h.t1Wins - h2h.t2Wins} hafta</b> daha fazla kazandı!</span>`
+          ? `<span class="px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black text-xs font-display">🏆 <b>${h2h.t1.name}</b>, rakibine karşı <b>${h2h.t1Wins - h2h.t2Wins} hafta</b> daha fazla kazandı!</span>`
           : (h2h.t2Wins > h2h.t1Wins
-            ? `<span class="px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-400 font-bold text-xs">🏆 <b>${h2h.t2.name}</b>, rakibine karşı <b>${h2h.t2Wins - h2h.t1Wins} hafta</b> daha fazla kazandı!</span>`
-            : `<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-bold text-xs">⚖️ Her iki menajer de eşit sayıda (${h2h.t1Wins} hafta) üstünlük sağladı!</span>`
+            ? `<span class="px-3.5 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-400 font-black text-xs font-display">🏆 <b>${h2h.t2.name}</b>, rakibine karşı <b>${h2h.t2Wins - h2h.t1Wins} hafta</b> daha fazla kazandı!</span>`
+            : `<span class="px-3.5 py-1 rounded-full bg-white/5 text-slate-300 font-bold text-xs font-display">⚖️ Her iki menajer de eşit sayıda (${h2h.t1Wins} hafta) üstünlük sağladı!</span>`
           )
         }
       </div>
     </div>
 
     <!-- Week by Week Matchups -->
-    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2">
+    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-2 font-display">
       <i class="fa-solid fa-list-ol text-cyan-400"></i> Hafta Hafta Karşılaşma Skorları
     </h4>
-    <div class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+    <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
       ${h2h.matchups.map(m => {
         const isT1 = m.winner === 't1';
         const isT2 = m.winner === 't2';
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-xs transition">
-            <span class="font-bold text-slate-400 w-14 tabular-nums">GW ${m.gw}</span>
+          <div class="flex items-center justify-between p-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-xs transition">
+            <span class="font-black text-slate-400 w-14 font-display tabular-nums">GW ${m.gw}</span>
             <div class="flex items-center gap-3 font-display tabular-nums">
-              <span class="font-extrabold ${isT1 ? 'text-emerald-400 text-sm' : 'text-slate-400'}">${m.s1} P</span>
+              <span class="font-black ${isT1 ? 'text-emerald-400 text-sm' : 'text-slate-400'}">${m.s1} P</span>
               <span class="text-slate-600 text-xs">-</span>
-              <span class="font-extrabold ${isT2 ? 'text-purple-400 text-sm' : 'text-slate-400'}">${m.s2} P</span>
+              <span class="font-black ${isT2 ? 'text-purple-400 text-sm' : 'text-slate-400'}">${m.s2} P</span>
             </div>
-            <div class="w-32 text-right">
-              ${isT1 ? `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[11px] font-bold border border-emerald-500/20 truncate inline-block max-w-full">Kazandı: ${h2h.t1.name}</span>` :
-                (isT2 ? `<span class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-bold border border-purple-500/20 truncate inline-block max-w-full">Kazandı: ${h2h.t2.name}</span>` :
-                `<span class="px-2 py-0.5 rounded-md bg-white/5 text-slate-400 text-[11px]">Berabere</span>`
+            <div class="w-36 text-right">
+              ${isT1 ? `<span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 text-[11px] font-bold border border-emerald-500/20 truncate inline-block max-w-full font-display">Kazandı: ${h2h.t1.name}</span>` :
+                (isT2 ? `<span class="px-2.5 py-0.5 rounded-lg bg-purple-500/15 text-purple-400 text-[11px] font-bold border border-purple-500/20 truncate inline-block max-w-full font-display">Kazandı: ${h2h.t2.name}</span>` :
+                `<span class="px-2.5 py-0.5 rounded-lg bg-white/5 text-slate-400 text-[11px] font-medium font-display">Berabere</span>`
                 )
               }
             </div>
@@ -1085,69 +1149,69 @@ window.openManagerModal = function(teamId) {
   const container = document.getElementById('manager-modal-content');
   if (container) {
     container.innerHTML = `
-      <!-- Manager Header -->
-      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4">
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 text-white ring-2 ring-white/20" style="background: ${team.gradient}">
+      <!-- Manager Hero Header -->
+      <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] mb-4 relative overflow-hidden">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0 text-white ring-2 ring-white/20" style="background: ${team.gradient}">
           ${team.avatar}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <h3 class="text-lg font-black text-white truncate">${team.name}</h3>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+            <h3 class="text-lg sm:text-xl font-black text-white truncate font-display">${team.name}</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-display">
               #${currentStanding.rank}. Sıra
             </span>
           </div>
-          <p class="text-xs text-slate-400 truncate">${team.manager}</p>
-          <div class="mt-2 flex flex-wrap gap-2 text-xs">
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Toplam: <b class="text-white tabular-nums">${currentStanding.totalPoints} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Ortalama: <b class="text-white tabular-nums">${avgScore} P</b></span>
-            <span class="px-2.5 py-1 rounded-lg bg-white/[0.05] text-slate-300">Galibiyet: <b class="text-white tabular-nums">${currentStanding.winsCount}</b></span>
+          <p class="text-xs text-slate-400 truncate font-medium">${team.manager}</p>
+          <div class="mt-2.5 flex flex-wrap gap-2 text-xs">
+            <span class="px-2.5 py-1 rounded-xl bg-white/[0.05] border border-white/5 text-slate-300 font-medium">Toplam: <b class="text-white font-display tabular-nums font-black">${currentStanding.totalPoints} P</b></span>
+            <span class="px-2.5 py-1 rounded-xl bg-white/[0.05] border border-white/5 text-slate-300 font-medium">Ortalama: <b class="text-white font-display tabular-nums font-black">${avgScore} P</b></span>
+            <span class="px-2.5 py-1 rounded-xl bg-white/[0.05] border border-white/5 text-slate-300 font-medium">Galibiyet: <b class="text-white font-display tabular-nums font-black">${currentStanding.winsCount}</b></span>
           </div>
         </div>
       </div>
 
       <!-- RPG Level & Title Banner -->
-      <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 mb-4 space-y-2.5">
+      <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 mb-4 space-y-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <span class="text-3xl p-1.5 rounded-xl bg-white/5 border border-white/10">${lvl.icon}</span>
+          <div class="flex items-center gap-3">
+            <span class="text-3xl p-2 rounded-2xl bg-white/5 border border-white/10">${lvl.icon}</span>
             <div>
-              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Menajer Rütbesi (RPG Seviye ${lvl.level})</div>
-              <div class="text-base font-black text-white">${lvl.title}</div>
+              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-display">Menajer Rütbesi (Seviye ${lvl.level})</div>
+              <div class="text-base font-black text-white font-display">${lvl.title}</div>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-xl text-xs font-black border ${lvl.badgeColor}">
+          <span class="px-3 py-1 rounded-xl text-xs font-black border font-display ${lvl.badgeColor}">
             Seviye ${lvl.level} / 5
           </span>
         </div>
         <!-- XP Progress Bar -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-[11px] font-bold text-slate-400">
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-[11px] font-bold text-slate-400 font-display">
             <span>${currentStanding.totalPoints} Puan</span>
             <span>${lvl.level === 5 ? 'MAX RÜTBE' : `${lvl.max} Puan (Sonraki Seviye)`}</span>
           </div>
-          <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden border border-white/5">
-            <div class="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 transition-all duration-500" style="width: ${lvl.progressPct}%"></div>
+          <div class="w-full h-2.5 rounded-full bg-slate-900/90 overflow-hidden border border-white/5">
+            <div class="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 transition-all duration-500 shadow-[0_0_10px_#00ff87]" style="width: ${lvl.progressPct}%"></div>
           </div>
         </div>
       </div>
 
       <!-- Badges Showcase (5 Rozet Vitrini) -->
       <div class="mb-4">
-        <div class="flex items-center justify-between mb-2.5">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-2 font-display">
             <i class="fa-solid fa-medal text-amber-400"></i> Kazanılan Başarımlar & Rozetler
           </h4>
-          <span class="text-xs font-bold text-amber-400">${unlockedCount} / ${badges.length} Açıldı</span>
+          <span class="text-xs font-black text-amber-400 font-display">${unlockedCount} / ${badges.length} Açıldı</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           ${badges.map(b => `
-            <div class="p-3 rounded-2xl border transition flex items-center gap-3 ${
+            <div class="p-3 rounded-2xl border transition-all flex items-center gap-3 ${
               b.unlocked 
-                ? `${b.badgeClass} shadow-md` 
+                ? `${b.badgeClass} shadow-md bg-white/[0.04]` 
                 : 'bg-white/[0.02] border-white/5 text-slate-500 opacity-60'
             }">
-              <div class="w-12 h-12 shrink-0 flex items-center justify-center ${b.unlocked ? 'filter drop-shadow' : 'opacity-30 grayscale'}">
+              <div class="w-12 h-12 shrink-0 flex items-center justify-center ${b.unlocked ? 'filter drop-shadow-md' : 'opacity-30 grayscale'}">
                 <img 
                   src="${b.image}" 
                   alt="${b.name}" 
@@ -1156,13 +1220,13 @@ window.openManagerModal = function(teamId) {
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
-                  <div class="font-black text-xs ${b.unlocked ? 'text-white' : 'text-slate-400'}">${b.name}</div>
+                  <div class="font-black text-xs ${b.unlocked ? 'text-white' : 'text-slate-400'} font-display">${b.name}</div>
                   ${b.unlocked 
-                    ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">AÇILDI ✨</span>`
-                    : `<span class="text-[9px] text-slate-500"><i class="fa-solid fa-lock text-[8px]"></i> Kilitli</span>`
+                    ? `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-display border border-emerald-500/30">AÇILDI ✨</span>`
+                    : `<span class="text-[9px] text-slate-500 font-bold font-display"><i class="fa-solid fa-lock text-[8px] mr-0.5"></i> Kilitli</span>`
                   }
                 </div>
-                <div class="text-[11px] ${b.unlocked ? 'text-slate-300' : 'text-slate-500'} mt-0.5 leading-snug">${b.desc}</div>
+                <div class="text-[11px] ${b.unlocked ? 'text-slate-300' : 'text-slate-500'} mt-0.5 leading-snug font-medium">${b.desc}</div>
               </div>
             </div>
           `).join('')}
@@ -1171,20 +1235,20 @@ window.openManagerModal = function(teamId) {
 
       <!-- Quick 4-Grid Metrics -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-          <div class="text-[11px] text-emerald-400 font-semibold">En Yüksek Skor</div>
+        <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+          <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider font-display">En Yüksek Skor</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${maxScore} P</div>
         </div>
-        <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300">
-          <div class="text-[11px] text-rose-400 font-semibold">En Düşük Skor</div>
+        <div class="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300">
+          <div class="text-[10px] text-rose-400 font-bold uppercase tracking-wider font-display">En Düşük Skor</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${minScore} P</div>
         </div>
-        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
-          <div class="text-[11px] text-amber-400 font-semibold">1. Sıra Haftası</div>
+        <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
+          <div class="text-[10px] text-amber-400 font-bold uppercase tracking-wider font-display">1. Sıra Haftası</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${weeksAtFirst} Hafta</div>
         </div>
-        <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">
-          <div class="text-[11px] text-cyan-400 font-semibold">İlk 3 (Podyum)</div>
+        <div class="p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">
+          <div class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider font-display">İlk 3 (Podyum)</div>
           <div class="text-xl font-black mt-1 font-display tabular-nums">${podiumWeeks} Hafta</div>
         </div>
       </div>

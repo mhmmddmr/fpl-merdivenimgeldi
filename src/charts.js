@@ -18,20 +18,20 @@ function setChartDefaults() {
 
   Chart.defaults.color = '#94a3b8';
   Chart.defaults.font.family = "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif";
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(18, 11, 36, 0.95)';
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 10, 36, 0.96)';
   Chart.defaults.plugins.tooltip.titleColor = '#ffffff';
-  Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 13 };
+  Chart.defaults.plugins.tooltip.titleFont = { weight: '800', size: 13, family: "'Outfit', sans-serif" };
   Chart.defaults.plugins.tooltip.bodyColor = '#e2e8f0';
-  Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
-  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.12)';
+  Chart.defaults.plugins.tooltip.bodyFont = { weight: '600', size: 12, family: "'Plus Jakarta Sans', sans-serif" };
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.15)';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 12;
-  Chart.defaults.plugins.tooltip.cornerRadius = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 12;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
   Chart.defaults.plugins.legend.labels.boxWidth = 8;
   Chart.defaults.plugins.legend.labels.padding = 10;
-  Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
+  Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '700', family: "'Outfit', sans-serif" };
 }
 
 /**
@@ -351,12 +351,12 @@ export function renderLadderMatrix(containerId, progressionData, currentStanding
   }
 
   let tableHtml = `
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto rounded-xl border border-white/5">
       <table class="w-full text-left text-xs border-collapse">
         <thead>
-          <tr class="text-[10px] uppercase font-bold text-slate-400 border-b border-white/5">
-            <th class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap"># Takım</th>
-            ${gwList.map(gw => `<th class="py-2.5 px-2 text-center whitespace-nowrap">GW ${gw}</th>`).join('')}
+          <tr class="text-[10px] uppercase font-extrabold text-slate-400 border-b border-white/10 font-display tracking-wider bg-white/[0.02]">
+            <th class="py-3 px-3.5 sticky left-0 bg-[#110a24] z-10 whitespace-nowrap border-r border-white/10">Takım</th>
+            ${gwList.map(gw => `<th class="py-3 px-2.5 text-center whitespace-nowrap">GW ${gw}</th>`).join('')}
           </tr>
         </thead>
         <tbody class="divide-y divide-white/[0.04]">
@@ -366,30 +366,30 @@ export function renderLadderMatrix(containerId, progressionData, currentStanding
     const currentRank = (currentStandings?.find(s => s.team.id === item.team.id)?.rank) ?? (index + 1);
 
     tableHtml += `
-      <tr class="hover:bg-white/[0.03] transition">
-        <td class="py-2.5 px-3 sticky left-0 bg-[#120b24] z-10 whitespace-nowrap font-bold text-white flex items-center gap-2">
-          <span class="text-[11px] font-extrabold w-4 text-slate-500">${currentRank}.</span>
-          <span class="text-sm">${item.team.avatar}</span>
-          <span class="truncate max-w-[110px]">${item.team.name}</span>
+      <tr class="hover:bg-white/[0.04] transition cursor-pointer group" onclick="if(window.openManagerModal) window.openManagerModal('${item.team.id}')">
+        <td class="py-3 px-3.5 sticky left-0 bg-[#110a24] group-hover:bg-[#180f33] z-10 whitespace-nowrap font-black text-white flex items-center gap-2.5 border-r border-white/10 transition-colors">
+          <span class="text-[11px] font-extrabold w-4 text-slate-500 font-display">${currentRank}.</span>
+          <span class="text-base shrink-0 transition-transform group-hover:scale-110">${item.team.avatar}</span>
+          <span class="truncate max-w-[130px] font-display text-sm group-hover:text-emerald-400 transition-colors">${item.team.name}</span>
         </td>
     `;
 
     item.ranks.forEach(rank => {
-      let badgeStyle = "bg-white/[0.05] text-slate-400 border-white/10";
+      let badgeStyle = "bg-white/[0.04] text-slate-400 border-white/10";
 
       if (rank === 1) {
-        badgeStyle = "bg-amber-400/25 text-amber-300 border-amber-400/40 font-black";
+        badgeStyle = "bg-gradient-to-br from-amber-400/30 to-yellow-600/30 text-amber-300 border-amber-400/60 shadow-[0_0_10px_rgba(251,191,36,0.25)] font-black";
       } else if (rank === 2) {
-        badgeStyle = "bg-slate-300/20 text-slate-200 border-slate-300/30 font-bold";
+        badgeStyle = "bg-slate-300/25 text-white border-slate-300/40 font-bold";
       } else if (rank === 3) {
-        badgeStyle = "bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold";
+        badgeStyle = "bg-orange-500/25 text-orange-200 border-orange-500/40 font-bold";
       } else if (rank >= 7) {
-        badgeStyle = "bg-rose-500/15 text-rose-300 border-rose-500/20";
+        badgeStyle = "bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold";
       }
 
       tableHtml += `
-        <td class="py-2 px-1.5 text-center whitespace-nowrap">
-          <span class="inline-flex items-center justify-center w-6 h-6 rounded-md text-[11px] border ${badgeStyle}">
+        <td class="py-2.5 px-2 text-center whitespace-nowrap">
+          <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black font-display border tabular-nums transition-transform hover:scale-115 ${badgeStyle}">
             ${rank}
           </span>
         </td>
