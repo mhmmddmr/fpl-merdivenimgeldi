@@ -9,7 +9,8 @@ export const INITIAL_TEAMS = [
     "color": "#00FF66",
     "accent": "text-[#00FF66]",
     "gradient": "linear-gradient(135deg, #059669, #00FF66)",
-    "avatar": "👑"
+    "avatar": "👑",
+    "avatarUrl": null
   },
   {
     "id": "reis",
@@ -18,7 +19,8 @@ export const INITIAL_TEAMS = [
     "color": "#D500F9",
     "accent": "text-[#D500F9]",
     "gradient": "linear-gradient(135deg, #7c3aed, #D500F9)",
-    "avatar": "⚽"
+    "avatar": "⚽",
+    "avatarUrl": null
   },
   {
     "id": "zirve",
@@ -27,7 +29,8 @@ export const INITIAL_TEAMS = [
     "color": "#FF0055",
     "accent": "text-[#FF0055]",
     "gradient": "linear-gradient(135deg, #be123c, #FF0055)",
-    "avatar": "🚀"
+    "avatar": "🚀",
+    "avatarUrl": "./assets/avatars/zirve.jpg"
   },
   {
     "id": "hedef27",
@@ -36,7 +39,8 @@ export const INITIAL_TEAMS = [
     "color": "#FFFFFF",
     "accent": "text-white",
     "gradient": "linear-gradient(135deg, #64748b, #FFFFFF)",
-    "avatar": "🎯"
+    "avatar": "🎯",
+    "avatarUrl": "./assets/avatars/hedef27.jpg"
   },
   {
     "id": "kirmizisiyah",
@@ -45,7 +49,8 @@ export const INITIAL_TEAMS = [
     "color": "#FF2A2A",
     "accent": "text-[#FF2A2A]",
     "gradient": "linear-gradient(135deg, #991b1b, #FF2A2A)",
-    "avatar": "🔴"
+    "avatar": "🔴",
+    "avatarUrl": "./assets/avatars/kirmizisiyah.jpg"
   },
   {
     "id": "explorer",
@@ -54,7 +59,8 @@ export const INITIAL_TEAMS = [
     "color": "#00F0FF",
     "accent": "text-[#00F0FF]",
     "gradient": "linear-gradient(135deg, #0284c7, #00F0FF)",
-    "avatar": "🧭"
+    "avatar": "🧭",
+    "avatarUrl": "./assets/avatars/explorer.jpg"
   },
   {
     "id": "aliyntem",
@@ -63,7 +69,8 @@ export const INITIAL_TEAMS = [
     "color": "#FFE500",
     "accent": "text-[#FFE500]",
     "gradient": "linear-gradient(135deg, #ca8a04, #FFE500)",
-    "avatar": "⭐"
+    "avatar": "⭐",
+    "avatarUrl": null
   },
   {
     "id": "d3mon",
@@ -72,7 +79,8 @@ export const INITIAL_TEAMS = [
     "color": "#2979FF",
     "accent": "text-[#2979FF]",
     "gradient": "linear-gradient(135deg, #1d4ed8, #2979FF)",
-    "avatar": "😈"
+    "avatar": "😈",
+    "avatarUrl": null
   },
   {
     "id": "recobaba",
@@ -81,7 +89,8 @@ export const INITIAL_TEAMS = [
     "color": "#FF7700",
     "accent": "text-[#FF7700]",
     "gradient": "linear-gradient(135deg, #ea580c, #FF7700)",
-    "avatar": "🔥"
+    "avatar": "🔥",
+    "avatarUrl": "./assets/avatars/recobaba.jpg"
   }
 ];
 
@@ -298,8 +307,8 @@ export const INITIAL_GAMEWEEKS = [
   }
 ];
 
-export const DATASET_VERSION = "2026_gw15_season_v5";
-export const STORAGE_KEY = "fpl_ladder_v2026_gw15_season_v5";
+export const DATASET_VERSION = "2026_gw15_season_v6";
+export const STORAGE_KEY = "fpl_ladder_v2026_gw15_season_v6";
 
 export function loadLeagueData() {
   try {
@@ -307,6 +316,10 @@ export function loadLeagueData() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.version === DATASET_VERSION && parsed.teams && parsed.gameweeks && parsed.gameweeks.length >= 15) {
+        parsed.teams = parsed.teams.map(t => {
+          const init = INITIAL_TEAMS.find(it => it.id === t.id);
+          return init ? { ...t, avatarUrl: init.avatarUrl || null } : t;
+        });
         return parsed;
       }
     }

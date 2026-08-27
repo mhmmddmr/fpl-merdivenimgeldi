@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.4.0';
+} from './data.js?v=5.5.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.4.0';
+} from './stats.js?v=5.5.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.4.0';
+} from './charts.js?v=5.5.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.4.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.5.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -64,6 +64,17 @@ function initApp() {
   if (gws.length > 0) {
     selectedGameweek = gws[gws.length - 1].gw;
   }
+}
+
+/**
+ * Global Avatar Renderer (Custom caricature photo or fallback emoji)
+ */
+export function renderTeamAvatar(team, extraImgClass = 'w-full h-full object-cover') {
+  if (!team) return '⚽';
+  if (team.avatarUrl) {
+    return `<img src="${team.avatarUrl}" alt="${team.name}" class="${extraImgClass}" loading="lazy" />`;
+  }
+  return team.avatar || '⚽';
 }
 
 /**
@@ -152,7 +163,7 @@ function renderTeamFilterPills() {
           ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400 shadow-md shadow-emerald-500/25 scale-105' 
           : 'bg-white/[0.04] text-slate-300 border-white/5 hover:text-white hover:bg-white/[0.08] hover:border-white/15'
       }">
-        <span class="text-sm">${t.avatar}</span>
+        <span class="w-4 h-4 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-xs">${renderTeamAvatar(t, 'w-full h-full object-cover rounded-md')}</span>
         <span class="truncate max-w-[95px]">${t.name}</span>
       </button>
     `;
@@ -221,8 +232,8 @@ function renderHighlightCards() {
         <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
           <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${highlights.leaders.map(l => `
-              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
-                ${l.team.avatar}
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0 overflow-hidden" style="background: ${l.team.gradient}" title="${l.team.name}">
+                ${renderTeamAvatar(l.team)}
               </div>
             `).join('')}
           </div>
@@ -237,8 +248,8 @@ function renderHighlightCards() {
     } else if (primaryLeader) {
       bodyHtml = `
         <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-amber-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${primaryLeader.team.gradient}">
-            ${primaryLeader.team.avatar}
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-amber-400/30 transition-transform group-hover:scale-105 duration-200 overflow-hidden" style="background: ${primaryLeader.team.gradient}">
+            ${renderTeamAvatar(primaryLeader.team)}
           </div>
           <div class="min-w-0 flex-1">
             <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-amber-300 transition-colors font-display">${primaryLeader.team.name}</h3>
@@ -293,8 +304,8 @@ function renderHighlightCards() {
         <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
           <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${highlights.gwWinners.map(w => `
-              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${w.team.gradient}" title="${w.team.name}">
-                ${w.team.avatar}
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0 overflow-hidden" style="background: ${w.team.gradient}" title="${w.team.name}">
+                ${renderTeamAvatar(w.team)}
               </div>
             `).join('')}
           </div>
@@ -309,8 +320,8 @@ function renderHighlightCards() {
     } else if (winner) {
       bodyHtml = `
         <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-purple-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${winner.team.gradient}">
-            ${winner.team.avatar}
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-purple-400/30 transition-transform group-hover:scale-105 duration-200 overflow-hidden" style="background: ${winner.team.gradient}">
+            ${renderTeamAvatar(winner.team)}
           </div>
           <div class="min-w-0 flex-1">
             <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-purple-300 transition-colors font-display">${winner.team.name}</h3>
@@ -365,8 +376,8 @@ function renderHighlightCards() {
         <div class="h-14 flex items-center gap-3 my-2.5 relative z-10 min-w-0">
           <div class="flex -space-x-3 overflow-hidden py-1 shrink-0">
             ${lowestList.map(l => `
-              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0" style="background: ${l.team.gradient}" title="${l.team.name}">
-                ${l.team.avatar}
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md ring-2 ring-[#110a24] shrink-0 overflow-hidden" style="background: ${l.team.gradient}" title="${l.team.name}">
+                ${renderTeamAvatar(l.team)}
               </div>
             `).join('')}
           </div>
@@ -381,8 +392,8 @@ function renderHighlightCards() {
     } else if (loser) {
       bodyHtml = `
         <div class="h-14 flex items-center gap-3.5 my-2.5 relative z-10 min-w-0">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-rose-400/30 transition-transform group-hover:scale-105 duration-200" style="background: ${loser.team.gradient}">
-            ${loser.team.avatar}
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-rose-400/30 transition-transform group-hover:scale-105 duration-200 overflow-hidden" style="background: ${loser.team.gradient}">
+            ${renderTeamAvatar(loser.team)}
           </div>
           <div class="min-w-0 flex-1">
             <h3 class="text-base sm:text-lg font-black text-white tracking-tight truncate leading-tight group-hover:text-rose-300 transition-colors font-display">${loser.team.name}</h3>
@@ -544,7 +555,7 @@ function renderLeagueBadgesSection() {
               title="${h.team.name} (${h.team.manager}) - ${h.detail}"
             >
               <div class="flex items-center gap-2 min-w-0">
-                <span class="text-sm shrink-0 group-hover/holder:scale-110 transition-transform">${h.team.avatar}</span>
+                <span class="w-6 h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center text-sm group-hover/holder:scale-110 transition-transform">${renderTeamAvatar(h.team, 'w-full h-full object-cover rounded-lg')}</span>
                 <span class="text-xs font-bold text-slate-200 group-hover/holder:text-white truncate font-display">${h.team.name}</span>
               </div>
               <span class="px-2 py-0.5 rounded-md text-[10px] font-black font-display tabular-nums shrink-0 border ${badge.pillClass}">
@@ -707,8 +718,8 @@ function renderStandingsTable() {
         <!-- Team & Manager -->
         <td class="py-3.5 px-3 sm:px-4">
           <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg font-bold shadow-md shrink-0 text-white ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${item.team.gradient}">
-              ${item.team.avatar}
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg font-bold shadow-md shrink-0 text-white ring-2 ring-white/10 transition-transform group-hover:scale-105 overflow-hidden" style="background: ${item.team.gradient}">
+              ${renderTeamAvatar(item.team)}
             </div>
             <div class="min-w-0">
               <div class="font-black text-white text-sm sm:text-base group-hover:text-emerald-400 transition-colors truncate font-display">
@@ -900,8 +911,8 @@ function openAddGameweekModal() {
     formContainer.innerHTML = leagueData.teams.map(team => `
       <div class="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.06] border border-white/5 transition-all">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm shrink-0 ring-1 ring-white/10" style="background: ${team.gradient}">
-            ${team.avatar}
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm shrink-0 ring-1 ring-white/10 overflow-hidden" style="background: ${team.gradient}">
+            ${renderTeamAvatar(team)}
           </div>
           <div>
             <div class="font-black text-sm text-white font-display">${team.name}</div>
@@ -1032,8 +1043,8 @@ function updateH2HView() {
       <div class="flex items-center justify-between gap-3">
         <!-- Team 1 -->
         <div class="flex items-center gap-3 w-5/12 min-w-0">
-          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${h2h.t1.gradient}">
-            ${h2h.t1.avatar}
+          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105 overflow-hidden" style="background: ${h2h.t1.gradient}">
+            ${renderTeamAvatar(h2h.t1)}
           </div>
           <div class="min-w-0">
             <div class="font-black text-white text-sm sm:text-base truncate font-display">${h2h.t1.name}</div>
@@ -1060,8 +1071,8 @@ function updateH2HView() {
             <div class="text-xs text-slate-400 truncate font-medium">${h2h.t2.manager}</div>
             <div class="text-[11px] text-purple-300/90 mt-0.5 font-bold font-display tabular-nums">${h2h.t2Total} Toplam Puan</div>
           </div>
-          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105" style="background: ${h2h.t2.gradient}">
-            ${h2h.t2.avatar}
+          <div class="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl shadow-md shrink-0 ring-2 ring-white/10 transition-transform group-hover:scale-105 overflow-hidden" style="background: ${h2h.t2.gradient}">
+            ${renderTeamAvatar(h2h.t2)}
           </div>
         </div>
       </div>
@@ -1142,8 +1153,8 @@ window.openManagerModal = function(teamId) {
     container.innerHTML = `
       <!-- Manager Hero Header -->
       <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] mb-4 relative overflow-hidden">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0 text-white ring-2 ring-white/20" style="background: ${team.gradient}">
-          ${team.avatar}
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg shrink-0 text-white ring-2 ring-white/20 overflow-hidden" style="background: ${team.gradient}">
+          ${renderTeamAvatar(team)}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">

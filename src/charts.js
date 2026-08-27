@@ -369,7 +369,9 @@ export function renderLadderMatrix(containerId, progressionData, currentStanding
       <tr class="hover:bg-white/[0.04] transition cursor-pointer group" onclick="if(window.openManagerModal) window.openManagerModal('${item.team.id}')">
         <td class="py-3 px-3.5 sticky left-0 bg-[#110a24] group-hover:bg-[#180f33] z-10 whitespace-nowrap font-black text-white flex items-center gap-2.5 border-r border-white/10 transition-colors">
           <span class="text-[11px] font-extrabold w-4 text-slate-500 font-display">${currentRank}.</span>
-          <span class="text-base shrink-0 transition-transform group-hover:scale-110">${item.team.avatar}</span>
+          <span class="w-5 h-5 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-sm transition-transform group-hover:scale-110">
+            ${item.team.avatarUrl ? `<img src="${item.team.avatarUrl}" alt="${item.team.name}" class="w-full h-full object-cover rounded-md" loading="lazy" />` : (item.team.avatar || '⚽')}
+          </span>
           <span class="truncate max-w-[130px] font-display text-sm group-hover:text-emerald-400 transition-colors">${item.team.name}</span>
         </td>
     `;
