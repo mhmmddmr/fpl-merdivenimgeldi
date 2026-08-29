@@ -389,110 +389,112 @@ export function getHeadToHead(leagueData, team1Id, team2Id) {
 }
 
 /**
- * 🎖️ 1. RPG Level & Title Calculator (10-Level Full Season Scale: 0 - 2000+ P)
+ * 🎖️ 1. RPG Level & Title Definitions (10-Level Full Season Scale: 0 - 2000+ P)
  */
-export function getManagerLevel(totalPoints) {
-  if (totalPoints >= 1800) {
-    return {
-      level: 10,
-      title: "FPL Efsanesi / Zirve Şampiyonu",
-      badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10",
-      icon: "👑",
-      min: 1800,
-      max: 2200,
-      progressPct: Math.min(100, Math.round(((totalPoints - 1800) / 400) * 100))
-    };
-  } else if (totalPoints >= 1600) {
-    return {
-      level: 9,
-      title: "Şampiyonluk Adayı",
-      badgeColor: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 shadow-sm shadow-yellow-500/10",
-      icon: "🏆",
-      min: 1600,
-      max: 1800,
-      progressPct: Math.round(((totalPoints - 1600) / 200) * 100)
-    };
-  } else if (totalPoints >= 1400) {
-    return {
-      level: 8,
-      title: "Zirve Tehdidi",
-      badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm shadow-rose-500/10",
-      icon: "💎",
-      min: 1400,
-      max: 1600,
-      progressPct: Math.round(((totalPoints - 1400) / 200) * 100)
-    };
-  } else if (totalPoints >= 1200) {
-    return {
-      level: 7,
-      title: "Merdiven Üstadı",
-      badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/10",
-      icon: "🧙‍♂️",
-      min: 1200,
-      max: 1400,
-      progressPct: Math.round(((totalPoints - 1200) / 200) * 100)
-    };
-  } else if (totalPoints >= 1000) {
-    return {
-      level: 6,
-      title: "Puan Avcısı",
-      badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm shadow-indigo-500/10",
-      icon: "🏹",
-      min: 1000,
-      max: 1200,
-      progressPct: Math.round(((totalPoints - 1000) / 200) * 100)
-    };
-  } else if (totalPoints >= 800) {
-    return {
-      level: 5,
-      title: "FPL Stratejisti",
-      badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-sm shadow-blue-500/10",
-      icon: "🎯",
-      min: 800,
-      max: 1000,
-      progressPct: Math.round(((totalPoints - 800) / 200) * 100)
-    };
-  } else if (totalPoints >= 600) {
-    return {
-      level: 4,
-      title: "Pep'in Çırağı",
-      badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10",
-      icon: "⚡",
-      min: 600,
-      max: 800,
-      progressPct: Math.round(((totalPoints - 600) / 200) * 100)
-    };
-  } else if (totalPoints >= 400) {
-    return {
-      level: 3,
-      title: "Scout Çırağı",
-      badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm shadow-teal-500/10",
-      icon: "🔍",
-      min: 400,
-      max: 600,
-      progressPct: Math.round(((totalPoints - 400) / 200) * 100)
-    };
-  } else if (totalPoints >= 200) {
-    return {
-      level: 2,
-      title: "Halı Saha Taktisyeni",
-      badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-      icon: "📋",
-      min: 200,
-      max: 400,
-      progressPct: Math.round(((totalPoints - 200) / 200) * 100)
-    };
-  } else {
-    return {
-      level: 1,
-      title: "Çaylak Menajer",
-      badgeColor: "bg-slate-500/20 text-slate-300 border-slate-500/40",
-      icon: "🌱",
-      min: 0,
-      max: 200,
-      progressPct: Math.round((totalPoints / 200) * 100)
-    };
+export const ALL_MANAGER_LEVELS = [
+  {
+    level: 1,
+    title: "Çaylak Menajer",
+    badgeColor: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+    icon: "🌱",
+    min: 0,
+    max: 200
+  },
+  {
+    level: 2,
+    title: "Halı Saha Taktisyeni",
+    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    icon: "📋",
+    min: 200,
+    max: 400
+  },
+  {
+    level: 3,
+    title: "Scout Çırağı",
+    badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm shadow-teal-500/10",
+    icon: "🔍",
+    min: 400,
+    max: 600
+  },
+  {
+    level: 4,
+    title: "Pep'in Çırağı",
+    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10",
+    icon: "⚡",
+    min: 600,
+    max: 800
+  },
+  {
+    level: 5,
+    title: "FPL Stratejisti",
+    badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-sm shadow-blue-500/10",
+    icon: "🎯",
+    min: 800,
+    max: 1000
+  },
+  {
+    level: 6,
+    title: "Puan Avcısı",
+    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm shadow-indigo-500/10",
+    icon: "🏹",
+    min: 1000,
+    max: 1200
+  },
+  {
+    level: 7,
+    title: "Merdiven Üstadı",
+    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/10",
+    icon: "🧙‍♂️",
+    min: 1200,
+    max: 1400
+  },
+  {
+    level: 8,
+    title: "Zirve Tehdidi",
+    badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm shadow-rose-500/10",
+    icon: "💎",
+    min: 1400,
+    max: 1600
+  },
+  {
+    level: 9,
+    title: "Şampiyonluk Adayı",
+    badgeColor: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 shadow-sm shadow-yellow-500/10",
+    icon: "🏆",
+    min: 1600,
+    max: 1800
+  },
+  {
+    level: 10,
+    title: "FPL Efsanesi / Zirve Şampiyonu",
+    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10",
+    icon: "👑",
+    min: 1800,
+    max: 2200
   }
+];
+
+export function getManagerLevel(totalPoints) {
+  let matched = ALL_MANAGER_LEVELS[0];
+  for (let i = ALL_MANAGER_LEVELS.length - 1; i >= 0; i--) {
+    if (totalPoints >= ALL_MANAGER_LEVELS[i].min) {
+      matched = ALL_MANAGER_LEVELS[i];
+      break;
+    }
+  }
+
+  let progressPct = 0;
+  if (matched.level === 10) {
+    progressPct = Math.min(100, Math.round(((totalPoints - matched.min) / (matched.max - matched.min)) * 100));
+  } else {
+    progressPct = Math.min(100, Math.max(0, Math.round(((totalPoints - matched.min) / (matched.max - matched.min)) * 100)));
+  }
+
+  return {
+    ...matched,
+    progressPct,
+    allLevels: ALL_MANAGER_LEVELS
+  };
 }
 
 /**

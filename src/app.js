@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.9.0';
+} from './data.js?v=6.0.0';
 
 import {
   calculateStandings,
@@ -14,9 +14,10 @@ import {
   getLeaderboardDominance,
   getHeadToHead,
   getManagerLevel,
+  ALL_MANAGER_LEVELS,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.9.0';
+} from './stats.js?v=6.0.0';
 
 import {
   renderRankChart,
@@ -25,9 +26,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.9.0';
+} from './charts.js?v=6.0.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.9.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=6.0.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -1203,27 +1204,90 @@ window.openManagerModal = function(teamId) {
         </div>
       </div>
 
-      <!-- RPG Level & Title Banner -->
-      <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 mb-4 space-y-3">
+      <!-- RPG Level & Title Banner with Interactive 10-Node Stepper Track -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/10 mb-4 space-y-4 relative overflow-visible">
+        
+        <!-- Header -->
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="text-3xl p-2 rounded-2xl bg-white/5 border border-white/10">${lvl.icon}</span>
-            <div>
-              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-display">Menajer Rütbesi (Seviye ${lvl.level})</div>
-              <div class="text-base font-black text-white font-display">${lvl.title}</div>
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-3xl p-2 rounded-2xl bg-white/5 border border-white/10 shrink-0">${lvl.icon}</span>
+            <div class="min-w-0">
+              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-display truncate">Menajer Rütbesi (Seviye ${lvl.level})</div>
+              <div class="text-base sm:text-lg font-black text-white font-display truncate">${lvl.title}</div>
             </div>
           </div>
-          <span class="px-3 py-1 rounded-xl text-xs font-black border font-display ${lvl.badgeColor}">
+          <span class="px-3 py-1 rounded-xl text-xs font-black border font-display shrink-0 ${lvl.badgeColor}">
             Seviye ${lvl.level} / 10
           </span>
         </div>
-        <!-- XP Progress Bar -->
-        <div class="space-y-1.5">
-          <div class="flex justify-between text-[11px] font-bold text-slate-400 font-display">
-            <span>${currentStanding.totalPoints} Puan</span>
-            <span>${lvl.level === 10 ? 'MAX RÜTBE' : `${lvl.max} Puan (Sonraki Seviye)`}</span>
+
+        <!-- 10-Node Interactive Level Track -->
+        <div class="pt-2 pb-1 relative">
+          <!-- Background Track Line -->
+          <div class="absolute top-[18px] left-3 right-3 h-1.5 bg-slate-800/80 rounded-full z-0"></div>
+          
+          <!-- Active Filled Track Line -->
+          <div class="absolute top-[18px] left-3 h-1.5 bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 rounded-full z-0 transition-all duration-700 shadow-[0_0_8px_rgba(45,212,191,0.5)]" 
+               style="width: calc(${Math.min(100, Math.max(0, ((lvl.level - 1) / 9) * 100))}% - 6px)"></div>
+
+          <!-- 10 Stepper Nodes -->
+          <div class="flex justify-between items-center relative z-10">
+            ${ALL_MANAGER_LEVELS.map((node) => {
+              const isCurrent = node.level === lvl.level;
+              const isUnlocked = currentStanding.totalPoints >= node.min;
+              const pointsNeeded = node.min - currentStanding.totalPoints;
+
+              let nodeClass = "w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#130b26] text-slate-500 border border-white/15 hover:border-cyan-400/60 hover:text-white flex items-center justify-center cursor-pointer relative group/node transition-all duration-200";
+              let contentHtml = `<span class="text-[10px] font-display font-bold">${node.level}</span>`;
+
+              if (isCurrent) {
+                nodeClass = "w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-400 text-slate-950 font-black border-2 border-white ring-4 ring-amber-400/30 shadow-[0_0_15px_#fbbf24] scale-110 flex items-center justify-center cursor-pointer relative group/node z-20 animate-pulse";
+                contentHtml = `<span class="text-xs">${node.icon}</span>`;
+              } else if (isUnlocked) {
+                nodeClass = "w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-slate-950 font-black border border-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.4)] flex items-center justify-center cursor-pointer relative group/node";
+                contentHtml = `<i class="fa-solid fa-check text-[9px] sm:text-[10px]"></i>`;
+              }
+
+              return `
+                <div class="${nodeClass}">
+                  ${contentHtml}
+
+                  <!-- Interactive Tooltip (Hover Details) -->
+                  <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover/node:opacity-100 group-hover/node:pointer-events-auto transition-all duration-200 z-50 whitespace-nowrap shadow-2xl">
+                    <div class="bg-[#180f33]/95 border border-white/20 p-2.5 rounded-xl backdrop-blur-xl text-center shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
+                      <div class="flex items-center justify-center gap-1.5 font-display font-black text-xs text-white">
+                        <span>${node.icon}</span>
+                        <span>Seviye ${node.level}: ${node.title}</span>
+                      </div>
+                      <div class="text-[11px] text-slate-300 font-medium mt-1">
+                        Puan Barajı: <b class="text-amber-300 font-display tabular-nums">${node.min} P</b>
+                      </div>
+                      <div class="text-[10px] font-bold mt-1.5 font-display">
+                        ${isCurrent 
+                          ? `<span class="text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-md border border-amber-400/30">● Mevcut Rütbe (${currentStanding.totalPoints} P)</span>`
+                          : (isUnlocked 
+                            ? `<span class="text-emerald-400 bg-emerald-400/15 px-2 py-0.5 rounded-md border border-emerald-400/30">✓ Açıldı</span>`
+                            : `<span class="text-slate-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">🔒 Kilitli (${pointsNeeded} P lazım)</span>`
+                          )
+                        }
+                      </div>
+                    </div>
+                    <!-- Tooltip pointer arrow -->
+                    <div class="w-2 h-2 bg-[#180f33] border-r border-b border-white/20 transform rotate-45 mx-auto -mt-1"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
-          <div class="w-full h-2.5 rounded-full bg-slate-900/90 overflow-hidden border border-white/5">
+        </div>
+
+        <!-- Level XP Status Footer -->
+        <div class="space-y-1.5 pt-1 border-t border-white/5">
+          <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 font-display">
+            <span>Mevcut: <b class="text-white tabular-nums">${currentStanding.totalPoints} Puan</b></span>
+            <span>${lvl.level === 10 ? '<b class="text-amber-300">👑 MAX RÜTBE</b>' : `Sonraki Seviye: <b class="text-slate-200 tabular-nums">${lvl.max} P</b> (+${lvl.max - currentStanding.totalPoints} P)`}</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-900/90 overflow-hidden border border-white/5">
             <div class="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 transition-all duration-500 shadow-[0_0_10px_#00ff87]" style="width: ${lvl.progressPct}%"></div>
           </div>
         </div>
