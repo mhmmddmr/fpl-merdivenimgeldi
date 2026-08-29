@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=5.8.0';
+} from './data.js?v=5.9.0';
 
 import {
   calculateStandings,
@@ -16,7 +16,7 @@ import {
   getManagerLevel,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=5.8.0';
+} from './stats.js?v=5.9.0';
 
 import {
   renderRankChart,
@@ -25,9 +25,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=5.8.0';
+} from './charts.js?v=5.9.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=5.8.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=5.9.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -1214,14 +1214,14 @@ window.openManagerModal = function(teamId) {
             </div>
           </div>
           <span class="px-3 py-1 rounded-xl text-xs font-black border font-display ${lvl.badgeColor}">
-            Seviye ${lvl.level} / 5
+            Seviye ${lvl.level} / 10
           </span>
         </div>
         <!-- XP Progress Bar -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-[11px] font-bold text-slate-400 font-display">
             <span>${currentStanding.totalPoints} Puan</span>
-            <span>${lvl.level === 5 ? 'MAX RÜTBE' : `${lvl.max} Puan (Sonraki Seviye)`}</span>
+            <span>${lvl.level === 10 ? 'MAX RÜTBE' : `${lvl.max} Puan (Sonraki Seviye)`}</span>
           </div>
           <div class="w-full h-2.5 rounded-full bg-slate-900/90 overflow-hidden border border-white/5">
             <div class="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-amber-400 transition-all duration-500 shadow-[0_0_10px_#00ff87]" style="width: ${lvl.progressPct}%"></div>
