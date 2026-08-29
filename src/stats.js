@@ -394,83 +394,93 @@ export function getHeadToHead(leagueData, team1Id, team2Id) {
 export const ALL_MANAGER_LEVELS = [
   {
     level: 1,
-    title: "Çaylak Menajer",
+    title: "Halısaha Dubası",
     badgeColor: "bg-slate-500/20 text-slate-300 border-slate-500/40",
-    icon: "🌱",
+    icon: "🥔",
     min: 0,
-    max: 200
+    max: 200,
+    desc: "Kadro kurmayı unutan, top diye çocuğa vuran yürüyen duba."
   },
   {
     level: 2,
-    title: "Halı Saha Taktisyeni",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-    icon: "📋",
+    title: "Kıraathane Filozofu",
+    badgeColor: "bg-amber-700/20 text-amber-300 border-amber-600/40",
+    icon: "☕",
     min: 200,
-    max: 400
+    max: 400,
+    desc: "Her hafta 'haftaya toparlarız' diyen çay ocağı taktik dehası."
   },
   {
     level: 3,
-    title: "Scout Çırağı",
-    badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm shadow-teal-500/10",
-    icon: "🔍",
+    title: "Minus Bağımlısı",
+    badgeColor: "bg-red-500/20 text-red-300 border-red-500/40 shadow-sm shadow-red-500/10",
+    icon: "💸",
     min: 400,
-    max: 600
+    max: 600,
+    desc: "Haftalık -8 transfer çekip yine de patlayan fantezi kumarbazı."
   },
   {
     level: 4,
-    title: "Pep'in Çırağı",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10",
-    icon: "⚡",
+    title: "Çakma Guardiola",
+    badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-sm shadow-teal-500/10",
+    icon: "👨‍🦲",
     min: 600,
-    max: 800
+    max: 800,
+    desc: "Fantezi olsun diye kaptanı sol beke verip saç baş yolduran sahte dahi."
   },
   {
     level: 5,
-    title: "FPL Stratejisti",
+    title: "Excel Manyağı",
     badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-sm shadow-blue-500/10",
-    icon: "🎯",
+    icon: "📊",
     min: 800,
-    max: 1000
+    max: 1000,
+    desc: "xG, fikstür zorluğu ve algoritmalara gömülüp kafayı sıyıran analist."
   },
   {
     level: 6,
-    title: "Puan Avcısı",
-    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm shadow-indigo-500/10",
-    icon: "🏹",
+    title: "Puan Çakalı",
+    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-500/10",
+    icon: "🦊",
     min: 1000,
-    max: 1200
+    max: 1200,
+    desc: "90+6'da gelen beleş asist ve bonuslarla ligin suyunu sıkan kurnaz tilki."
   },
   {
     level: 7,
-    title: "Merdiven Üstadı",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/10",
-    icon: "🧙‍♂️",
+    title: "Merdiven Canavarı",
+    badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 shadow-sm shadow-indigo-500/10",
+    icon: "🪜",
     min: 1200,
-    max: 1400
+    max: 1400,
+    desc: "Çaktırmadan basamakları üçer beşer tırmanıp racon kesen gizli tehlike."
   },
   {
     level: 8,
-    title: "Zirve Tehdidi",
+    title: "Enseye Üfleyen",
     badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm shadow-rose-500/10",
-    icon: "💎",
+    icon: "🎯",
     min: 1400,
-    max: 1600
+    max: 1600,
+    desc: "Liderin hemen ensesinde sıcak nefesini hissettiren şampiyonluk kabusu."
   },
   {
     level: 9,
-    title: "Şampiyonluk Adayı",
+    title: "Şampanyayı Soğutan",
     badgeColor: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 shadow-sm shadow-yellow-500/10",
-    icon: "🏆",
+    icon: "🍾",
     min: 1600,
-    max: 1800
+    max: 1800,
+    desc: "Havasından yanına yaklaşılmayan, kupayı gözüne kestirmiş kibir abidesi."
   },
   {
     level: 10,
-    title: "FPL Efsanesi / Zirve Şampiyonu",
+    title: "Ligin Sefiri / FPL İlahı",
     badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10",
     icon: "👑",
     min: 1800,
-    max: 2200
+    max: 2200,
+    desc: "Merdivenin tepesinde purosunu tüttüren, ligin mutlak hükümdarı."
   }
 ];
 

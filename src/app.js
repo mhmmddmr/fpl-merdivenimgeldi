@@ -5,7 +5,7 @@ import {
   saveLeagueData,
   resetLeagueData,
   DATASET_VERSION
-} from './data.js?v=6.0.0';
+} from './data.js?v=6.1.0';
 
 import {
   calculateStandings,
@@ -17,7 +17,7 @@ import {
   ALL_MANAGER_LEVELS,
   getTeamBadges,
   getLeagueBadgesOverview
-} from './stats.js?v=6.0.0';
+} from './stats.js?v=6.1.0';
 
 import {
   renderRankChart,
@@ -26,9 +26,9 @@ import {
   updateChartFocus,
   setFocusedTeam,
   getFocusedTeam
-} from './charts.js?v=6.0.0';
+} from './charts.js?v=6.1.0';
 
-import { fetchFplLeagueStandings } from './fplApi.js?v=6.0.0';
+import { fetchFplLeagueStandings } from './fplApi.js?v=6.1.0';
 
 // Clear previous outdated stores
 ['fpl_ladder_data_v1', 'fpl_merdivenim_geldi_v38_store', 'fpl_merdivenim_geldi_v38_laser_contrast_store', 'fpl_merdivenim_geldi_v38_realistic_season_store', 'fpl_ladder_v2026_realistic_v3', 'fpl_ladder_v2026_authentic_real_v4'].forEach(k => {
@@ -1208,12 +1208,13 @@ window.openManagerModal = function(teamId) {
       <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/10 mb-4 space-y-4 relative overflow-visible">
         
         <!-- Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3 min-w-0">
             <span class="text-3xl p-2 rounded-2xl bg-white/5 border border-white/10 shrink-0">${lvl.icon}</span>
             <div class="min-w-0">
               <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-display truncate">Menajer Rütbesi (Seviye ${lvl.level})</div>
               <div class="text-base sm:text-lg font-black text-white font-display truncate">${lvl.title}</div>
+              <p class="text-xs text-slate-400 font-normal italic truncate mt-0.5">${lvl.desc || ''}</p>
             </div>
           </div>
           <span class="px-3 py-1 rounded-xl text-xs font-black border font-display shrink-0 ${lvl.badgeColor}">
@@ -1254,17 +1255,18 @@ window.openManagerModal = function(teamId) {
 
                   <!-- Interactive Tooltip (Hover Details) -->
                   <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover/node:opacity-100 group-hover/node:pointer-events-auto transition-all duration-200 z-50 whitespace-nowrap shadow-2xl">
-                    <div class="bg-[#180f33]/95 border border-white/20 p-2.5 rounded-xl backdrop-blur-xl text-center shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
+                    <div class="bg-[#180f33]/95 border border-white/20 p-2.5 rounded-xl backdrop-blur-xl text-center shadow-[0_10px_30px_rgba(0,0,0,0.8)] max-w-[240px]">
                       <div class="flex items-center justify-center gap-1.5 font-display font-black text-xs text-white">
                         <span>${node.icon}</span>
-                        <span>Seviye ${node.level}: ${node.title}</span>
+                        <span class="truncate">Seviye ${node.level}: ${node.title}</span>
                       </div>
-                      <div class="text-[11px] text-slate-300 font-medium mt-1">
+                      ${node.desc ? `<p class="text-[10px] text-slate-300 font-normal italic mt-1 leading-tight text-center">${node.desc}</p>` : ''}
+                      <div class="text-[11px] text-slate-300 font-medium mt-1.5">
                         Puan Barajı: <b class="text-amber-300 font-display tabular-nums">${node.min} P</b>
                       </div>
                       <div class="text-[10px] font-bold mt-1.5 font-display">
                         ${isCurrent 
-                          ? `<span class="text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-md border border-amber-400/30">● Mevcut Rütbe (${currentStanding.totalPoints} P)</span>`
+                          ? `<span class="text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-md border border-amber-400/30">● Mevcut Rütbeniz (${currentStanding.totalPoints} P)</span>`
                           : (isUnlocked 
                             ? `<span class="text-emerald-400 bg-emerald-400/15 px-2 py-0.5 rounded-md border border-emerald-400/30">✓ Açıldı</span>`
                             : `<span class="text-slate-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">🔒 Kilitli (${pointsNeeded} P lazım)</span>`
